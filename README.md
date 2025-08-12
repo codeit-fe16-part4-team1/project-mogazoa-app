@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📜 심화 프로젝트 README
 
-## Getting Started
+코드잇 파트4 1팀 심화 프로젝트
 
-First, run the development server:
+> ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white&labelColor=20232a)
+> ![css](https://img.shields.io/badge/-css-663399?logo=css&logoColor=white&labelColor=20232a)
+> ![HTML5](https://img.shields.io/badge/-HTML5-E34F26?logo=html5&logoColor=white&labelColor=20232a)
+> ![Tailwind CSS](https://img.shields.io/badge/-Tailwind_CSS-06B6D4?logo=tailwindcss&logoColor=white&labelColor=20232a)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+> ![Next.js](https://img.shields.io/badge/-Next.js-000000?logo=next.js&logoColor=white&labelColor=20232a)
+> ![React](https://img.shields.io/badge/-React-61DAFB?logo=react&logoColor=white&labelColor=20232a)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+> ![Prettier](https://img.shields.io/badge/-Prettier-F7B93E?logo=prettier&logoColor=white&labelColor=20232a)
+> ![ESLint](https://img.shields.io/badge/-ESLint-4B32C3?logo=eslint&logoColor=white&labelColor=20232a)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+> ![Axios](https://img.shields.io/badge/-Axios-5A29E4?logo=axios&logoColor=white&labelColor=20232a)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+> ![Node.js](https://img.shields.io/badge/-Node.js-5FA04E?logo=node.js&logoColor=white&labelColor=20232a)
+> ![npm](https://img.shields.io/badge/-npm-CB3837?logo=npm&logoColor=white&labelColor=20232a)
 
-## Learn More
+> ![Git](https://img.shields.io/badge/-Git-F05032?logo=git&logoColor=white&labelColor=20232a)
+> ![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white&labelColor=20232a)
+> ![Notion](https://img.shields.io/badge/-Notion-000000?logo=notion&logoColor=white&labelColor=20232a)
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🚀 배포 사이트
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- [🧷 [배포 사이트]](https://new-project-final.link/)
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 💌 주제
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**[WIKIED]** - 지인들의 위키를 직접 작성하고 공유하는 플랫폼
+
+- 🧷 [가이드 문서]
+
+---
+
+### 📝 프로젝트 수행 계획서
+
+- 🧷 [수행 계획서]
+
+---
+
+### 📅 프로젝트 일정
+
+---
+
+### 🔍 요구사항 분석
+
+- 🧷 [User Flow]
+
+---
+
+### 🎨 디자인 시안
+
+- 🧷 [Figma - 원본]
+
+---
+
+### 🔌 API 정보
+
+- 🧷 [SWAGGER 문서]
+
+---
