@@ -43,9 +43,8 @@ jobs:
             git fetch --all
             git reset --hard origin/main
 
-            export NODE_ENV=production
-            npm ci
-            npm run build
+            HUSKY=0 npm ci
+            NODE_ENV=production npm run build
 
             pm2 reload project-final-app || pm2 start "npm run start" --name "project-final-app"
             pm2 save
