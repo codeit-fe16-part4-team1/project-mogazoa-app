@@ -18,13 +18,6 @@ jobs:
       #   with:
       #     node-version: 18.x
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
       - name: Deploy on EC2 (git pull → build → restart)
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -33,6 +26,18 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             set -e
+
+            [ -s "$HOME/.nvm/nvm.sh" ] && . "$HOME/.nvm/nvm.sh"
+
+            # (EC2에 1회 적용용) 스왑 2GB
+            if ! sudo swapon --show | grep -q '/swapfile'; then
+              sudo fallocate -l 2G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=2048
+              sudo chmod 600 /swapfile
+              sudo mkswap /swapfile
+              sudo swapon /swapfile
+              echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+            fi
+
             cd "${{ secrets.EC2_APP_DIR }}"
 
             git fetch --all
@@ -44,6 +49,13 @@ jobs:
 
             pm2 reload project-final-app || pm2 start "npm run start" --name "project-final-app"
             pm2 save
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: CloudFront Invalidate Cache
         run: aws cloudfront create-invalidation \
