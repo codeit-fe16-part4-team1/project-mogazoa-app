@@ -1,0 +1,51 @@
+name: deploy project to EC2
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  continuous-deployment:
+    runs-on: ubuntu-latest
+    steps:
+      # (선택) 저장소 체크아웃은 로컬 테스트/린트할 때만 필요
+      # - name: Git Checkout
+      #   uses: actions/checkout@v4
+
+      # (선택) 로컬에서 테스트/빌드를 돌릴 거면 Node 세팅
+      # - name: Use Node.js 18.x
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: 18.x
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Deploy on EC2 (git pull → build → restart)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            set -e
+            cd "${{ secrets.EC2_APP_DIR }}"
+
+            git fetch --all
+            git reset --hard origin/main
+
+            export NODE_ENV=production
+            npm ci
+            npm run build
+
+            pm2 reload project-final-app || pm2 start "npm run start" --name "project-final-app"
+            pm2 save
+
+      - name: CloudFront Invalidate Cache
+        run: aws cloudfront create-invalidation \
+          --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+          --paths "/*"
