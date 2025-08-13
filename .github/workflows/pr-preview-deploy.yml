@@ -71,9 +71,9 @@ jobs:
           fi
 
           # 기존 브랜치 디렉터리 제거 후 새로 생성
-          sudo rm -rf "${APP_DIR}"
-          sudo mkdir -p "${APP_DIR}"
-          sudo chown -R ubuntu:ubuntu "${APP_DIR}"
+          sudo rm -rf "\${APP_DIR}"
+          sudo mkdir -p "\${APP_DIR}"
+          sudo chown -R ubuntu:ubuntu "\${APP_DIR}"
 
           # 코드 전개
           tar -xzf /tmp/app.tar.gz -C \"\${APP_DIR}\"
