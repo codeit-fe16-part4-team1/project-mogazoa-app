@@ -91,8 +91,10 @@ jobs:
           npm run build
 
           # PM2는 ubuntu 사용자 컨텍스트에서 실행
-          pm2 delete \"preview-\${BRANCH}\" || true
-          PORT=\${PORT} pm2 start node_modules/next/dist/bin/next --name \"preview-\${BRANCH}\" -- start -p \${PORT}
+          pm2 delete "preview-${BRANCH}" || true
+          pm2 start "node_modules/.bin/next start -p ${PORT}" \
+            --name "preview-${BRANCH}" \
+            --cwd "${APP_DIR}"
           pm2 save
 
           # Nginx 검사/리로드
