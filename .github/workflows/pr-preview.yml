@@ -23,9 +23,9 @@ jobs:
           echo "name=$SANITIZED" >> $GITHUB_OUTPUT
           echo "port=$PORT" >> $GITHUB_OUTPUT
 
-          - name: Pack source (git archive snapshot)
-            run: |
-              git archive --format=tar --prefix=app/ HEAD | gzip > app.tar.gz
+      - name: Pack source (git archive snapshot)
+        run: |
+          git archive --format=tar --prefix=app/ HEAD | gzip > app.tar.gz
 
       - name: Copy & Deploy on EC2
         env:
