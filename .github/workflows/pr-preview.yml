@@ -20,6 +20,13 @@ jobs:
           PORT=$(( 5000 + $(echo -n "$SANITIZED" | cksum | awk '{print $1 % 1000}') ))
           echo "name=$SANITIZED" >> $GITHUB_OUTPUT
           echo "port=$PORT" >> $GITHUB_OUTPUT
+          echo "[DEBUG] RAW=$RAW SANITIZED=$SANITIZED PORT=$PORT"
+
+      # 2-1) PORT 값 디버그 출력
+      - name: Debug meta outputs
+        run: |
+          echo "[DEBUG] BRANCH=${{ steps.meta.outputs.name }}"
+          echo "[DEBUG] PORT=${{ steps.meta.outputs.port }}"
 
       # 3) 소스 패키징
       - name: Pack source (git archive snapshot)
@@ -50,6 +57,11 @@ jobs:
           DOMAIN=\"${DOMAIN}\"
           APP_DIR=\"/var/www/preview/\${BRANCH}\"
 
+          if [ -z \"\${BASE_PORT}\" ]; then
+            echo \"[FATAL] BASE_PORT is empty\"
+            exit 1
+          fi
+
           # 앱 디렉토리
           sudo mkdir -p \"\${APP_DIR}\"
           sudo chown -R ubuntu:ubuntu \"\${APP_DIR}\"
@@ -66,20 +78,21 @@ jobs:
           fi
           npm run build
 
-          # ===== 포트 할당: BASE_PORT ~ BASE_PORT+50 사이에서 빈 포트 찾기 =====
+          # ===== 포트 할당: BASE_PORT ~ BASE_PORT+50 사이에서 빈 포트 찾기 (ss 기반) =====
           pick_port() {
-            local start=$1
-            local end=$((start+50))
+            local start=\$1
+            local end=\$((start+50))
             local p
-            for p in $(seq $start $end); do
-              if ! ss -ltn "sport = :$p" | awk 'NR>1{exit 1}'; then
-                echo $p
+            for p in \$(seq \$start \$end); do
+              if ! ss -ltn \"sport = :\$p\" | awk \"NR>1{exit 1}\"; then
+                echo \$p
                 return 0
               fi
             done
             return 1
           }
-          FINAL_PORT=\$(pick_port \"\${BASE_PORT}\") || { echo \"No free port near \${BASE_PORT}\"; exit 1; }
+
+          FINAL_PORT=\$(pick_port \"\${BASE_PORT}\") || { echo \"[FATAL] No free port near \${BASE_PORT}\"; exit 1; }
           echo \"[INFO] Using port \${FINAL_PORT} for \${BRANCH}\"
 
           # ===== 기존 프로세스/포트 정리 =====
@@ -94,11 +107,11 @@ jobs:
           sudo mkdir -p /etc/nginx/conf.d
 
           sed \
-            -e "s/__BRANCH__/${BRANCH}/g" \
-            -e "s/__DOMAIN__/${DOMAIN}/g" \
-            -e "s/__FINAL_PORT__/${FINAL_PORT}/g" \
+            -e \"s/__BRANCH__/\${BRANCH}/g\" \
+            -e \"s/__DOMAIN__/\${DOMAIN}/g\" \
+            -e \"s/__FINAL_PORT__/\${FINAL_PORT}/g\" \
             /tmp/preview.nginx.tpl \
-          | sudo tee "/etc/nginx/conf.d/preview-${BRANCH}.conf" >/dev/null
+          | sudo tee \"/etc/nginx/conf.d/preview-\${BRANCH}.conf\" >/dev/null
 
           sudo nginx -t
           sudo systemctl reload nginx
