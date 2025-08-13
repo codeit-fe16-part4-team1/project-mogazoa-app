@@ -70,6 +70,14 @@ jobs:
             exit 1
           fi
 
+          # === (여기) 홈 디렉터리 & PM2 로그 클린업 추가 ===
+          rm -f ~/app.tar.gz || true
+          npm cache clean --force || true
+          pm2 flush || true
+          rm -rf ~/.pm2/logs/* || true
+          # (옵션) 저널 로그도 정리하고 싶으면:
+          # sudo journalctl --vacuum-time=7d || true
+
           # 기존 브랜치 디렉터리 제거 후 새로 생성
           sudo rm -rf "\${APP_DIR}"
           sudo mkdir -p "\${APP_DIR}"
