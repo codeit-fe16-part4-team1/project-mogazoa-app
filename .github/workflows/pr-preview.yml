@@ -43,53 +43,53 @@ jobs:
           scp -o StrictHostKeyChecking=no app.tar.gz ubuntu@"${EC2_HOST}":/tmp/app.tar.gz
 
           ssh -o StrictHostKeyChecking=no ubuntu@"${EC2_HOST}" "sudo bash -lc '
-            set -euo pipefail
-            BRANCH=\"${BRANCH}\"
-            PORT=\"${PORT}\"
-            DOMAIN=\"${DOMAIN}\"
-            APP_DIR=\"/var/www/preview/\${BRANCH}\"
+          set -euo pipefail
+          BRANCH=\"${BRANCH}\"
+          PORT=\"${PORT}\"
+          DOMAIN=\"${DOMAIN}\"
+          APP_DIR=\"/var/www/preview/\${BRANCH}\"
 
-            mkdir -p \"\${APP_DIR}\"
-            chown -R ubuntu:ubuntu \"\${APP_DIR}\"
-            tar -xzf /tmp/app.tar.gz -C \"\${APP_DIR}\"
-            rm -f /tmp/app.tar.gz
-            cd \"\${APP_DIR}\"
+          mkdir -p \"\${APP_DIR}\"
+          chown -R ubuntu:ubuntu \"\${APP_DIR}\"
+          tar -xzf /tmp/app.tar.gz -C \"\${APP_DIR}\"
+          rm -f /tmp/app.tar.gz
+          cd \"\${APP_DIR}\"
 
-            # 필요 시 환경변수
-            # echo \"NEXT_PUBLIC_API_URL=https://staging.api.\${DOMAIN}\" > .env
+          # 필요 시 환경변수
+          # echo \"NEXT_PUBLIC_API_URL=https://staging.api.\${DOMAIN}\" > .env
 
-            # 서버에서 빌드
-            if [ -f package-lock.json ]; then
-              npm ci
-            else
-              npm install
-            fi
-            npm run build
+          # 서버에서 빌드
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+          npm run build
 
-            # PM2 재기동
-            pm2 delete \"preview-\${BRANCH}\" || true
-            PORT=\${PORT} pm2 start node_modules/next/dist/bin/next --name \"preview-\${BRANCH}\" -- start -p \${PORT}
-            pm2 save
+          # PM2 재기동
+          pm2 delete \"preview-\${BRANCH}\" || true
+          PORT=\${PORT} pm2 start node_modules/next/dist/bin/next --name \"preview-\${BRANCH}\" -- start -p \${PORT}
+          pm2 save
 
-            # Nginx vhost 생성 (Nginx 변수는 \$로 이스케이프!)
-            cat >/etc/nginx/conf.d/preview-\${BRANCH}.conf <<EOF
-            server {
-              listen 80;
-              server_name ${BRANCH}.preview.${DOMAIN};
+          # Nginx vhost 생성 (Nginx 변수는 \$로 이스케이프!)
+          cat >/etc/nginx/conf.d/preview-\${BRANCH}.conf <<EOF
+          server {
+            listen 80;
+            server_name \${BRANCH}.preview.\${DOMAIN};
 
-              location / {
-                proxy_http_version 1.1;
-                proxy_set_header Host \$host;
-                proxy_set_header X-Real-IP \$remote_addr;
-                proxy_set_header Upgrade \$http_upgrade;
-                proxy_set_header Connection "upgrade";
-                proxy_pass http://127.0.0.1:${PORT};
-              }
+            location / {
+              proxy_http_version 1.1;
+              proxy_set_header Host \$host;
+              proxy_set_header X-Real-IP \$remote_addr;
+              proxy_set_header Upgrade \$http_upgrade;
+              proxy_set_header Connection "upgrade";
+              proxy_pass http://127.0.0.1:\${PORT};
             }
-            EOF
+          }
+          EOF
 
-            nginx -t
-            systemctl reload nginx
+          nginx -t
+          systemctl reload nginx
           '"
 
       - name: Output Preview URL
