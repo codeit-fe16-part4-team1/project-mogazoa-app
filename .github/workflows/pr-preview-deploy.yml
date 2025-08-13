@@ -88,7 +88,8 @@ jobs:
             echo "[DEBUG] Checking ports from $start to $end"
             local p=$start
             while [ $p -le $end ]; do
-              if ! ss -ltnH "sport = :$p" | grep -q .; then
+              # 단순 포트 문자열 검색으로 변경
+              if ! ss -ltnH | grep -q ":$p "; then
                 echo $p
                 return 0
               fi
