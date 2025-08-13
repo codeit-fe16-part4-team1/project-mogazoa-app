@@ -9,9 +9,11 @@ jobs:
   continuous-deployment:
     runs-on: ubuntu-latest
     steps:
+      # 1) GitHub 저장소 체크아웃
       - name: Checkout
         uses: actions/checkout@v4
 
+      # 2) 브랜치명 & 포트 계산
       - name: Compute branch name & port
         id: meta
         run: |
@@ -21,10 +23,12 @@ jobs:
           echo "name=$SANITIZED" >> $GITHUB_OUTPUT
           echo "port=$PORT" >> $GITHUB_OUTPUT
 
+      # 3) 소스 패키징
       - name: Pack source (git archive snapshot)
         run: |
           git archive --format=tar HEAD | gzip > app.tar.gz
 
+      # 4) Nginx vhost 설정 파일 생성
       - name: Create Nginx config locally
         env:
           BRANCH: ${{ steps.meta.outputs.name }}
@@ -47,6 +51,7 @@ jobs:
           }
           EOF
 
+      # 5) EC2에 배포
       - name: Copy & Deploy on EC2
         env:
           BRANCH: ${{ steps.meta.outputs.name }}
@@ -60,9 +65,10 @@ jobs:
           echo "${EC2_SSH_KEY}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
-          # 앱과 conf 파일 전송
+          # 앱 코드 & Nginx conf 전송
           scp -o StrictHostKeyChecking=no app.tar.gz preview-${BRANCH}.conf ubuntu@"${EC2_HOST}":/tmp/
 
+          # 원격 실행
           ssh -o StrictHostKeyChecking=no ubuntu@"${EC2_HOST}" "bash -lc '
           set -euo pipefail
           BRANCH=\"${BRANCH}\"
@@ -70,7 +76,7 @@ jobs:
           DOMAIN=\"${DOMAIN}\"
           APP_DIR=\"/var/www/preview/\${BRANCH}\"
 
-          # /var/www/* 권한 작업
+          # 앱 디렉토리 준비
           sudo mkdir -p \"\${APP_DIR}\"
           sudo chown -R ubuntu:ubuntu \"\${APP_DIR}\"
 
@@ -81,6 +87,7 @@ jobs:
           # Nginx 설정 이동
           sudo mv /tmp/preview-\${BRANCH}.conf /etc/nginx/conf.d/
 
+          # 빌드 준비
           cd \"\${APP_DIR}\"
           if [ -f package-lock.json ]; then
             npm ci
@@ -92,18 +99,19 @@ jobs:
           # 1) 기존 PM2 프로세스 제거
           pm2 delete \"preview-\${BRANCH}\" || true
 
-          # 2) 포트 점유 프로세스 강제 종료
+          # 2) 같은 포트를 쓰는 모든 프로세스 종료
           lsof -ti :\${PORT} | xargs --no-run-if-empty kill -9 || true
 
-          # 3) 새 PM2 실행 (포트 지정)
+          # 3) 새 PM2 프로세스 실행
           pm2 start \"node_modules/.bin/next start -p \${PORT}\" --name \"preview-\${BRANCH}\"
           pm2 save
 
-          # Nginx 검사/리로드
+          # Nginx 설정 검사 & 재시작
           sudo nginx -t
           sudo systemctl reload nginx
           '"
 
+      # 6) 미리보기 URL 출력
       - name: Output Preview URL
         env:
           BRANCH: ${{ steps.meta.outputs.name }}
