@@ -31,53 +31,65 @@ jobs:
         env:
           BRANCH: ${{ steps.meta.outputs.name }}
           PORT: ${{ steps.meta.outputs.port }}
-          DOMAIN: ${{ secrets.PREVIEW_DOMAIN }} # 예: new-project-final.link
+          DOMAIN: ${{ secrets.PREVIEW_DOMAIN }}
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+        shell: bash
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          echo "${EC2_SSH_KEY}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          scp -o StrictHostKeyChecking=no app.tar.gz ubuntu@${{ secrets.EC2_HOST }}:/tmp/app.tar.gz
 
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} "sudo bash -lc '
+          scp -o StrictHostKeyChecking=no app.tar.gz ubuntu@"${EC2_HOST}":/tmp/app.tar.gz
+
+          ssh -o StrictHostKeyChecking=no ubuntu@"${EC2_HOST}" "sudo bash -lc '
             set -euo pipefail
-            BRANCH=\"$BRANCH\"
-            PORT=\"$PORT\"
-            APP_DIR=\"/var/www/preview/\$BRANCH\"
+            BRANCH=\"${BRANCH}\"
+            PORT=\"${PORT}\"
+            DOMAIN=\"${DOMAIN}\"
+            APP_DIR=\"/var/www/preview/\${BRANCH}\"
 
-            mkdir -p \"\$APP_DIR\"
-            chown -R ubuntu:ubuntu \"\$APP_DIR\"
-            tar -xzf /tmp/app.tar.gz -C \"\$APP_DIR\"
+            mkdir -p \"\${APP_DIR}\"
+            chown -R ubuntu:ubuntu \"\${APP_DIR}\"
+            tar -xzf /tmp/app.tar.gz -C \"\${APP_DIR}\"
             rm -f /tmp/app.tar.gz
-            cd \"\$APP_DIR\"
+            cd \"\${APP_DIR}\"
 
-            # 환경변수 필요하면 여기서 .env 생성
-            # echo \"NEXT_PUBLIC_API_URL=https://staging.api.${DOMAIN}\" > .env
+            # 필요 시 환경변수
+            # echo \"NEXT_PUBLIC_API_URL=https://staging.api.\${DOMAIN}\" > .env
 
-            # 빌드 & 실행 (Next.js SSR)
-            npm ci
+            # 서버에서 빌드
+            if [ -f package-lock.json ]; then
+              npm ci
+            else
+              npm install
+            fi
             npm run build
 
-            # pm2로 브랜치별 서버 실행/갱신
-            pm2 delete \"preview-\$BRANCH\" || true
-            PORT=\$PORT pm2 start node_modules/next/dist/bin/next --name \"preview-\$BRANCH\" -- start -p \$PORT
+            # PM2 재기동
+            pm2 delete \"preview-\${BRANCH}\" || true
+            PORT=\${PORT} pm2 start node_modules/next/dist/bin/next --name \"preview-\${BRANCH}\" -- start -p \${PORT}
             pm2 save
 
-            # 브랜치별 Nginx vhost 생성(서브도메인 → 해당 포트로 프록시)
-            cat >/etc/nginx/conf.d/preview-\$BRANCH.conf <<EOF
+            # Nginx vhost 생성 (Nginx 변수는 \$로 이스케이프!)
+            cat >/etc/nginx/conf.d/preview-\${BRANCH}.conf <<EOF
             server {
               listen 80;
-              server_name \$BRANCH.preview.${DOMAIN};
+              server_name \${BRANCH}.preview.\${DOMAIN};
+
               location / {
                 proxy_http_version 1.1;
                 proxy_set_header Host \$host;
                 proxy_set_header X-Real-IP \$remote_addr;
                 proxy_set_header Upgrade \$http_upgrade;
                 proxy_set_header Connection "upgrade";
-                proxy_pass http://127.0.0.1:\$PORT;
+                proxy_pass http://127.0.0.1:\${PORT};
               }
             }
             EOF
-            nginx -t && systemctl reload nginx
+
+            nginx -t
+            systemctl reload nginx
           '"
 
       - name: Output Preview URL
