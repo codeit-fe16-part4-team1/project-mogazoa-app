@@ -16,9 +16,7 @@ jobs:
         id: meta
         run: |
           RAW="${{ github.head_ref }}"
-          # 소문자 + 안전문자만 남기기
           SANITIZED="$(echo "$RAW" | tr '[:upper:]' '[:lower:]' | sed 's#[^a-z0-9._-]#-#g')"
-          # 5000~5999 범위 포트 고정 생성(브랜치 해시 기반)
           PORT=$(( 5000 + $(echo -n "$SANITIZED" | cksum | awk '{print $1 % 1000}') ))
           echo "name=$SANITIZED" >> $GITHUB_OUTPUT
           echo "port=$PORT" >> $GITHUB_OUTPUT
@@ -62,10 +60,10 @@ jobs:
           echo "${EC2_SSH_KEY}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
-          # 앱과 conf 파일 모두 전송
+          # 앱과 conf 파일 전송 (ubuntu 사용자로)
           scp -o StrictHostKeyChecking=no app.tar.gz preview-${BRANCH}.conf ubuntu@"${EC2_HOST}":/tmp/
 
-          # 여기서 sudo 제거 → ubuntu 계정 환경에서 실행
+          # 원격 실행은 ubuntu 계정 환경에서 수행
           ssh -o StrictHostKeyChecking=no ubuntu@"${EC2_HOST}" "bash -lc '
           set -euo pipefail
           BRANCH=\"${BRANCH}\"
@@ -73,13 +71,15 @@ jobs:
           DOMAIN=\"${DOMAIN}\"
           APP_DIR=\"/var/www/preview/\${BRANCH}\"
 
-          mkdir -p \"\${APP_DIR}\"
-          chown -R ubuntu:ubuntu \"\${APP_DIR}\"
+          # /var/www/* 권한 작업만 root로
+          sudo mkdir -p \"\${APP_DIR}\"
+          sudo chown -R ubuntu:ubuntu \"\${APP_DIR}\"
 
+          # 코드 배포/빌드/PM2는 ubuntu로 실행
           tar -xzf /tmp/app.tar.gz -C \"\${APP_DIR}\"
           rm -f /tmp/app.tar.gz
 
-          # Nginx 설정 이동 (이건 root 권한 필요하므로 sudo)
+          # Nginx 설정 이동은 root 권한 필요
           sudo mv /tmp/preview-\${BRANCH}.conf /etc/nginx/conf.d/
 
           cd \"\${APP_DIR}\"
@@ -90,10 +90,12 @@ jobs:
           fi
           npm run build
 
+          # PM2는 ubuntu 사용자 컨텍스트에서 실행
           pm2 delete \"preview-\${BRANCH}\" || true
           PORT=\${PORT} pm2 start node_modules/next/dist/bin/next --name \"preview-\${BRANCH}\" -- start -p \${PORT}
           pm2 save
 
+          # Nginx 검사/리로드
           sudo nginx -t
           sudo systemctl reload nginx
           '"
