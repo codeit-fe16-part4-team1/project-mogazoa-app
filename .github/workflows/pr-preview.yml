@@ -91,7 +91,7 @@ jobs:
           pm2 save
 
           # ===== Nginx vhost를 최종 포트로 생성 =====
-          read -r -d '' CONF <<'          EOF'
+          CONF=$(cat <<'          EOF'
           server {
             listen 80;
             server_name ${BRANCH}.preview.${DOMAIN};
@@ -129,9 +129,10 @@ jobs:
             }
           }
           EOF
+          )
 
           printf "%s" "$CONF" \
-            | envsubst "\${BRANCH} \${DOMAIN} \${FINAL_PORT}" \
+            | envsubst '${BRANCH} ${DOMAIN} ${FINAL_PORT}' \
             | sudo tee "/etc/nginx/conf.d/preview-${BRANCH}.conf" >/dev/null
 
           sudo nginx -t
