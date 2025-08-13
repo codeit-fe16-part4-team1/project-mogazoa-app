@@ -60,10 +60,9 @@ jobs:
           echo "${EC2_SSH_KEY}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
-          # 앱과 conf 파일 전송 (ubuntu 사용자로)
+          # 앱과 conf 파일 전송
           scp -o StrictHostKeyChecking=no app.tar.gz preview-${BRANCH}.conf ubuntu@"${EC2_HOST}":/tmp/
 
-          # 원격 실행은 ubuntu 계정 환경에서 수행
           ssh -o StrictHostKeyChecking=no ubuntu@"${EC2_HOST}" "bash -lc '
           set -euo pipefail
           BRANCH=\"${BRANCH}\"
@@ -71,15 +70,15 @@ jobs:
           DOMAIN=\"${DOMAIN}\"
           APP_DIR=\"/var/www/preview/\${BRANCH}\"
 
-          # /var/www/* 권한 작업만 root로
+          # /var/www/* 권한 작업
           sudo mkdir -p \"\${APP_DIR}\"
           sudo chown -R ubuntu:ubuntu \"\${APP_DIR}\"
 
-          # 코드 배포/빌드/PM2는 ubuntu로 실행
+          # 코드 배포
           tar -xzf /tmp/app.tar.gz -C \"\${APP_DIR}\"
           rm -f /tmp/app.tar.gz
 
-          # Nginx 설정 이동은 root 권한 필요
+          # Nginx 설정 이동
           sudo mv /tmp/preview-\${BRANCH}.conf /etc/nginx/conf.d/
 
           cd \"\${APP_DIR}\"
@@ -90,11 +89,10 @@ jobs:
           fi
           npm run build
 
-          # PM2는 ubuntu 사용자 컨텍스트에서 실행
-          pm2 delete "preview-${BRANCH}" || true
-          pm2 start "node_modules/.bin/next start -p ${PORT}" \
-            --name "preview-${BRANCH}" \
-            --cwd "${APP_DIR}"
+          # PM2 실행 (포트 지정)
+          pm2 delete \"preview-\${BRANCH}\" || true
+          cd \"\${APP_DIR}\"
+          pm2 start \"node_modules/.bin/next start -p \${PORT}\" --name \"preview-\${BRANCH}\"
           pm2 save
 
           # Nginx 검사/리로드
