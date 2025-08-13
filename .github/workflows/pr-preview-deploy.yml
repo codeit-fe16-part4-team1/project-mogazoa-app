@@ -99,10 +99,6 @@ jobs:
           fi
           npm run build
 
-          # (포트 선정 전에) 혹시 있던 프로세스 정리
-          pm2 delete "preview-${BRANCH}" || true
-          pm2 save
-
           # ===== 포트 할당: BASE_PORT ~ BASE_PORT+200 사이에서 빈 포트 찾기 (ss 기반) =====
           pick_port() {
             local start="$1"
@@ -124,8 +120,12 @@ jobs:
           }
           echo "[INFO] Using port ${FINAL_PORT} for ${BRANCH}"
 
-          # ===== PM2로 Next.js 시작 =====
-          pm2 start \"node_modules/.bin/next start -p \${FINAL_PORT}\" --name \"preview-\${BRANCH}\"
+          # ===== PM2 실행 (있으면 reload, 없으면 start) =====
+          if pm2 describe "preview-${BRANCH}" > /dev/null; then
+            pm2 reload "preview-${BRANCH}"
+          else
+            pm2 start "node_modules/.bin/next start -p ${FINAL_PORT}" --name "preview-${BRANCH}"
+          fi
           pm2 save
 
           # ===== Nginx vhost를 최종 포트로 생성 =====
