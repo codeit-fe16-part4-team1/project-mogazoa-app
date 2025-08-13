@@ -28,7 +28,14 @@ jobs:
       # 4) 배포 패키징 (필요 파일만 압축)
       - name: Package build artifacts
         run: |
-          tar -czf app.tar.gz .next public package.json node_modules
+          FILES=".next package.json node_modules"
+          if [ -d public ]; then
+            echo "✅ public folder found, including in package."
+            FILES="$FILES public"
+          else
+            echo "⚠️ public folder not found, skipping."
+          fi
+          tar -czf app.tar.gz $FILES
 
       # 5) EC2로 전송
       - name: Upload to EC2
