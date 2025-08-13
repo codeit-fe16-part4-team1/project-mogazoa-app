@@ -24,11 +24,15 @@ jobs:
         id: meta
         run: |
           RAW="${{ github.ref_name }}"
-          SANITIZED="$(echo "$RAW" | tr '[:upper:]' '[:lower:]' | sed 's#[^a-z0-9._-]#-#g')"
+          SANITIZED="$(echo "$RAW" \
+          | tr '[:upper:]' '[:lower:]' \
+          | sed 's/[^a-z0-9-]/-/g' \
+          | sed 's/^-*//; s/-*$//' \
+          | sed 's/-\{2,\}/-/g')"
           PORT=$(( 5000 + $(echo -n "$SANITIZED" | cksum | awk '{print $1 % 1000}') ))
+          echo "raw=$RAW" >> $GITHUB_OUTPUT       # ← 추가
           echo "name=$SANITIZED" >> $GITHUB_OUTPUT
           echo "port=$PORT" >> $GITHUB_OUTPUT
-          echo "[DEBUG] RAW=$RAW SANITIZED=$SANITIZED PORT=$PORT"
 
       # 2-1) PORT 값 디버그 출력
       - name: Debug meta outputs
@@ -56,7 +60,7 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
 
           # 앱 아카이브와 nginx 템플릿을 같이 전송
-          scp -o StrictHostKeyChecking=no app.tar.gz deploy/preview.nginx.tpl ubuntu@"${EC2_HOST}":/tmp/
+          scp -o StrictHostKeyChecking=no app.tar.gz ubuntu@"${EC2_HOST}":/tmp/
 
           ssh -o StrictHostKeyChecking=no ubuntu@"${EC2_HOST}" "bash -lc '
           set -euo pipefail
@@ -70,7 +74,7 @@ jobs:
             exit 1
           fi
 
-          # === (여기) 홈 디렉터리 & PM2 로그 클린업 추가 ===
+          # === 홈 디렉터리 & PM2 로그 클린업 추가 ===
           rm -f ~/app.tar.gz || true
           npm cache clean --force || true
           pm2 flush || true
@@ -86,7 +90,7 @@ jobs:
           # 코드 전개
           tar -xzf /tmp/app.tar.gz -C \"\${APP_DIR}\"
           rm -f /tmp/app.tar.gz
-
+          export HUSKY=0
           cd \"\${APP_DIR}\"
           if [ -f package-lock.json ]; then
             npm ci
@@ -95,26 +99,30 @@ jobs:
           fi
           npm run build
 
-          # ===== 포트 할당: BASE_PORT ~ BASE_PORT+50 사이에서 빈 포트 찾기 (ss 기반) =====
+          # (포트 선정 전에) 혹시 있던 프로세스 정리
+          pm2 delete "preview-${BRANCH}" || true
+          pm2 save
+
+          # ===== 포트 할당: BASE_PORT ~ BASE_PORT+200 사이에서 빈 포트 찾기 (ss 기반) =====
           pick_port() {
-            local start=\$1
-            local end=\$((start+50))
-            local p
-            for p in \$(seq \$start \$end); do
-              if ! ss -ltn \"sport = :\$p\" | awk \"NR>1{exit 1}\"; then
-                echo \$p
+            local start="$1"
+            local end=$(( start + 200 ))
+
+            for p in $(seq "$start" "$end"); do
+              # -H: header 제거, 결과가 비어있으면 LISTEN 중인 프로세스가 없음 = 사용 가능
+              if ! ss -ltnH "sport = :$p" | grep -q .; then
+                echo "$p"
                 return 0
               fi
             done
             return 1
           }
 
-          FINAL_PORT=\$(pick_port \"\${BASE_PORT}\") || { echo \"[FATAL] No free port near \${BASE_PORT}\"; exit 1; }
-          echo \"[INFO] Using port \${FINAL_PORT} for \${BRANCH}\"
-
-          # ===== 기존 프로세스/포트 정리 =====
-          pm2 delete \"preview-\${BRANCH}\" || true
-          sudo fuser -k \${FINAL_PORT}/tcp || true
+          FINAL_PORT="$(pick_port "${BASE_PORT}")" || {
+            echo "[FATAL] No free port near ${BASE_PORT}"
+            exit 1
+          }
+          echo "[INFO] Using port ${FINAL_PORT} for ${BRANCH}"
 
           # ===== PM2로 Next.js 시작 =====
           pm2 start \"node_modules/.bin/next start -p \${FINAL_PORT}\" --name \"preview-\${BRANCH}\"
@@ -147,12 +155,14 @@ jobs:
           echo \"[INFO] Upstream port: \${FINAL_PORT}\"
           '"
 
-      # 6) 미리보기 URL 출력
+      # 6) 미리보기 URL 출력 (=> 코멘트에서 쓰기 위해 output으로 노출)
       - name: Output Preview URL
+        id: url
         env:
           BRANCH: ${{ steps.meta.outputs.name }}
           DOMAIN: ${{ vars.DOMAIN }}
-        run: echo "https://${BRANCH}.preview.${DOMAIN}"
+        run: |
+          echo "url=https://${BRANCH}.preview.${DOMAIN}" >> "$GITHUB_OUTPUT"
 
       # ── PR 코멘트 업서트(배포 결과 반영) ──
       # 브랜치에 열린 PR을 조회
@@ -162,13 +172,13 @@ jobs:
         with:
           script: |
             const owner = context.repo.owner;
-            const repo = context.repo.repo;
-            const branch = process.env.BRANCH || '${{ steps.meta.outputs.name }}';
-            const res = await github.rest.pulls.list({ owner, repo, state: 'open', head: `${owner}:${branch}`, per_page: 10 });
+            const repo  = context.repo.repo;
+            const head  = `${owner}:${process.env.RAW}`;  // ← 원래 브랜치명으로 조회
+            const res = await github.rest.pulls.list({ owner, repo, state: 'open', head, per_page: 10 });
             const pr = res.data[0];
             core.setOutput('number', pr ? String(pr.number) : '');
         env:
-          BRANCH: ${{ steps.meta.outputs.name }}
+          RAW: ${{ steps.meta.outputs.raw }}
 
       # 기존 코멘트 식별(없으면 빈 값)
       - name: Find existing preview comment
