@@ -8,17 +8,40 @@ jobs:
   continuous-deployment:
     runs-on: ubuntu-latest
     steps:
-      # (선택) 저장소 체크아웃은 로컬 테스트/린트할 때만 필요
-      # - name: Git Checkout
-      #   uses: actions/checkout@v4
+      # 1) 저장소 체크아웃
+      - name: Git Checkout
+        uses: actions/checkout@v4
 
-      # (선택) 로컬에서 테스트/빌드를 돌릴 거면 Node 세팅
-      # - name: Use Node.js 18.x
-      #   uses: actions/setup-node@v4
-      #   with:
-      #     node-version: 18.x
+      # 2) Node 환경 세팅
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: npm
 
-      - name: Deploy on EC2 (git pull → build → restart)
+      # 3) 빌드
+      - name: Install dependencies & Build
+        run: |
+          HUSKY=0 npm ci
+          NODE_ENV=production npm run build
+
+      # 4) 배포 패키징 (필요 파일만 압축)
+      - name: Package build artifacts
+        run: |
+          tar -czf app.tar.gz .next public package.json node_modules
+
+      # 5) EC2로 전송
+      - name: Upload to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: 'app.tar.gz'
+          target: '${{ secrets.EC2_APP_DIR }}'
+
+      # 6) EC2에서 압축 해제 & 실행
+      - name: Deploy on EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -26,26 +49,16 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             set -e
-
-            [ -s "$HOME/.nvm/nvm.sh" ] && . "$HOME/.nvm/nvm.sh"
-
-            # (EC2에 1회 적용용) 스왑 2GB
-            if ! sudo swapon --show | grep -q '/swapfile'; then
-              sudo fallocate -l 2G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=2048
-              sudo chmod 600 /swapfile
-              sudo mkswap /swapfile
-              sudo swapon /swapfile
-              echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
-            fi
-
             cd "${{ secrets.EC2_APP_DIR }}"
 
-            git fetch --all
-            git reset --hard origin/main
+            # 기존 파일 삭제
+            rm -rf .next public package.json node_modules
 
-            HUSKY=0 npm ci
-            NODE_ENV=production npm run build
+            # 새 빌드 압축 해제
+            tar -xzf app.tar.gz
+            rm app.tar.gz
 
+            # PM2 재시작
             pm2 reload project-final-app || pm2 start "npm run start" --name "project-final-app"
             pm2 save
 
