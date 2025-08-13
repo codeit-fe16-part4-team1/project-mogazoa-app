@@ -20,8 +20,9 @@ jobs:
           PORT=$(( 5000 + $(echo -n "$SANITIZED" | cksum | awk '{print $1 % 1000}') ))
           echo "name=$SANITIZED" >> $GITHUB_OUTPUT
           echo "port=$PORT" >> $GITHUB_OUTPUT
-          echo "[DEBUG] RAW=$RAW SANITIZED=$SANITIZED PORT=$PORT"
-
+          echo "[DEBUG] RAW=$RAW"
+          echo "[DEBUG] SANITIZED=$SANITIZED"
+          echo "[DEBUG] BASE_PORT=$PORT"
       # 2-1) PORT 값 디버그 출력
       - name: Debug meta outputs
         run: |
@@ -78,6 +79,8 @@ jobs:
           fi
           npm run build
 
+          echo \"[DEBUG][EC2] BASE_PORT=\${BASE_PORT}\"
+
           # ===== 포트 할당: BASE_PORT ~ BASE_PORT+50 사이에서 빈 포트 찾기 (ss 기반) =====
           pick_port() {
             local start=$1
@@ -91,8 +94,11 @@ jobs:
             return 1
           }
 
-          FINAL_PORT=\$(pick_port \"\${BASE_PORT}\") || { echo \"[FATAL] No free port near \${BASE_PORT}\"; exit 1; }
-          echo \"[INFO] Using port \${FINAL_PORT} for \${BRANCH}\"
+          FINAL_PORT=\$(pick_port \"\${BASE_PORT}\") || {
+            echo \"[FATAL] No free port near \${BASE_PORT}\"
+            exit 1
+          }
+          echo \"[DEBUG][EC2] FINAL_PORT=\${FINAL_PORT} for \${BRANCH}\"
 
           # ===== 기존 프로세스/포트 정리 =====
           pm2 delete \"preview-\${BRANCH}\" || true
