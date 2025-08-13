@@ -65,7 +65,8 @@ jobs:
           # 앱과 conf 파일 모두 전송
           scp -o StrictHostKeyChecking=no app.tar.gz preview-${BRANCH}.conf ubuntu@"${EC2_HOST}":/tmp/
 
-          ssh -o StrictHostKeyChecking=no ubuntu@"${EC2_HOST}" "sudo bash -lc '
+          # 여기서 sudo 제거 → ubuntu 계정 환경에서 실행
+          ssh -o StrictHostKeyChecking=no ubuntu@"${EC2_HOST}" "bash -lc '
           set -euo pipefail
           BRANCH=\"${BRANCH}\"
           PORT=\"${PORT}\"
@@ -74,11 +75,12 @@ jobs:
 
           mkdir -p \"\${APP_DIR}\"
           chown -R ubuntu:ubuntu \"\${APP_DIR}\"
+
           tar -xzf /tmp/app.tar.gz -C \"\${APP_DIR}\"
           rm -f /tmp/app.tar.gz
 
-          # Nginx 설정 이동
-          mv /tmp/preview-\${BRANCH}.conf /etc/nginx/conf.d/
+          # Nginx 설정 이동 (이건 root 권한 필요하므로 sudo)
+          sudo mv /tmp/preview-\${BRANCH}.conf /etc/nginx/conf.d/
 
           cd \"\${APP_DIR}\"
           if [ -f package-lock.json ]; then
@@ -92,8 +94,8 @@ jobs:
           PORT=\${PORT} pm2 start node_modules/next/dist/bin/next --name \"preview-\${BRANCH}\" -- start -p \${PORT}
           pm2 save
 
-          nginx -t
-          systemctl reload nginx
+          sudo nginx -t
+          sudo systemctl reload nginx
           '"
 
       - name: Output Preview URL
