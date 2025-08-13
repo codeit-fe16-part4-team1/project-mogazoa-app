@@ -93,38 +93,39 @@ jobs:
           # ===== Nginx vhost를 최종 포트로 생성 =====
           export BRANCH DOMAIN FINAL_PORT
 
-          # conf 내용을 printf로 생성 → envsubst로 변수 치환 → nginx conf 저장
-          printf '%s\n' \
-          'server {' \
-          '    listen 80;' \
-          '    server_name ${BRANCH}.preview.${DOMAIN};' \
-          '    return 301 https://$host$request_uri;' \
-          '}' \
-          '' \
-          'server {' \
-          '    listen 443 ssl http2;' \
-          '    server_name ${BRANCH}.preview.${DOMAIN};' \
-          '' \
-          '    ssl_certificate     /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;' \
-          '    ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;' \
-          '' \
-          '    ssl_protocols       TLSv1.2 TLSv1.3;' \
-          '    ssl_ciphers         HIGH:!aNULL:!MD5;' \
-          '    ssl_prefer_server_ciphers on;' \
-          '' \
-          '    location / {' \
-          '        proxy_http_version 1.1;' \
-          '        proxy_set_header Host $host;' \
-          '        proxy_set_header X-Real-IP $remote_addr;' \
-          '        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;' \
-          '        proxy_set_header X-Forwarded-Proto $scheme;' \
-          '        proxy_set_header Upgrade $http_upgrade;' \
-          '        proxy_set_header Connection "upgrade";' \
-          '        proxy_pass http://127.0.0.1:${FINAL_PORT};' \
-          '    }' \
-          '}' \
-          | envsubst '${BRANCH} ${DOMAIN} ${FINAL_PORT}' \
-          | sudo tee "/etc/nginx/conf.d/preview-${BRANCH}.conf" >/dev/null
+          CONF=$'server {\n'\
+          $'    listen 80;\n'\
+          $'    server_name ${BRANCH}.preview.${DOMAIN};\n'\
+          $'    return 301 https://\\$host\\$request_uri;\n'\
+          $'}\n'\
+          $'\n'\
+          $'server {\n'\
+          $'    listen 443 ssl http2;\n'\
+          $'    server_name ${BRANCH}.preview.${DOMAIN};\n'\
+          $'\n'\
+          $'    ssl_certificate     /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;\n'\
+          $'    ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;\n'\
+          $'\n'\
+          $'    ssl_protocols       TLSv1.2 TLSv1.3;\n'\
+          $'    ssl_ciphers         HIGH:!aNULL:!MD5;\n'\
+          $'    ssl_prefer_server_ciphers on;\n'\
+          $'\n'\
+          $'    location / {\n'\
+          $'        proxy_http_version 1.1;\n'\
+          $'        proxy_set_header Host \\$host;\n'\
+          $'        proxy_set_header X-Real-IP \\$remote_addr;\n'\
+          $'        proxy_set_header X-Forwarded-For \\$proxy_add_x_forwarded_for;\n'\
+          $'        proxy_set_header X-Forwarded-Proto \\$scheme;\n'\
+          $'        proxy_set_header Upgrade \\$http_upgrade;\n'\
+          $'        proxy_set_header Connection "upgrade";\n'\
+          $'        proxy_pass http://127.0.0.1:${FINAL_PORT};\n'\
+          $'    }\n'\
+          $'}\n'
+
+          # BRANCH/DOMAIN/FINAL_PORT만 치환 (Nginx 변수들은 \$로 이스케이프해서 그대로 유지)
+          printf "%s" "$CONF" \
+            | envsubst '${BRANCH} ${DOMAIN} ${FINAL_PORT}' \
+            | sudo tee "/etc/nginx/conf.d/preview-${BRANCH}.conf" >/dev/null
 
           sudo nginx -t
           sudo systemctl reload nginx
