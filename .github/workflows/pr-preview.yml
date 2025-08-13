@@ -93,7 +93,7 @@ jobs:
           # ===== Nginx vhost를 최종 포트로 생성 =====
           export BRANCH DOMAIN FINAL_PORT
 
-          CONF=$(cat <<'NGINX'
+          read -r -d '' CONF <<'          EOF'
           server {
             listen 80;
             server_name ${BRANCH}.preview.${DOMAIN};
@@ -130,8 +130,7 @@ jobs:
               proxy_pass http://127.0.0.1:${FINAL_PORT};
             }
           }
-          NGINX
-          )
+          EOF
 
           printf "%s" "$CONF" \
             | envsubst '${BRANCH} ${DOMAIN} ${FINAL_PORT}' \
