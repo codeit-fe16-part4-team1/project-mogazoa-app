@@ -125,10 +125,7 @@ jobs:
           echo "[INFO] Using port ${FINAL_PORT} for ${BRANCH}"
 
           # ===== PM2로 Next.js 시작 (CWD 고정 + 환경 저장) =====
-          pm2 start "node_modules/.bin/next start -p ${FINAL_PORT}" \
-            --name "preview-${BRANCH}" \
-            --cwd "${APP_DIR}" \
-            --update-env
+          pm2 start "node_modules/.bin/next start -p ${FINAL_PORT}" --name "preview-${BRANCH}" --cwd "${APP_DIR}" --update-env
           pm2 save
 
           # ===== Nginx vhost를 최종 포트로 생성 =====
