@@ -2,84 +2,147 @@ name: PR Preview to EC2
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize]
+    types: [opened, synchronize]
     branches: [main]
 
 jobs:
   continuous-deployment:
     runs-on: ubuntu-latest
     steps:
+      # 1) GitHub 저장소 체크아웃
       - name: Checkout
         uses: actions/checkout@v4
 
+      # 2) 브랜치명 & 포트 계산
       - name: Compute branch name & port
         id: meta
         run: |
           RAW="${{ github.head_ref }}"
-          # 소문자 + 안전문자만 남기기
           SANITIZED="$(echo "$RAW" | tr '[:upper:]' '[:lower:]' | sed 's#[^a-z0-9._-]#-#g')"
-          # 5000~5999 범위 포트 고정 생성(브랜치 해시 기반)
           PORT=$(( 5000 + $(echo -n "$SANITIZED" | cksum | awk '{print $1 % 1000}') ))
           echo "name=$SANITIZED" >> $GITHUB_OUTPUT
           echo "port=$PORT" >> $GITHUB_OUTPUT
 
-      - name: Pack source (no node_modules)
+      # 3) 소스 패키징
+      - name: Pack source (git archive snapshot)
         run: |
-          tar --exclude='./node_modules' -czf app.tar.gz .
+          git archive --format=tar HEAD | gzip > app.tar.gz
 
+      # 4) Nginx vhost 설정 파일 생성
+      - name: Create Nginx config locally
+        env:
+          BRANCH: ${{ steps.meta.outputs.name }}
+          PORT: ${{ steps.meta.outputs.port }}
+          DOMAIN: ${{ secrets.PREVIEW_DOMAIN }}
+        run: |
+          cat > preview-${BRANCH}.conf <<EOF
+          server {
+            listen 80;
+            server_name ${BRANCH}.preview.${DOMAIN};
+
+            location / {
+              proxy_http_version 1.1;
+              proxy_set_header Host \$host;
+              proxy_set_header X-Real-IP \$remote_addr;
+              proxy_set_header Upgrade \$http_upgrade;
+              proxy_set_header Connection "upgrade";
+              proxy_pass http://127.0.0.1:${PORT};
+            }
+          }
+          EOF
+
+      # 5) EC2에 배포
       - name: Copy & Deploy on EC2
         env:
           BRANCH: ${{ steps.meta.outputs.name }}
           PORT: ${{ steps.meta.outputs.port }}
-          DOMAIN: ${{ secrets.PREVIEW_DOMAIN }} # 예: new-project-final.link
+          DOMAIN: ${{ secrets.PREVIEW_DOMAIN }}
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+        shell: bash
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          echo "${EC2_SSH_KEY}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          scp -o StrictHostKeyChecking=no app.tar.gz ubuntu@${{ secrets.EC2_HOST }}:/tmp/app.tar.gz
 
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} "sudo bash -lc '
-            set -euo pipefail
-            BRANCH=\"$BRANCH\"
-            PORT=\"$PORT\"
-            APP_DIR=\"/var/www/preview/\$BRANCH\"
+          # 앱 아카이브만 전송 (로컬에서 만든 conf는 보내지 않음)
+          scp -o StrictHostKeyChecking=no app.tar.gz ubuntu@"${EC2_HOST}":/tmp/
 
-            mkdir -p \"\$APP_DIR\"
-            chown -R ubuntu:ubuntu \"\$APP_DIR\"
-            tar -xzf /tmp/app.tar.gz -C \"\$APP_DIR\"
-            rm -f /tmp/app.tar.gz
-            cd \"\$APP_DIR\"
+          ssh -o StrictHostKeyChecking=no ubuntu@"${EC2_HOST}" "bash -lc '
+          set -euo pipefail
+          BRANCH=\"${BRANCH}\"
+          BASE_PORT=\"${PORT}\"
+          DOMAIN=\"${DOMAIN}\"
+          APP_DIR=\"/var/www/preview/\${BRANCH}\"
 
-            # 환경변수 필요하면 여기서 .env 생성
-            # echo \"NEXT_PUBLIC_API_URL=https://staging.api.${DOMAIN}\" > .env
+          # 앱 디렉토리
+          sudo mkdir -p \"\${APP_DIR}\"
+          sudo chown -R ubuntu:ubuntu \"\${APP_DIR}\"
 
-            # 빌드 & 실행 (Next.js SSR)
+          # 코드 전개
+          tar -xzf /tmp/app.tar.gz -C \"\${APP_DIR}\"
+          rm -f /tmp/app.tar.gz
+
+          cd \"\${APP_DIR}\"
+          if [ -f package-lock.json ]; then
             npm ci
-            npm run build
+          else
+            npm install
+          fi
+          npm run build
 
-            # pm2로 브랜치별 서버 실행/갱신
-            pm2 delete \"preview-\$BRANCH\" || true
-            PORT=\$PORT pm2 start node_modules/next/dist/bin/next --name \"preview-\$BRANCH\" -- start -p \$PORT
-            pm2 save
+          # ===== 포트 할당: BASE_PORT ~ BASE_PORT+50 사이에서 빈 포트 찾기 =====
+          pick_port() {
+            local start=\$1
+            local end=\$((start+50))
+            local p
+            for p in \$(seq \$start \$end); do
+              if ! sudo lsof -nP -iTCP:\$p -sTCP:LISTEN >/dev/null 2>&1; then
+                echo \$p; return 0
+              fi
+            done
+            return 1
+          }
+          FINAL_PORT=\$(pick_port \"\${BASE_PORT}\") || { echo \"No free port near \${BASE_PORT}\"; exit 1; }
+          echo \"[INFO] Using port \${FINAL_PORT} for \${BRANCH}\"
 
-            # 브랜치별 Nginx vhost 생성(서브도메인 → 해당 포트로 프록시)
-            cat >/etc/nginx/conf.d/preview-\$BRANCH.conf <<EOF
-            server {
-              listen 80;
-              server_name \$BRANCH.preview.${DOMAIN};
-              location / {
-                proxy_http_version 1.1;
-                proxy_set_header Host \$host;
-                proxy_set_header X-Real-IP \$remote_addr;
-                proxy_set_header Upgrade \$http_upgrade;
-                proxy_set_header Connection "upgrade";
-                proxy_pass http://127.0.0.1:\$PORT;
-              }
+          # ===== 기존 프로세스/포트 정리 =====
+          pm2 delete \"preview-\${BRANCH}\" || true
+          # 혹시 같은 포트를 쓰는 잔존 프로세스가 있으면 강제 종료
+          sudo fuser -k \${FINAL_PORT}/tcp || true
+
+          # ===== PM2로 Next.js 시작 =====
+          pm2 start \"node_modules/.bin/next start -p \${FINAL_PORT}\" --name \"preview-\${BRANCH}\"
+          pm2 save
+
+          # ===== Nginx vhost를 최종 포트로 생성 =====
+          export BRANCH DOMAIN FINAL_PORT
+          envsubst '${BRANCH} ${DOMAIN} ${FINAL_PORT}' <<'NGINX' | sudo tee /etc/nginx/conf.d/preview-${BRANCH}.conf >/dev/null
+          server {
+            listen 80;
+            server_name ${BRANCH}.preview.${DOMAIN};
+
+            location / {
+              proxy_http_version 1.1;
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+              proxy_set_header Upgrade $http_upgrade;
+              proxy_set_header Connection "upgrade";
+              proxy_pass http://127.0.0.1:${FINAL_PORT};
             }
-            EOF
-            nginx -t && systemctl reload nginx
+          }
+          NGINX
+
+          sudo nginx -t
+          sudo systemctl reload nginx
+
+          echo \"[INFO] Preview URL: https://\${BRANCH}.preview.\${DOMAIN}\"
+          echo \"[INFO] Upstream port: \${FINAL_PORT}\"
           '"
 
+      # 6) 미리보기 URL 출력
       - name: Output Preview URL
         env:
           BRANCH: ${{ steps.meta.outputs.name }}
