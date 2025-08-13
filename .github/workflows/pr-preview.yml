@@ -31,7 +31,7 @@ jobs:
         env:
           BRANCH: ${{ steps.meta.outputs.name }}
           PORT: ${{ steps.meta.outputs.port }}
-          DOMAIN: ${{ secrets.PREVIEW_DOMAIN }}
+          DOMAIN: ${{ vars.DOMAIN }}
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
         shell: bash
@@ -149,5 +149,5 @@ jobs:
       - name: Output Preview URL
         env:
           BRANCH: ${{ steps.meta.outputs.name }}
-          DOMAIN: ${{ vars.PREVIEW_DOMAIN }}
+          DOMAIN: ${{ vars.DOMAIN }}
         run: echo "https://${BRANCH}.preview.${DOMAIN}"
