@@ -57,7 +57,9 @@ jobs:
               -exec rm -rf {} +
 
             # PM2 재시작
-            pm2 reload project-final-app || pm2 start "npm run start" --name "project-final-app"
+            pm2 describe project-final-app > /dev/null \
+              && pm2 reload project-final-app \
+              || pm2 start "npm run start" --name "project-final-app"
             pm2 save
 
       - name: Configure AWS credentials
