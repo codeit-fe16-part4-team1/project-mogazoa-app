@@ -3,6 +3,14 @@ name: PR Preview to EC2
 on:
   push:
 
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: pr-preview-${{ github.ref_name }}
+  cancel-in-progress: true
+
 jobs:
   continuous-deployment:
     runs-on: ubuntu-latest
@@ -136,3 +144,65 @@ jobs:
           BRANCH: ${{ steps.meta.outputs.name }}
           DOMAIN: ${{ vars.DOMAIN }}
         run: echo "https://${BRANCH}.preview.${DOMAIN}"
+
+      # ── PR 코멘트 업서트(배포 결과 반영) ──
+      # 브랜치에 열린 PR을 조회
+      - name: Find open PR for this branch
+        id: get-pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const branch = process.env.BRANCH || '${{ steps.meta.outputs.name }}';
+            const res = await github.rest.pulls.list({ owner, repo, state: 'open', head: `${owner}:${branch}`, per_page: 10 });
+            const pr = res.data[0];
+            core.setOutput('number', pr ? String(pr.number) : '');
+        env:
+          BRANCH: ${{ steps.meta.outputs.name }}
+
+      # 기존 코멘트 식별(없으면 빈 값)
+      - name: Find existing preview comment
+        if: ${{ steps.get-pr.outputs.number != '' }}
+        id: find-comment
+        uses: peter-evans/find-comment@v3
+        with:
+          issue-number: ${{ steps.get-pr.outputs.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: '<!-- preview-comment:${{ steps.meta.outputs.name }} -->'
+
+      # 성공 시 Ready 로 갱신
+      - name: Upsert comment (success)
+        if: ${{ steps.get-pr.outputs.number != '' && success() }}
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          issue-number: ${{ steps.get-pr.outputs.number }}
+          edit-mode: replace
+          body: |
+            <!-- preview-comment:${{ steps.meta.outputs.name }} -->
+            ✅ **Preview ready**
+            | Field | Value |
+            |---|---|
+            | Branch | `${{ steps.meta.outputs.name }}` |
+            | Commit | `${{ github.sha }}` |
+            | Preview | ${{ steps.url.outputs.url }} |
+            | Logs | [View run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) |
+
+      # 실패 시 Failed 로 갱신
+      - name: Upsert comment (failure)
+        if: ${{ steps.get-pr.outputs.number != '' && failure() }}
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          issue-number: ${{ steps.get-pr.outputs.number }}
+          edit-mode: replace
+          body: |
+            <!-- preview-comment:${{ steps.meta.outputs.name }} -->
+            ❌ **Preview failed**
+            | Field | Value |
+            |---|---|
+            | Branch | `${{ steps.meta.outputs.name }}` |
+            | Commit | `${{ github.sha }}` |
+            | Preview | _unavailable_ |
+            | Logs | [View run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) |
