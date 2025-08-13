@@ -91,9 +91,9 @@ jobs:
           pm2 save
 
           # ===== Nginx vhost를 최종 포트로 생성 =====
-          export BRANCH="$BRANCH"
-          export DOMAIN="$DOMAIN"
-          export FINAL_PORT="$FINAL_PORT"
+          export BRANCH="${BRANCH:?BRANCH is empty}"
+          export DOMAIN="${DOMAIN:?DOMAIN is empty}"
+          export FINAL_PORT="${FINAL_PORT:?FINAL_PORT is empty}"
 
           read -r -d '' CONF <<'          EOF'
           server {
