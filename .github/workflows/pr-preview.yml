@@ -40,8 +40,8 @@ jobs:
           echo "${EC2_SSH_KEY}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
-          # 앱 아카이브만 전송 (로컬에서 만든 conf는 보내지 않음)
-          scp -o StrictHostKeyChecking=no app.tar.gz ubuntu@"${EC2_HOST}":/tmp/
+          # 앱 아카이브와 nginx 템플릿을 같이 전송
+          scp -o StrictHostKeyChecking=no app.tar.gz deploy/preview.nginx.tpl ubuntu@"${EC2_HOST}":/tmp/
 
           ssh -o StrictHostKeyChecking=no ubuntu@"${EC2_HOST}" "bash -lc '
           set -euo pipefail
@@ -83,7 +83,6 @@ jobs:
 
           # ===== 기존 프로세스/포트 정리 =====
           pm2 delete \"preview-\${BRANCH}\" || true
-          # 혹시 같은 포트를 쓰는 잔존 프로세스가 있으면 강제 종료
           sudo fuser -k \${FINAL_PORT}/tcp || true
 
           # ===== PM2로 Next.js 시작 =====
@@ -91,49 +90,15 @@ jobs:
           pm2 save
 
           # ===== Nginx vhost를 최종 포트로 생성 =====
-          CONF=$(cat <<-EOF
-          server {
-            listen 80;
-            server_name \${BRANCH}.preview.\${DOMAIN};
-            return 301 https://\$host\$request_uri;
-          }
+          export BRANCH=\"\${BRANCH}\"
+          export DOMAIN=\"\${DOMAIN}\"
+          export FINAL_PORT=\"\${FINAL_PORT}\"
 
-          map \$http_upgrade \$connection_upgrade {
-            default upgrade;
-            ''      close;
-          }
+          sudo mkdir -p /etc/nginx/conf.d
 
-          server {
-            listen 443 ssl http2;
-            server_name \${BRANCH}.preview.\${DOMAIN};
-
-            ssl_certificate     /etc/letsencrypt/live/\${DOMAIN}/fullchain.pem;
-            ssl_certificate_key /etc/letsencrypt/live/\${DOMAIN}/privkey.pem;
-
-            ssl_protocols       TLSv1.2 TLSv1.3;
-            ssl_ciphers         HIGH:!aNULL:!MD5;
-            ssl_prefer_server_ciphers on;
-
-            location / {
-              proxy_http_version 1.1;
-
-              proxy_set_header Host \$host;
-              proxy_set_header X-Real-IP \$remote_addr;
-              proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-              proxy_set_header X-Forwarded-Proto \$scheme;
-
-              proxy_set_header Upgrade \$http_upgrade;
-              proxy_set_header Connection \$connection_upgrade;
-
-              proxy_pass http://127.0.0.1:\${FINAL_PORT};
-            }
-          }
-          EOF
-          )
-
-          printf "%s" "$CONF" \
-            | envsubst '${BRANCH} ${DOMAIN} ${FINAL_PORT}' \
-            | sudo tee "/etc/nginx/conf.d/preview-${BRANCH}.conf" >/dev/null
+          envsubst \"\${BRANCH} \${DOMAIN} \${FINAL_PORT}\" \
+            < /tmp/preview.nginx.tpl \
+            | sudo tee \"/etc/nginx/conf.d/preview-\${BRANCH}.conf\" >/dev/null
 
           sudo nginx -t
           sudo systemctl reload nginx
