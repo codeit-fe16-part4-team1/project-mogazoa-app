@@ -68,12 +68,13 @@ jobs:
 
           # ===== 포트 할당: BASE_PORT ~ BASE_PORT+50 사이에서 빈 포트 찾기 =====
           pick_port() {
-            local start=\$1
-            local end=\$((start+50))
+            local start=$1
+            local end=$((start+50))
             local p
-            for p in \$(seq \$start \$end); do
-              if ! sudo lsof -nP -iTCP:\$p -sTCP:LISTEN >/dev/null 2>&1; then
-                echo \$p; return 0
+            for p in $(seq $start $end); do
+              if ! ss -ltn "sport = :$p" | awk 'NR>1{exit 1}'; then
+                echo $p
+                return 0
               fi
             done
             return 1
