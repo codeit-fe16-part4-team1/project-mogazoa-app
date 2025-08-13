@@ -28,30 +28,7 @@ jobs:
         run: |
           git archive --format=tar HEAD | gzip > app.tar.gz
 
-      # 4) Nginx vhost 설정 파일 생성
-      - name: Create Nginx config locally
-        env:
-          BRANCH: ${{ steps.meta.outputs.name }}
-          PORT: ${{ steps.meta.outputs.port }}
-          DOMAIN: ${{ secrets.PREVIEW_DOMAIN }}
-        run: |
-          cat > preview-${BRANCH}.conf <<EOF
-          server {
-            listen 80;
-            server_name ${BRANCH}.preview.${DOMAIN};
-
-            location / {
-              proxy_http_version 1.1;
-              proxy_set_header Host \$host;
-              proxy_set_header X-Real-IP \$remote_addr;
-              proxy_set_header Upgrade \$http_upgrade;
-              proxy_set_header Connection "upgrade";
-              proxy_pass http://127.0.0.1:${PORT};
-            }
-          }
-          EOF
-
-      # 5) EC2에 배포
+      # 4) EC2에 배포
       - name: Copy & Deploy on EC2
         env:
           BRANCH: ${{ steps.meta.outputs.name }}
