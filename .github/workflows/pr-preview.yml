@@ -92,7 +92,7 @@ jobs:
 
           # ===== Nginx vhost를 최종 포트로 생성 =====
           export BRANCH DOMAIN FINAL_PORT
-          cat <<'NGINX' | sed 's/^ \\{10\\}//' | envsubst '${BRANCH} ${DOMAIN} ${FINAL_PORT}' \
+          cat <<'NGINX' | sed 's/^[ ]\{10\}//' | envsubst '${BRANCH} ${DOMAIN} ${FINAL_PORT}' \
             | sudo tee /etc/nginx/conf.d/preview-${BRANCH}.conf >/dev/null
           # HTTP → HTTPS 리다이렉트
           server {
