@@ -65,29 +65,24 @@ jobs:
           echo "${EC2_SSH_KEY}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
-          # 앱 코드 & Nginx conf 전송
-          scp -o StrictHostKeyChecking=no app.tar.gz preview-${BRANCH}.conf ubuntu@"${EC2_HOST}":/tmp/
+          # 앱 아카이브만 전송 (로컬에서 만든 conf는 보내지 않음)
+          scp -o StrictHostKeyChecking=no app.tar.gz ubuntu@"${EC2_HOST}":/tmp/
 
-          # 원격 실행
           ssh -o StrictHostKeyChecking=no ubuntu@"${EC2_HOST}" "bash -lc '
           set -euo pipefail
           BRANCH=\"${BRANCH}\"
-          PORT=\"${PORT}\"
+          BASE_PORT=\"${PORT}\"
           DOMAIN=\"${DOMAIN}\"
           APP_DIR=\"/var/www/preview/\${BRANCH}\"
 
-          # 앱 디렉토리 준비
+          # 앱 디렉토리
           sudo mkdir -p \"\${APP_DIR}\"
           sudo chown -R ubuntu:ubuntu \"\${APP_DIR}\"
 
-          # 코드 배포
+          # 코드 전개
           tar -xzf /tmp/app.tar.gz -C \"\${APP_DIR}\"
           rm -f /tmp/app.tar.gz
 
-          # Nginx 설정 이동
-          sudo mv /tmp/preview-\${BRANCH}.conf /etc/nginx/conf.d/
-
-          # 빌드 준비
           cd \"\${APP_DIR}\"
           if [ -f package-lock.json ]; then
             npm ci
@@ -96,19 +91,54 @@ jobs:
           fi
           npm run build
 
-          # 1) 기존 PM2 프로세스 제거
+          # ===== 포트 할당: BASE_PORT ~ BASE_PORT+50 사이에서 빈 포트 찾기 =====
+          pick_port() {
+            local start=\$1
+            local end=\$((start+50))
+            local p
+            for p in \$(seq \$start \$end); do
+              if ! sudo lsof -nP -iTCP:\$p -sTCP:LISTEN >/dev/null 2>&1; then
+                echo \$p; return 0
+              fi
+            done
+            return 1
+          }
+          FINAL_PORT=\$(pick_port \"\${BASE_PORT}\") || { echo \"No free port near \${BASE_PORT}\"; exit 1; }
+          echo \"[INFO] Using port \${FINAL_PORT} for \${BRANCH}\"
+
+          # ===== 기존 프로세스/포트 정리 =====
           pm2 delete \"preview-\${BRANCH}\" || true
+          # 혹시 같은 포트를 쓰는 잔존 프로세스가 있으면 강제 종료
+          sudo fuser -k \${FINAL_PORT}/tcp || true
 
-          # 2) 같은 포트를 쓰는 모든 프로세스 종료
-          lsof -ti :\${PORT} | xargs --no-run-if-empty kill -9 || true
-
-          # 3) 새 PM2 프로세스 실행
-          pm2 start \"node_modules/.bin/next start -p \${PORT}\" --name \"preview-\${BRANCH}\"
+          # ===== PM2로 Next.js 시작 =====
+          pm2 start \"node_modules/.bin/next start -p \${FINAL_PORT}\" --name \"preview-\${BRANCH}\"
           pm2 save
 
-          # Nginx 설정 검사 & 재시작
+          # ===== Nginx vhost를 최종 포트로 생성 =====
+          sudo tee /etc/nginx/conf.d/preview-\${BRANCH}.conf >/dev/null <<NGINX
+          server {
+            listen 80;
+            server_name \${BRANCH}.preview.\${DOMAIN};
+
+            location / {
+              proxy_http_version 1.1;
+              proxy_set_header Host \$host;
+              proxy_set_header X-Real-IP \$remote_addr;
+              proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto \$scheme;
+              proxy_set_header Upgrade \$http_upgrade;
+              proxy_set_header Connection "upgrade";
+              proxy_pass http://127.0.0.1:\${FINAL_PORT};
+            }
+          }
+          NGINX
+
           sudo nginx -t
           sudo systemctl reload nginx
+
+          echo \"[INFO] Preview URL: https://\${BRANCH}.preview.\${DOMAIN}\"
+          echo \"[INFO] Upstream port: \${FINAL_PORT}\"
           '"
 
       # 6) 미리보기 URL 출력
