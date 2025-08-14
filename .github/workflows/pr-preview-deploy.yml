@@ -40,6 +40,7 @@ jobs:
           echo "[DEBUG][GHA] ✅ 소스파일 압축 완료"
       # 4) EC2에 배포
       - name: Copy & Deploy on EC2
+        id: deploy
         env:
           BRANCH: ${{ steps.meta.outputs.name }}
           PORT: ${{ steps.meta.outputs.port }}
@@ -150,22 +151,12 @@ jobs:
           echo "[DEBUG][EC2] 🔍 원본 헤더:"
           curl -sI -H "Host: ${BRANCH}.preview.${DOMAIN}" http://127.0.0.1 \
             | egrep -i "http/|server|cache-control" || true
-
-          # 색상 정의
-          RED="\033[1;31m"
-          GREEN="\033[1;32m"
-          BLUE="\033[1;34m"
-          CYAN="\033[1;36m"
-          RESET="\033[0m"
-
-          echo ""
-          echo -e "${BLUE}================= 🚀 Preview Info =================${RESET}"
-          printf "${CYAN}%-15s${RESET} | %s\n" "BRANCH"        "${BRANCH}"
-          printf "${CYAN}%-15s${RESET} | %s\n" "Preview URL"   "https://${BRANCH}.preview.${DOMAIN}"
-          printf "${CYAN}%-15s${RESET} | %s\n" "Upstream Port" "${FINAL_PORT}"
-          echo -e "${BLUE}===================================================${RESET}"
-          echo ""
           EOSSH
+
+          # 최종 결과를 GitHub Actions output으로 넘기기
+          echo "preview_url=https://${BRANCH}.preview.${DOMAIN}" >> $GITHUB_OUTPUT
+          echo "branch=${BRANCH}" >> $GITHUB_OUTPUT
+          echo "port=${FINAL_PORT}" >> $GITHUB_OUTPUT
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -179,3 +170,20 @@ jobs:
           echo "[DEBUG] ⏳ CloudFront 캐시 무효화 시작..."
           aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
           echo "[DEBUG] ✅ CloudFront 캐시 무효화 완료"
+
+      # 5) Preview Info 출력
+      - name: Print Preview Info
+        run: |
+          RED="\033[1;31m"
+          GREEN="\033[1;32m"
+          BLUE="\033[1;34m"
+          CYAN="\033[1;36m"
+          RESET="\033[0m"
+
+          echo ""
+          echo -e "${BLUE}====================== 🚀 Preview Info ======================${RESET}"
+          printf "${CYAN}%-15s${RESET} | %s\n" "BRANCH"        "${{ steps.deploy.outputs.branch }}"
+          printf "${CYAN}%-15s${RESET} | %s\n" "Preview URL"   "${{ steps.deploy.outputs.preview_url }}"
+          printf "${CYAN}%-15s${RESET} | %s\n" "Upstream Port" "${{ steps.deploy.outputs.port }}"
+          echo -e "${BLUE}=============================================================${RESET}"
+          echo ""
