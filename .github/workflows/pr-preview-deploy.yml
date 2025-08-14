@@ -62,10 +62,10 @@ jobs:
           set -euo pipefail
 
           echo \"[DEBUG][EC2] Params:\"
-          BRANCH=\"${BRANCH}\"
-          BASE_PORT=\"${PORT}\"
-          DOMAIN=\"${DOMAIN}\"
-          APP_DIR=\"/var/www/preview/\${BRANCH}\"
+          BRANCH="${BRANCH}"
+          BASE_PORT="${PORT}"
+          DOMAIN="${DOMAIN}"
+          APP_DIR="/var/www/preview/${BRANCH}"
 
           if [ -z \"\${BASE_PORT}\" ]; then
             echo \"[FATAL] BASE_PORT is empty\"
