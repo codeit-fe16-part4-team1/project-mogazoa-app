@@ -1,128 +1,145 @@
-# name: PR Preview to EC2
+name: PR Preview to EC2
 
-# on:
-#   push:
+on:
+  push:
+    branches-ignore:
+      - main
 
-# jobs:
-#   continuous-deployment:
-#     runs-on: ubuntu-latest
-#     steps:
-#       # 1) GitHub 저장소 체크아웃
-#       - name: Checkout
-#         uses: actions/checkout@v4
+jobs:
+  continuous-deployment:
+    runs-on: ubuntu-latest
+    steps:
+      # 1) GitHub 저장소 체크아웃
+      - name: Checkout
+        uses: actions/checkout@v4
 
-#       # 2) 브랜치명 & 포트 계산
-#       - name: Compute branch name & port
-#         id: meta
-#         run: |
-#           RAW="${{ github.ref_name }}"
-#           SANITIZED="$(echo "$RAW" | tr '[:upper:]' '[:lower:]' | sed 's#[^a-z0-9._-]#-#g')"
-#           PORT=$(( 5000 + $(echo -n "$SANITIZED" | cksum | awk '{print $1 % 1000}') ))
-#           echo "name=$SANITIZED" >> $GITHUB_OUTPUT
-#           echo "port=$PORT" >> $GITHUB_OUTPUT
-#           echo "[DEBUG] RAW=$RAW"
-#           echo "[DEBUG] SANITIZED=$SANITIZED"
-#           echo "[DEBUG] BASE_PORT=$PORT"
+      # 2) 브랜치명 & 포트 계산
+      - name: Compute branch name & port
+        id: meta
+        run: |
+          RAW="${{ github.ref_name }}"
+          SANITIZED="$(echo "$RAW" | tr '[:upper:]' '[:lower:]' | sed 's#[^a-z0-9._-]#-#g')"
+          PORT=$(( 5000 + $(echo -n "$SANITIZED" | cksum | awk '{print $1 % 1000}') ))
+          echo "name=$SANITIZED" >> $GITHUB_OUTPUT
+          echo "port=$PORT" >> $GITHUB_OUTPUT
+          echo "[DEBUG] RAW=$RAW"
+          echo "[DEBUG] SANITIZED=$SANITIZED"
+          echo "[DEBUG] BASE_PORT=$PORT"
 
-#       # 2-1) PORT 값 디버그 출력
-#       - name: Debug meta outputs
-#         run: |
-#           echo "[DEBUG] BRANCH=${{ steps.meta.outputs.name }}"
-#           echo "[DEBUG] PORT=${{ steps.meta.outputs.port }}"
+      # 2-1) PORT 값 디버그 출력
+      - name: Debug meta outputs
+        run: |
+          echo "[DEBUG] BRANCH=${{ steps.meta.outputs.name }}"
+          echo "[DEBUG] PORT=${{ steps.meta.outputs.port }}"
 
-#       # 3) 소스 패키징
-#       - name: Pack source (git archive snapshot)
-#         run: |
-#           git archive --format=tar HEAD | gzip > app.tar.gz
+      # 3) 소스 패키징
+      - name: Pack source (git archive snapshot)
+        run: |
+          echo "[DEBUG][GHA] Creating source archive..."
+          git archive --format=tar HEAD | gzip > app.tar.gz
 
-#       # 4) EC2에 배포
-#       - name: Copy & Deploy on EC2
-#         env:
-#           BRANCH: ${{ steps.meta.outputs.name }}
-#           PORT: ${{ steps.meta.outputs.port }}
-#           DOMAIN: ${{ vars.DOMAIN }}
-#           EC2_HOST: ${{ secrets.EC2_HOST }}
-#           EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
-#         shell: bash
-#         run: |
-#           mkdir -p ~/.ssh
-#           echo "${EC2_SSH_KEY}" > ~/.ssh/id_rsa
-#           chmod 600 ~/.ssh/id_rsa
+      # 4) EC2에 배포
+      - name: Copy & Deploy on EC2
+        env:
+          BRANCH: ${{ steps.meta.outputs.name }}
+          PORT: ${{ steps.meta.outputs.port }}
+          DOMAIN: ${{ vars.DOMAIN }}
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+        shell: bash
+        run: |
+          echo "[DEBUG][GHA] Setting up SSH key..."
+          mkdir -p ~/.ssh
+          echo "${EC2_SSH_KEY}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
 
-#           # 앱 아카이브와 nginx 템플릿을 같이 전송
-#           scp -o StrictHostKeyChecking=no app.tar.gz deploy/preview.nginx.tpl ubuntu@"${EC2_HOST}":/tmp/
+          # 앱 아카이브와 nginx 템플릿을 같이 전송
+          echo "[DEBUG][GHA] Transferring files to EC2..."
+          scp -o StrictHostKeyChecking=no app.tar.gz deploy/preview.nginx.tpl ubuntu@"${EC2_HOST}":/tmp/
 
-#           ssh -o StrictHostKeyChecking=no ubuntu@"${EC2_HOST}" "bash -lc '
-#           set -euo pipefail
-#           BRANCH=\"${BRANCH}\"
-#           BASE_PORT=\"${PORT}\"
-#           DOMAIN=\"${DOMAIN}\"
-#           APP_DIR=\"/var/www/preview/\${BRANCH}\"
+          echo "[DEBUG][GHA] Connecting to EC2..."
+          ssh -o StrictHostKeyChecking=no ubuntu@"${EC2_HOST}" "bash -lc '
+          set -euo pipefail
 
-#           if [ -z \"\${BASE_PORT}\" ]; then
-#             echo \"[FATAL] BASE_PORT is empty\"
-#             exit 1
-#           fi
+          echo \"[DEBUG][EC2] Params:\"
+          BRANCH=\"${BRANCH}\"
+          BASE_PORT=\"${PORT}\"
+          DOMAIN=\"${DOMAIN}\"
+          APP_DIR=\"/var/www/preview/\${BRANCH}\"
 
-#           # 앱 디렉토리
-#           sudo mkdir -p \"\${APP_DIR}\"
-#           sudo chown -R ubuntu:ubuntu \"\${APP_DIR}\"
+          if [ -z \"\${BASE_PORT}\" ]; then
+            echo \"[FATAL] BASE_PORT is empty\"
+            exit 1
+          fi
 
-#           # 코드 전개
-#           tar -xzf /tmp/app.tar.gz -C \"\${APP_DIR}\"
-#           rm -f /tmp/app.tar.gz
+          # 앱 디렉토리
+          echo \"[DEBUG][EC2] Creating app directory: \${APP_DIR}\"
+          sudo mkdir -p \"\${APP_DIR}\"
+          sudo chown -R ubuntu:ubuntu \"\${APP_DIR}\"
 
-#           cd \"\${APP_DIR}\"
-#           if [ -f package-lock.json ]; then
-#             npm ci
-#           else
-#             npm install
-#           fi
-#           npm run build
+          # 코드 전개
+          echo \"[DEBUG][EC2] Extracting app archive...\"
+          tar -xzf /tmp/app.tar.gz -C \"\${APP_DIR}\"
+          rm -f /tmp/app.tar.gz
 
-#           echo \"[DEBUG][EC2] BASE_PORT=\${BASE_PORT}\"
+          cd \"\${APP_DIR}\"
+          echo \"[DEBUG][EC2] Installing dependencies...\"
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
 
-#           # ===== 포트 고정 사용 =====
-#           FINAL_PORT=\"\${BASE_PORT}\"
+          echo \"[DEBUG][EC2] Building project...\"
+          npm run build
 
-#           # ===== 기존 프로세스/포트 정리 =====
-#           pm2 delete \"preview-\${BRANCH}\" || true
-#           sudo fuser -k \${FINAL_PORT}/tcp || true
+          # ===== 포트 고정 사용 =====
+          FINAL_PORT=\"\${BASE_PORT}\"
+          echo \"[DEBUG][EC2] Using port: \${FINAL_PORT}\"
 
-#           # ===== PM2로 Next.js 시작 =====
-#           pm2 start \"node_modules/.bin/next start -p \${FINAL_PORT}\" --name \"preview-\${BRANCH}\"
-#           pm2 save
+          # ===== 기존 프로세스/포트 정리 =====
+          echo \"[DEBUG][EC2] Cleaning old processes...\"
+          pm2 delete \"preview-\${BRANCH}\" || true
+          sudo fuser -k \${FINAL_PORT}/tcp || true
 
-#           # ===== Nginx vhost를 최종 포트로 생성 =====
-#           export BRANCH DOMAIN FINAL_PORT
-#           envsubst '${BRANCH} ${DOMAIN} ${FINAL_PORT}' <<'NGINX' | sudo tee /etc/nginx/conf.d/preview-${BRANCH}.conf >/dev/null
-#           server {
-#             listen 80;
-#             server_name ${BRANCH}.preview.${DOMAIN};
+          # ===== PM2로 Next.js 시작 =====
+          echo \"[DEBUG][EC2] Starting PM2...\"
+          pm2 start \"node_modules/.bin/next start -p \${FINAL_PORT}\" --name \"preview-\${BRANCH}\"
+          pm2 save
 
-#             location / {
-#               proxy_http_version 1.1;
-#               proxy_set_header Host $host;
-#               proxy_set_header X-Real-IP $remote_addr;
-#               proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-#               proxy_set_header X-Forwarded-Proto $scheme;
-#               proxy_set_header Upgrade $http_upgrade;
-#               proxy_set_header Connection "upgrade";
-#               proxy_pass http://127.0.0.1:${FINAL_PORT};
-#             }
-#           }
-#           NGINX
+          # ===== Nginx vhost를 최종 포트로 생성 =====
+          echo \"[DEBUG][EC2] Generating Nginx config...\"
+          export BRANCH DOMAIN FINAL_PORT
+          envsubst '${BRANCH} ${DOMAIN} ${FINAL_PORT}' <<'NGINX' | sudo tee /etc/nginx/conf.d/preview-${BRANCH}.conf >/dev/null
+          server {
+            listen 80;
+            server_name ${BRANCH}.preview.${DOMAIN};
 
-#           sudo nginx -t
-#           sudo systemctl reload nginx
+            location / {
+              proxy_http_version 1.1;
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+              proxy_set_header Upgrade $http_upgrade;
+              proxy_set_header Connection "upgrade";
+              proxy_pass http://127.0.0.1:${FINAL_PORT};
+            }
+          }
+          NGINX
 
-#           echo \"[INFO] Preview URL: https://\${BRANCH}.preview.\${DOMAIN}\"
-#           echo \"[INFO] Upstream port: \${FINAL_PORT}\"
-#           '"
+          echo \"[DEBUG][EC2] Testing and reloading Nginx...\"
+          sudo nginx -t
+          sudo systemctl reload nginx
 
-#       # 6) 미리보기 URL 출력
-#       - name: Output Preview URL
-#         env:
-#           BRANCH: ${{ steps.meta.outputs.name }}
-#           DOMAIN: ${{ vars.DOMAIN }}
-#         run: echo "https://${BRANCH}.preview.${DOMAIN}"
+          echo \"[INFO] Preview URL: https://\${BRANCH}.preview.\${DOMAIN}\"
+          echo \"[INFO] Upstream port: \${FINAL_PORT}\"
+          '"
+
+      # 6) 미리보기 URL 출력
+      - name: Output Preview URL
+        env:
+          BRANCH: ${{ steps.meta.outputs.name }}
+          DOMAIN: ${{ vars.DOMAIN }}
+        run: |
+          echo "[INFO][GHA] Preview URL: https://${BRANCH}.preview.${DOMAIN}"
