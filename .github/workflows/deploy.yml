@@ -50,6 +50,7 @@ jobs:
 
             # 빌드 산출물만 남기고 소스코드/불필요한 파일 삭제
             find . -mindepth 1 -maxdepth 1 \
+              ! -name '.git' \
               ! -name '.next' \
               ! -name 'node_modules' \
               ! -name 'package.json' \
