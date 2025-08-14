@@ -184,6 +184,6 @@ jobs:
           echo -e "${BLUE}====================== 🚀 Preview Info ======================${RESET}"
           printf "${CYAN}%-15s${RESET} | %s\n" "BRANCH"        "${{ steps.deploy.outputs.branch }}"
           printf "${CYAN}%-15s${RESET} | %s\n" "Preview URL"   "${{ steps.deploy.outputs.preview_url }}"
-          printf "${CYAN}%-15s${RESET} | %s\n" "Upstream Port" "${{ steps.deploy.outputs.port }}"
+          printf "${CYAN}%-15s${RESET} | %s\n" "Upstream Port" "${{ steps.meta.outputs.port }}"
           echo -e "${BLUE}=============================================================${RESET}"
           echo ""
