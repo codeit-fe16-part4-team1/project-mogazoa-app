@@ -90,8 +90,9 @@ jobs:
             npm install
           fi
 
-          echo \"[DEBUG][EC2] Building project...\"
-          npm run build
+          echo \"[DEBUG][EC2] 프로젝트 빌드중...\"
+          rm -rf .next
+          NEXT_CACHE_DISABLED=1 npm run build
 
           # ===== 포트 고정 사용 =====
           FINAL_PORT=\"\${BASE_PORT}\"
@@ -115,6 +116,7 @@ jobs:
             listen 80;
             server_name ${BRANCH}.preview.${DOMAIN};
 
+            # HTML (SSR/정적 HTML) — 캐시 금지
             location / {
               proxy_http_version 1.1;
               proxy_set_header Host $host;
@@ -123,6 +125,21 @@ jobs:
               proxy_set_header X-Forwarded-Proto $scheme;
               proxy_set_header Upgrade $http_upgrade;
               proxy_set_header Connection "upgrade";
+
+              proxy_hide_header Cache-Control;                  # 원본의 s-maxage 제거
+              add_header Cache-Control "no-store" always;       # HTML 캐시 금지
+
+              proxy_pass http://127.0.0.1:${FINAL_PORT};
+            }
+
+            # Next.js 정적 번들 — 장기 캐시
+            location /_next/ {
+              proxy_http_version 1.1;
+              proxy_set_header Host $host;
+
+              proxy_hide_header Cache-Control;
+              add_header Cache-Control "public, max-age=31536000, immutable" always;
+
               proxy_pass http://127.0.0.1:${FINAL_PORT};
             }
           }
