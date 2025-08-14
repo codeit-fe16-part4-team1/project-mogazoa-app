@@ -112,12 +112,11 @@ jobs:
           echo \"[DEBUG][EC2] Generating Nginx config...\"
           echo \"[DEBUG][EC2] Server name created: ${BRANCH}.preview.${DOMAIN}\"
           export BRANCH DOMAIN FINAL_PORT
-          envsubst '${BRANCH} ${DOMAIN} ${FINAL_PORT}' <<'NGINX' | sudo tee /etc/nginx/conf.d/preview-${BRANCH}.conf >/dev/null
+          envsubst '${BRANCH} ${DOMAIN} ${FINAL_PORT}' <<NGINX | sudo tee /etc/nginx/conf.d/preview-${BRANCH}.conf >/dev/null
           server {
             listen 80;
             server_name ${BRANCH}.preview.${DOMAIN};
 
-            # HTML (SSR/정적 HTML) — 캐시 금지
             location / {
               proxy_http_version 1.1;
               proxy_set_header Host $host;
@@ -127,13 +126,12 @@ jobs:
               proxy_set_header Upgrade $http_upgrade;
               proxy_set_header Connection "upgrade";
 
-              proxy_hide_header Cache-Control;                  # 원본의 s-maxage 제거
-              add_header Cache-Control "no-store" always;       # HTML 캐시 금지
+              proxy_hide_header Cache-Control;
+              add_header Cache-Control "no-store" always;
 
               proxy_pass http://127.0.0.1:${FINAL_PORT};
             }
 
-            # Next.js 정적 번들 — 장기 캐시
             location /_next/ {
               proxy_http_version 1.1;
               proxy_set_header Host $host;
