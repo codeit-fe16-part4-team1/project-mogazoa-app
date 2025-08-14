@@ -22,10 +22,10 @@ server {
     add_header Pragma "no-cache" always;
     add_header Expires "0" always;
 
+    proxy_pass http://127.0.0.1:${FINAL_PORT};
+
     # CloudFront 단계 응답 헤더 디버그
     add_header X-Debug-Host $host always;
     add_header X-Debug-Server $server_name always;
-
-    proxy_pass http://127.0.0.1:${FINAL_PORT};
   }
 }
