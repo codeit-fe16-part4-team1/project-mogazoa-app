@@ -110,6 +110,7 @@ jobs:
 
           # ===== Nginx vhost를 최종 포트로 생성 =====
           echo \"[DEBUG][EC2] Generating Nginx config...\"
+          echo \"[DEBUG][EC2] Server name created: ${BRANCH}.preview.${DOMAIN}\"
           export BRANCH DOMAIN FINAL_PORT
           envsubst '${BRANCH} ${DOMAIN} ${FINAL_PORT}' <<'NGINX' | sudo tee /etc/nginx/conf.d/preview-${BRANCH}.conf >/dev/null
           server {
