@@ -108,34 +108,34 @@ jobs:
           pm2 start \"node_modules/.bin/next start -p \${FINAL_PORT}\" --name \"preview-\${BRANCH}\"
           pm2 save
 
-          # ===== Nginx vhost를 최종 포트로 생성 =====
+          # ===== Nginx vhost를 최종 포트로 생성 (템플릿 + envsubst) =====
           echo "[DEBUG][EC2] Generating Nginx config..."
           echo "[DEBUG][EC2] Server name created: ${BRANCH}.preview.${DOMAIN}"
           export BRANCH DOMAIN FINAL_PORT
-          echo "server {
-            listen 80;
-            server_name ${BRANCH}.preview.${DOMAIN};
 
-            location / {
-              proxy_http_version 1.1;
-              proxy_set_header Host \$host;
-              proxy_set_header X-Real-IP \$remote_addr;
-              proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-              proxy_set_header X-Forwarded-Proto \$scheme;
-              proxy_set_header Upgrade \$http_upgrade;
-              proxy_set_header Connection \"upgrade\";
-              proxy_pass http://127.0.0.1:${FINAL_PORT};
-            }
-          }" \
-          | envsubst '${BRANCH} ${DOMAIN} ${FINAL_PORT}' \
-          | sudo tee /etc/nginx/conf.d/preview-${BRANCH}.conf >/dev/null
+          # 템플릿 존재 점검
+          if [ ! -f /tmp/preview.nginx.tpl ]; then
+            echo "[FATAL] /tmp/preview.nginx.tpl not found (scp 단계 확인)"
+            exit 1
+          fi
 
-          echo \"[DEBUG][EC2] Testing and reloading Nginx...\"
+          # 템플릿 치환 → conf 생성 (치환 변수 '목록'을 명시해 Nginx의 $host 등은 보존)
+          envsubst "\$BRANCH \$DOMAIN \$FINAL_PORT" < /tmp/preview.nginx.tpl \
+            | sudo tee /etc/nginx/conf.d/preview-${BRANCH}.conf >/dev/null
+
+          # 생성물 확인
+          echo "[DEBUG][EC2] Rendered conf head:"
+          sudo sed -n "1,80p" /etc/nginx/conf.d/preview-${BRANCH}.conf || true
+
+          # Nginx 적용
+          echo "[DEBUG][EC2] Testing and reloading Nginx..."
           sudo nginx -t
           sudo systemctl reload nginx
 
-          echo \"[INFO] Preview URL: https://\${BRANCH}.preview.\${DOMAIN}\"
-          echo \"[INFO] Upstream port: \${FINAL_PORT}\"
+          # (검증) 원본(Nginx)에 Host 강제해 헤더 확인
+          echo "[DEBUG][EC2] Origin header check:"
+          curl -sI -H "Host: ${BRANCH}.preview.${DOMAIN}" http://127.0.0.1 \
+            | egrep -i "http/|server|cache-control" || true
           '"
 
       # 6) 미리보기 URL 출력
@@ -143,18 +143,7 @@ jobs:
         env:
           BRANCH: ${{ steps.meta.outputs.name }}
           DOMAIN: ${{ vars.DOMAIN }}
+          PORT: ${{ steps.meta.outputs.port }}
         run: |
           echo "[INFO][GHA] Preview URL: https://${BRANCH}.preview.${DOMAIN}"
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: CloudFront Invalidate Cache
-        run: |
-          echo "[DEBUG] CloudFront 캐시 무효화 시작..."
-          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
-          echo "[DEBUG] ✅ CloudFront 캐시 무효화 완료"
+          echo "[INFO][GHA] Upstream port: ${PORT}"
