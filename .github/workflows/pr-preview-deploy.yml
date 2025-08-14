@@ -125,9 +125,27 @@ jobs:
           echo "[DEBUG][EC2] Rendered conf head:"
           sudo sed -n "1,80p" /etc/nginx/conf.d/preview-${BRANCH}.conf || true
 
-          echo "[DEBUG][EC2] Testing and reloading Nginx..."
+          echo "[DEBUG][EC2] Testing Nginx config..."
           sudo nginx -t
-          sudo systemctl reload nginx
+
+          echo "[DEBUG][EC2] (Re)starting Nginx service..."
+          # 실행 중이면 reload, 아니면 start(최초 1회는 enable --now가 더 깔끔)
+          if systemctl list-unit-files | grep -q '^nginx\.service'; then
+            if systemctl is-active --quiet nginx; then
+              sudo systemctl reload nginx || sudo nginx -s reload
+            else
+              sudo systemctl enable --now nginx \
+                || sudo systemctl start nginx \
+                || sudo service nginx start \
+                || sudo nginx
+            fi
+          else
+            # systemd가 없거나 서비스 등록이 안 된 환경 대비
+            sudo nginx -s reload 2>/dev/null || sudo nginx
+          fi
+
+          echo "[DEBUG][EC2] Nginx status:"
+          (systemctl status nginx --no-pager -l || true) | sed -n '1,20p'
 
           echo "[DEBUG][EC2] Origin header check:"
           curl -sI -H "Host: ${BRANCH}.preview.${DOMAIN}" http://127.0.0.1 \
