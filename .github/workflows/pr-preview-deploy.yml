@@ -35,11 +35,12 @@ jobs:
       # 3) 소스 패키징
       - name: Pack source (git archive snapshot)
         run: |
-          echo "[DEBUG][GHA] Creating source archive..."
+          echo "[DEBUG][GHA] ⏳ 소스파일 압축 중..."
           git archive --format=tar HEAD | gzip > app.tar.gz
-
+          echo "[DEBUG][GHA] ✅ 소스파일 압축 완료"
       # 4) EC2에 배포
       - name: Copy & Deploy on EC2
+        id: deploy
         env:
           BRANCH: ${{ steps.meta.outputs.name }}
           PORT: ${{ steps.meta.outputs.port }}
@@ -48,118 +49,114 @@ jobs:
           EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
         shell: bash
         run: |
-          echo "[DEBUG][GHA] Setting up SSH key..."
+          echo "[DEBUG][GHA] ⏳ SSH Key 설정 중..."
           mkdir -p ~/.ssh
           echo "${EC2_SSH_KEY}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+          echo "[DEBUG][GHA] ⏳ SSH Key 설정 완료"
 
           # 앱 아카이브와 nginx 템플릿을 같이 전송
-          echo "[DEBUG][GHA] Transferring files to EC2..."
+          echo "[DEBUG][GHA] ⏳ EC2 인스턴스로 압축파일 복사 중..."
           scp -o StrictHostKeyChecking=no app.tar.gz deploy/preview.nginx.tpl ubuntu@"${EC2_HOST}":/tmp/
+          echo "[DEBUG][GHA] ✅ EC2 인스턴스로 압축파일 복사 완료"
 
-          echo "[DEBUG][GHA] Connecting to EC2..."
-          ssh -o StrictHostKeyChecking=no ubuntu@"${EC2_HOST}" "bash -lc '
+          echo "[DEBUG][GHA] ⏳ EC2 인스턴스에 연결 중..."
+
+          ssh -o StrictHostKeyChecking=no ubuntu@"${EC2_HOST}" bash -se <<'EOSSH'
           set -euo pipefail
 
-          echo \"[DEBUG][EC2] Params:\"
-          BRANCH=\"${BRANCH}\"
-          BASE_PORT=\"${PORT}\"
-          DOMAIN=\"${DOMAIN}\"
-          APP_DIR=\"/var/www/preview/\${BRANCH}\"
+          echo "[DEBUG][GHA] ✅ EC2 인스턴스에 연결 완료"
 
-          if [ -z \"\${BASE_PORT}\" ]; then
-            echo \"[FATAL] BASE_PORT is empty\"
+          # === GitHub Actions 값 주입 (여기서 GH 컨텍스트는 이미 치환된 문자열이 됨) ===
+          BRANCH="${{ steps.meta.outputs.name }}"
+          BASE_PORT="${{ steps.meta.outputs.port }}"
+          DOMAIN="${{ vars.DOMAIN }}"
+          APP_DIR="/var/www/preview/${BRANCH}"
+
+          echo "[DEBUG][EC2] ✅ PREVIEW 파라미터 출력:"
+          echo "[INFO] BRANCH=${BRANCH}"
+          echo "[INFO] BASE_PORT=${BASE_PORT}"
+          echo "[INFO] DOMAIN=${DOMAIN}"
+          echo "[INFO] APP_DIR=${APP_DIR}"
+
+          if [ -z "${BASE_PORT}" ]; then
+            echo "[FATAL] ✖️ BASE_PORT is empty"
             exit 1
           fi
 
-          # 앱 디렉토리
-          echo \"[DEBUG][EC2] Creating app directory: \${APP_DIR}\"
-          sudo mkdir -p \"\${APP_DIR}\"
-          sudo chown -R ubuntu:ubuntu \"\${APP_DIR}\"
+          # === 앱 디렉토리 & 코드 전개 ===
+          echo "[DEBUG][EC2] ⏳ 앱 디렉토리 생성 중..."
+          sudo mkdir -p "${APP_DIR}"
+          sudo chown -R ubuntu:ubuntu "${APP_DIR}"
+          echo "[DEBUG][EC2] ✅ 앱 디렉토리 생성 완료"
 
-          # 코드 전개
-          echo \"[DEBUG][EC2] Extracting app archive...\"
-          tar -xzf /tmp/app.tar.gz -C \"\${APP_DIR}\"
+          echo "[DEBUG][EC2] ⏳ 소스코드 압축해제 중..."
+          tar -xzf /tmp/app.tar.gz -C "${APP_DIR}"
           rm -f /tmp/app.tar.gz
+          echo "[DEBUG][EC2] ✅ 소스코드 압축해제 완료"
 
-          cd \"\${APP_DIR}\"
-          echo \"[DEBUG][EC2] Installing dependencies...\"
+          cd "${APP_DIR}"
+          echo "[DEBUG][EC2] ⏳ npm 설치 중..."
           if [ -f package-lock.json ]; then
             npm ci
           else
             npm install
           fi
+          echo "[DEBUG][EC2] ✅ npm 설치 완료..."
 
-          echo \"[DEBUG][EC2] 프로젝트 빌드중...\"
+          echo "[DEBUG][EC2] ⏳ 프로젝트 빌드중..."
           rm -rf .next
           NEXT_CACHE_DISABLED=1 npm run build
+          echo "[DEBUG][EC2] ✅ 프로젝트 빌드 완료"
 
-          # ===== 포트 고정 사용 =====
-          FINAL_PORT=\"\${BASE_PORT}\"
-          echo \"[DEBUG][EC2] Using port: \${FINAL_PORT}\"
+          # === 포트/PM2 ===
+          FINAL_PORT="${BASE_PORT}"
+          echo "[DEBUG][EC2] Using port: ${FINAL_PORT}"
+          echo "[DEBUG][EC2] Cleaning old processes..."
+          pm2 delete "preview-${BRANCH}" || true
+          sudo fuser -k ${FINAL_PORT}/tcp || true
 
-          # ===== 기존 프로세스/포트 정리 =====
-          echo \"[DEBUG][EC2] Cleaning old processes...\"
-          pm2 delete \"preview-\${BRANCH}\" || true
-          sudo fuser -k \${FINAL_PORT}/tcp || true
-
-          # ===== PM2로 Next.js 시작 =====
-          echo \"[DEBUG][EC2] Starting PM2...\"
-          pm2 start \"node_modules/.bin/next start -p \${FINAL_PORT}\" --name \"preview-\${BRANCH}\"
+          echo "[DEBUG][EC2] ⏳ PM2 실행 중..."
+          pm2 start "node_modules/.bin/next start -p ${FINAL_PORT}" --name "preview-${BRANCH}"
           pm2 save
+          echo "[DEBUG][EC2] ✅ PM2 실행 완료..."
 
-          # ===== Nginx vhost를 최종 포트로 생성 =====
-          echo \"[DEBUG][EC2] Generating Nginx config...\"
+          # === Nginx vhost 생성: 템플릿 + envsubst(치환 변수 '목록' 제한) ===
+          echo "[DEBUG][EC2] ⏳ Nginx config 생성 중..."
+          if [ ! -f /tmp/preview.nginx.tpl ]; then
+            echo "[FATAL] /tmp/preview.nginx.tpl not found (scp 단계 확인)"
+            exit 1
+          fi
+          echo "[DEBUG][EC2] ✅ Nginx config 생성 완료"
+
           export BRANCH DOMAIN FINAL_PORT
-          envsubst '${BRANCH} ${DOMAIN} ${FINAL_PORT}' <<'NGINX' | sudo tee /etc/nginx/conf.d/preview-${BRANCH}.conf >/dev/null
-          server {
-            listen 80;
-            server_name ${BRANCH}.preview.${DOMAIN};
+          envsubst "\$BRANCH \$DOMAIN \$FINAL_PORT" < /tmp/preview.nginx.tpl \
+            | sudo tee /etc/nginx/conf.d/preview-${BRANCH}.conf >/dev/null
 
-            # HTML (SSR/정적 HTML) — 캐시 금지
-            location / {
-              proxy_http_version 1.1;
-              proxy_set_header Host $host;
-              proxy_set_header X-Real-IP $remote_addr;
-              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-              proxy_set_header X-Forwarded-Proto $scheme;
-              proxy_set_header Upgrade $http_upgrade;
-              proxy_set_header Connection "upgrade";
+          echo "[DEBUG][EC2] Rendered conf head:"
+          sudo sed -n "1,80p" /etc/nginx/conf.d/preview-${BRANCH}.conf || true
 
-              proxy_hide_header Cache-Control;                  # 원본의 s-maxage 제거
-              add_header Cache-Control "no-store" always;       # HTML 캐시 금지
-
-              proxy_pass http://127.0.0.1:${FINAL_PORT};
-            }
-
-            # Next.js 정적 번들 — 장기 캐시
-            location /_next/ {
-              proxy_http_version 1.1;
-              proxy_set_header Host $host;
-
-              proxy_hide_header Cache-Control;
-              add_header Cache-Control "public, max-age=31536000, immutable" always;
-
-              proxy_pass http://127.0.0.1:${FINAL_PORT};
-            }
-          }
-          NGINX
-
-          echo \"[DEBUG][EC2] Testing and reloading Nginx...\"
+          echo "[DEBUG][EC2] ⏳ Nginx config 동작 테스트 중..."
           sudo nginx -t
-          sudo systemctl reload nginx
+          if systemctl is-active --quiet nginx; then
+            sudo systemctl reload nginx || sudo nginx -s reload
+          else
+            sudo systemctl start nginx || sudo nginx
+          fi
+          echo "[DEBUG][EC2] ✅ Nginx config 동작 테스트 완료"
 
-          echo \"[INFO] Preview URL: https://\${BRANCH}.preview.\${DOMAIN}\"
-          echo \"[INFO] Upstream port: \${FINAL_PORT}\"
-          '"
+          echo "[DEBUG][EC2] Nginx status:"
+          (systemctl status nginx --no-pager -l || true) | sed -n '1,20p'
 
-      # 6) 미리보기 URL 출력
-      - name: Output Preview URL
-        env:
-          BRANCH: ${{ steps.meta.outputs.name }}
-          DOMAIN: ${{ vars.DOMAIN }}
-        run: |
-          echo "[INFO][GHA] Preview URL: https://${BRANCH}.preview.${DOMAIN}"
+          echo "[DEBUG][EC2] 🔍 원본 헤더:"
+          curl -sI -H "Host: ${BRANCH}.preview.${DOMAIN}" http://127.0.0.1 \
+            | egrep -i "http/|server|cache-control" || true
+          EOSSH
+
+          # 최종 결과를 GitHub Actions output으로 넘기기
+          echo "preview_url=https://${BRANCH}.preview.${DOMAIN}" >> $GITHUB_OUTPUT
+          echo "branch=${BRANCH}" >> $GITHUB_OUTPUT
+          echo "port=${FINAL_PORT}" >> $GITHUB_OUTPUT
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -170,6 +167,23 @@ jobs:
 
       - name: CloudFront Invalidate Cache
         run: |
-          echo "[DEBUG] CloudFront 캐시 무효화 시작..."
+          echo "[DEBUG] ⏳ CloudFront 캐시 무효화 시작..."
           aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
           echo "[DEBUG] ✅ CloudFront 캐시 무효화 완료"
+
+      # 5) Preview Info 출력
+      - name: Print Preview Info
+        run: |
+          RED="\033[1;31m"
+          GREEN="\033[1;32m"
+          BLUE="\033[1;34m"
+          CYAN="\033[1;36m"
+          RESET="\033[0m"
+
+          echo ""
+          echo -e "${BLUE}====================== 🚀 Preview Info ======================${RESET}"
+          printf "${CYAN}%-15s${RESET} | %s\n" "BRANCH"        "${{ steps.deploy.outputs.branch }}"
+          printf "${CYAN}%-15s${RESET} | %s\n" "Preview URL"   "${{ steps.deploy.outputs.preview_url }}"
+          printf "${CYAN}%-15s${RESET} | %s\n" "Upstream Port" "${{ steps.meta.outputs.port }}"
+          echo -e "${BLUE}=============================================================${RESET}"
+          echo ""
