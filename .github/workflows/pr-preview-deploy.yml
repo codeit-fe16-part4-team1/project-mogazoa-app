@@ -143,3 +143,16 @@ jobs:
           DOMAIN: ${{ vars.DOMAIN }}
         run: |
           echo "[INFO][GHA] Preview URL: https://${BRANCH}.preview.${DOMAIN}"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: CloudFront Invalidate Cache
+        run: |
+          echo "[DEBUG] CloudFront 캐시 무효화 시작..."
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+          echo "[DEBUG] ✅ CloudFront 캐시 무효화 완료"
