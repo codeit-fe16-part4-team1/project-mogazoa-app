@@ -73,10 +73,10 @@ jobs:
           APP_DIR="/var/www/preview/${BRANCH}"
 
           echo "[DEBUG][EC2] ✅ PREVIEW 파라미터 출력:"
-          echo "  BRANCH=${BRANCH}"
-          echo "  BASE_PORT=${BASE_PORT}"
-          echo "  DOMAIN=${DOMAIN}"
-          echo "  APP_DIR=${APP_DIR}"
+          echo "[INFO] BRANCH=${BRANCH}"
+          echo "[INFO] BASE_PORT=${BASE_PORT}"
+          echo "[INFO] DOMAIN=${DOMAIN}"
+          echo "[INFO] APP_DIR=${APP_DIR}"
 
           if [ -z "${BASE_PORT}" ]; then
             echo "[FATAL] ✖️ BASE_PORT is empty"
@@ -151,8 +151,20 @@ jobs:
           curl -sI -H "Host: ${BRANCH}.preview.${DOMAIN}" http://127.0.0.1 \
             | egrep -i "http/|server|cache-control" || true
 
-          echo "[INFO] Preview URL: https://${BRANCH}.preview.${DOMAIN}"
-          echo "[INFO] Upstream port: ${FINAL_PORT}"
+          # 색상 정의
+          RED="\033[1;31m"
+          GREEN="\033[1;32m"
+          BLUE="\033[1;34m"
+          CYAN="\033[1;36m"
+          RESET="\033[0m"
+
+          echo ""
+          echo -e "${BLUE}================= 🚀 Preview Info =================${RESET}"
+          printf "${CYAN}%-15s${RESET} | %s\n" "BRANCH"        "${BRANCH}"
+          printf "${CYAN}%-15s${RESET} | %s\n" "Preview URL"   "https://${BRANCH}.preview.${DOMAIN}"
+          printf "${CYAN}%-15s${RESET} | %s\n" "Upstream Port" "${FINAL_PORT}"
+          echo -e "${BLUE}===================================================${RESET}"
+          echo ""
           EOSSH
 
       - name: Configure AWS credentials
