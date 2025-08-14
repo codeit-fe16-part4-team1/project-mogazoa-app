@@ -35,9 +35,9 @@ jobs:
       # 3) 소스 패키징
       - name: Pack source (git archive snapshot)
         run: |
-          echo "[DEBUG][GHA] Creating source archive..."
+          echo "[DEBUG][GHA] ⏳ 소스파일 압축 중..."
           git archive --format=tar HEAD | gzip > app.tar.gz
-
+          echo "[DEBUG][GHA] ✅ 소스파일 압축 완료"
       # 4) EC2에 배포
       - name: Copy & Deploy on EC2
         env:
@@ -48,19 +48,23 @@ jobs:
           EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
         shell: bash
         run: |
-          echo "[DEBUG][GHA] Setting up SSH key..."
+          echo "[DEBUG][GHA] ⏳ SSH Key 설정 중..."
           mkdir -p ~/.ssh
           echo "${EC2_SSH_KEY}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+          echo "[DEBUG][GHA] ⏳ SSH Key 설정 완료"
 
           # 앱 아카이브와 nginx 템플릿을 같이 전송
-          echo "[DEBUG][GHA] Transferring files to EC2..."
+          echo "[DEBUG][GHA] ⏳ EC2 인스턴스로 압축파일 복사 중..."
           scp -o StrictHostKeyChecking=no app.tar.gz deploy/preview.nginx.tpl ubuntu@"${EC2_HOST}":/tmp/
+          echo "[DEBUG][GHA] ✅ EC2 인스턴스로 압축파일 복사 완료"
 
-          echo "[DEBUG][GHA] Connecting to EC2..."
+          echo "[DEBUG][GHA] ⏳ EC2 인스턴스에 연결 중..."
 
           ssh -o StrictHostKeyChecking=no ubuntu@"${EC2_HOST}" bash -se <<'EOSSH'
           set -euo pipefail
+
+          echo "[DEBUG][GHA] ✅ EC2 인스턴스에 연결 완료"
 
           # === GitHub Actions 값 주입 (여기서 GH 컨텍스트는 이미 치환된 문자열이 됨) ===
           BRANCH="${{ steps.meta.outputs.name }}"
@@ -68,37 +72,41 @@ jobs:
           DOMAIN="${{ vars.DOMAIN }}"
           APP_DIR="/var/www/preview/${BRANCH}"
 
-          echo "[DEBUG][EC2] Params:"
+          echo "[DEBUG][EC2] ✅ PREVIEW 파라미터 출력:"
           echo "  BRANCH=${BRANCH}"
           echo "  BASE_PORT=${BASE_PORT}"
           echo "  DOMAIN=${DOMAIN}"
           echo "  APP_DIR=${APP_DIR}"
 
           if [ -z "${BASE_PORT}" ]; then
-            echo "[FATAL] BASE_PORT is empty"
+            echo "[FATAL] ✖️ BASE_PORT is empty"
             exit 1
           fi
 
           # === 앱 디렉토리 & 코드 전개 ===
-          echo "[DEBUG][EC2] Creating app directory..."
+          echo "[DEBUG][EC2] ⏳ 앱 디렉토리 생성 중..."
           sudo mkdir -p "${APP_DIR}"
           sudo chown -R ubuntu:ubuntu "${APP_DIR}"
+          echo "[DEBUG][EC2] ✅ 앱 디렉토리 생성 완료"
 
-          echo "[DEBUG][EC2] Extracting app archive..."
+          echo "[DEBUG][EC2] ⏳ 소스코드 압축해제 중..."
           tar -xzf /tmp/app.tar.gz -C "${APP_DIR}"
           rm -f /tmp/app.tar.gz
+          echo "[DEBUG][EC2] ✅ 소스코드 압축해제 완료"
 
           cd "${APP_DIR}"
-          echo "[DEBUG][EC2] Installing dependencies..."
+          echo "[DEBUG][EC2] ⏳ npm 설치 중..."
           if [ -f package-lock.json ]; then
             npm ci
           else
             npm install
           fi
+          echo "[DEBUG][EC2] ✅ npm 설치 완료..."
 
-          echo "[DEBUG][EC2] Building project..."
+          echo "[DEBUG][EC2] ⏳ 프로젝트 빌드중..."
           rm -rf .next
           NEXT_CACHE_DISABLED=1 npm run build
+          echo "[DEBUG][EC2] ✅ 프로젝트 빌드 완료"
 
           # === 포트/PM2 ===
           FINAL_PORT="${BASE_PORT}"
@@ -107,16 +115,18 @@ jobs:
           pm2 delete "preview-${BRANCH}" || true
           sudo fuser -k ${FINAL_PORT}/tcp || true
 
-          echo "[DEBUG][EC2] Starting PM2..."
+          echo "[DEBUG][EC2] ⏳ PM2 실행 중..."
           pm2 start "node_modules/.bin/next start -p ${FINAL_PORT}" --name "preview-${BRANCH}"
           pm2 save
+          echo "[DEBUG][EC2] ✅ PM2 실행 완료..."
 
           # === Nginx vhost 생성: 템플릿 + envsubst(치환 변수 '목록' 제한) ===
-          echo "[DEBUG][EC2] Generating Nginx config..."
+          echo "[DEBUG][EC2] ⏳ Nginx config 생성 중..."
           if [ ! -f /tmp/preview.nginx.tpl ]; then
             echo "[FATAL] /tmp/preview.nginx.tpl not found (scp 단계 확인)"
             exit 1
           fi
+          echo "[DEBUG][EC2] ✅ Nginx config 생성 완료"
 
           export BRANCH DOMAIN FINAL_PORT
           envsubst "\$BRANCH \$DOMAIN \$FINAL_PORT" < /tmp/preview.nginx.tpl \
@@ -125,18 +135,19 @@ jobs:
           echo "[DEBUG][EC2] Rendered conf head:"
           sudo sed -n "1,80p" /etc/nginx/conf.d/preview-${BRANCH}.conf || true
 
-          echo "[DEBUG][EC2] Testing Nginx config..."
+          echo "[DEBUG][EC2] ⏳ Nginx config 동작 테스트 중..."
           sudo nginx -t
           if systemctl is-active --quiet nginx; then
             sudo systemctl reload nginx || sudo nginx -s reload
           else
             sudo systemctl start nginx || sudo nginx
           fi
+          echo "[DEBUG][EC2] ✅ Nginx config 동작 테스트 완료"
 
           echo "[DEBUG][EC2] Nginx status:"
           (systemctl status nginx --no-pager -l || true) | sed -n '1,20p'
 
-          echo "[DEBUG][EC2] Origin header check:"
+          echo "[DEBUG][EC2] 🔍 원본 헤더:"
           curl -sI -H "Host: ${BRANCH}.preview.${DOMAIN}" http://127.0.0.1 \
             | egrep -i "http/|server|cache-control" || true
 
@@ -153,6 +164,6 @@ jobs:
 
       - name: CloudFront Invalidate Cache
         run: |
-          echo "[DEBUG] CloudFront 캐시 무효화 시작..."
+          echo "[DEBUG] ⏳ CloudFront 캐시 무효화 시작..."
           aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
           echo "[DEBUG] ✅ CloudFront 캐시 무효화 완료"
