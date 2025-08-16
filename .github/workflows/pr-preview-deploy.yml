@@ -168,7 +168,7 @@ jobs:
       - name: CloudFront Invalidate Cache
         run: |
           echo "[DEBUG] ⏳ CloudFront 캐시 무효화 시작..."
-          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_PREVIEW_ID }} --paths "/*"
           echo "[DEBUG] ✅ CloudFront 캐시 무효화 완료"
 
       # 5) Preview Info 출력
