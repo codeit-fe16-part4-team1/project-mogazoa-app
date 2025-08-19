@@ -8,13 +8,6 @@ jobs:
   cleanup:
     runs-on: ubuntu-latest
     steps:
-      - name: Compute branch name
-        id: meta
-        run: |
-          RAW="${{ github.event.pull_request.head.ref }}"
-          SANITIZED="$(echo "$RAW" | tr '[:upper:]' '[:lower:]' | sed 's#[^a-z0-9._-]#-#g')"
-          echo "name=$SANITIZED" >> $GITHUB_OUTPUT
-
       - name: Setup SSH key
         run: |
           mkdir -p ~/.ssh
@@ -22,23 +15,23 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
 
       - name: Cleanup Preview Environment on EC2
-        env:
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-          DOMAIN: ${{ vars.DOMAIN }}
-          BRANCH: ${{ steps.meta.outputs.name }}
         run: |
           echo "[DEBUG][GHA] ⏳ EC2 접속 후 preview 정리 작업 실행..."
-          ssh -o StrictHostKeyChecking=no ubuntu@"${EC2_HOST}" bash -se <<'EOSSH'
+          ssh -o StrictHostKeyChecking=no ubuntu@"${{ secrets.EC2_HOST }}" bash -se <<'EOSSH'
           set -euo pipefail
-          BRANCH="${BRANCH}"
-          APP_DIR="/var/www/preview/${BRANCH}"
-          CONF_FILE="/etc/nginx/conf.d/preview-${BRANCH}.conf"
 
-          echo "[INFO] 🧹 Cleaning preview for branch: ${BRANCH}"
+          # === GitHub Actions 값 주입 (여기서 GH 컨텍스트는 이미 치환된 문자열이 됨) ===
+          BRANCH="${{ github.event.pull_request.head.ref }}"
+          SANITIZED="$(echo "$BRANCH" | tr '[:upper:]' '[:lower:]' | sed 's#[^a-z0-9._-]#-#g')"
+          DOMAIN="${{ vars.DOMAIN }}"
+          APP_DIR="/var/www/preview/${SANITIZED}"
+          CONF_FILE="/etc/nginx/conf.d/preview-${SANITIZED}.conf"
+
+          echo "[INFO] 🧹 Cleaning preview for branch: ${SANITIZED}"
 
           # 1) PM2 프로세스 정리
-          echo "[DEBUG][EC2] ⏳ PM2 프로세스 삭제 중...: preview-${BRANCH}"
-          pm2 delete "preview-${BRANCH}" || true
+          echo "[DEBUG][EC2] ⏳ PM2 프로세스 삭제 중...: preview-${SANITIZED}"
+          pm2 delete "preview-${SANITIZED}" || true
           pm2 save
           echo "[DEBUG][EC2] ✅ PM2 프로세스 삭제 완료"
 
@@ -58,5 +51,5 @@ jobs:
             echo "[DEBUG][EC2] ✅ Nginx conf 삭제 완료"
           fi
 
-          echo "[INFO] ✅ Cleanup finished for branch: ${BRANCH}"
+          echo "[INFO] ✅ Cleanup finished for branch: ${SANITIZED}"
           EOSSH
