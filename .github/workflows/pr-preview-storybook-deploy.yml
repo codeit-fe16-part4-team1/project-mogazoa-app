@@ -50,6 +50,10 @@ jobs:
             s3://${{ secrets.AWS_STORYBOOK_S3_BUCKET_NAME }}/$BRANCH_NAME --delete
           echo "[DEBUG][S3] ✅ ${BRANCH_NAME} 브랜치 S3 배포 완료"
 
+          # GitHub Actions output으로 전달
+          echo "branch=${BRANCH_NAME}" >> $GITHUB_OUTPUT
+          echo "preview_url=https://${BRANCH_NAME}.preview.storybook.${{ vars.DOMAIN }}" >> $GITHUB_OUTPUT
+
       - name: CloudFront Invalidate Cache
         run: |
           echo "[DEBUG][CF] ⌛ CloudFront 캐시 무효화 진행 중..."
@@ -57,3 +61,19 @@ jobs:
             --distribution-id ${{ secrets.AWS_STORYBOOK_CLOUDFRONT_DISTRIBUTION_PREVIEW_ID }} \
             --paths '/*'
           echo "[DEBUG][CF] ✅ CloudFront 캐시 무효화 완료"
+
+      # 5) Preview Info 출력
+      - name: Print Preview Info
+        run: |
+          RED="\033[1;31m"
+          GREEN="\033[1;32m"
+          BLUE="\033[1;34m"
+          CYAN="\033[1;36m"
+          RESET="\033[0m"
+
+          echo ""
+          echo -e "${BLUE}====================== 🚀 Preview Info ======================${RESET}"
+          printf "${CYAN}%-15s${RESET} | %s\n" "BRANCH"      "${{ steps.deploy.outputs.branch }}"
+          printf "${CYAN}%-15s${RESET} | %s\n" "Preview URL" "${{ steps.deploy.outputs.preview_url }}"
+          echo -e "${BLUE}=============================================================${RESET}"
+          echo ""
