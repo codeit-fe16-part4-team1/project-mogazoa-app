@@ -6,6 +6,7 @@ on:
 
 jobs:
   cleanup:
+    if: ${{ !endsWith(github.event.pull_request.head.ref, '-story') }}
     runs-on: ubuntu-latest
     steps:
       - name: Setup SSH key
