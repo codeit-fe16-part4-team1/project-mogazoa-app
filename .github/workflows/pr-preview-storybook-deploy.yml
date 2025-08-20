@@ -43,6 +43,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Deploy to S3 (Preview)
+        id: deploy
         run: |
           BRANCH_NAME="${GITHUB_REF_NAME}"
           echo "[DEBUG][S3] ⌛ ${BRANCH_NAME} 브랜치 S3 배포 진행 중..."
