@@ -1,0 +1,80 @@
+name: Storybook Preview Deploy
+
+on:
+  push:
+    branches:
+      - '*-story'
+
+jobs:
+  preview-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js version 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+
+      - name: Install dependencies
+        run: |
+          echo "[DEBUG][NPM] ⌛ dependencies 설치 진행 중..."
+          npm ci
+          echo "[DEBUG][NPM] ✅ dependencies 설치 완료"
+
+      - name: Build Test
+        run: |
+          echo "[DEBUG][BUILD] ⌛ 프로젝트 빌드 진행 중..."
+          npm run build
+          echo "[DEBUG][BUILD] ✅ 프로젝트 빌드 완료"
+
+      - name: Build Storybook
+        run: |
+          echo "[DEBUG][STORYBOOK] ⌛ Storybook 빌드 진행 중..."
+          npm run build-storybook
+          echo "[DEBUG][STORYBOOK] ✅ Storybook 빌드 완료"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Deploy to S3 (Preview)
+        id: deploy
+        run: |
+          BRANCH_NAME="${GITHUB_REF_NAME}"
+          echo "[DEBUG][S3] ⌛ ${BRANCH_NAME} 브랜치 S3 배포 진행 중..."
+          aws s3 sync ./${{ secrets.STORYBOOK_S3_BUILD_DIRECTORY }} \
+            s3://${{ secrets.AWS_STORYBOOK_S3_BUCKET_NAME }}/$BRANCH_NAME --delete
+          echo "[DEBUG][S3] ✅ ${BRANCH_NAME} 브랜치 S3 배포 완료"
+
+          # GitHub Actions output으로 전달
+          echo "branch=${BRANCH_NAME}" >> $GITHUB_OUTPUT
+          echo "preview_url=https://${BRANCH_NAME}.preview.storybook.${{ vars.DOMAIN }}" >> $GITHUB_OUTPUT
+
+      - name: CloudFront Invalidate Cache
+        run: |
+          echo "[DEBUG][CF] ⌛ CloudFront 캐시 무효화 진행 중..."
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.AWS_STORYBOOK_CLOUDFRONT_DISTRIBUTION_PREVIEW_ID }} \
+            --paths '/*'
+          echo "[DEBUG][CF] ✅ CloudFront 캐시 무효화 완료"
+
+      # 5) Preview Info 출력
+      - name: Print Preview Info
+        run: |
+          RED="\033[1;31m"
+          GREEN="\033[1;32m"
+          BLUE="\033[1;34m"
+          CYAN="\033[1;36m"
+          RESET="\033[0m"
+
+          echo ""
+          echo -e "${BLUE}====================== 🚀 Preview Info ======================${RESET}"
+          printf "${CYAN}%-15s${RESET} | %s\n" "BRANCH"      "${{ steps.deploy.outputs.branch }}"
+          printf "${CYAN}%-15s${RESET} | %s\n" "Preview URL" "${{ steps.deploy.outputs.preview_url }}"
+          echo -e "${BLUE}=============================================================${RESET}"
+          echo ""

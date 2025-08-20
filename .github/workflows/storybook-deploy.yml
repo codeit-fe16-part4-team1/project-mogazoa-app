@@ -1,15 +1,21 @@
 name: Storybook deploy
 
 on:
-  push:
+  pull_request:
     branches: [main]
+    types: [closed]
 
 jobs:
-  continuous-deployment:
+  continuous-storybook-deployment:
+    if: github.event.pull_request.merged == true && endsWith(github.event.pull_request.head.ref, '-story')
     runs-on: ubuntu-latest
     steps:
       - name: Git Checkout
-        uses: actions/checkout@v4
+        run: |
+          echo "[DEBUG][GIT] ⌛ Git checkout 진행 중..."
+          git clone $GITHUB_SERVER_URL/$GITHUB_REPOSITORY .
+          git checkout $GITHUB_SHA
+          echo "[DEBUG][GIT] ✅ Git checkout 완료"
 
       - name: Use Node.js version 20.x
         uses: actions/setup-node@v4
@@ -17,11 +23,16 @@ jobs:
           node-version: 20.x
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          echo "[DEBUG][NPM] ⌛ dependencies 설치 진행 중..."
+          npm ci
+          echo "[DEBUG][NPM] ✅ dependencies 설치 완료"
 
       - name: Build Storybook
         run: |
+          echo "[DEBUG][STORYBOOK] ⌛ Storybook 빌드 진행 중..."
           npm run build-storybook
+          echo "[DEBUG][STORYBOOK] ✅ Storybook 빌드 완료"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -31,7 +42,15 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Deploy to S3
-        run: aws s3 sync ./${{ secrets.STORYBOOK_S3_BUILD_DIRECTORY }} s3://${{ secrets.AWS_STORYBOOK_S3_BUCKET_NAME }}/main --delete
+        run: |
+          echo "[DEBUG][S3] ⌛ main 브랜치 S3 배포 진행 중..."
+          aws s3 sync ./${{ secrets.STORYBOOK_S3_BUILD_DIRECTORY }} s3://${{ secrets.AWS_STORYBOOK_S3_BUCKET_NAME }}/main --delete
+          echo "[DEBUG][S3] ✅ main 브랜치 S3 배포 완료"
 
       - name: CloudFront Invalidate Cache
-        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_STORYBOOK_CLOUDFRONT_DISTRIBUTION_ID }} --paths '/*'
+        run: |
+          echo "[DEBUG][CF] ⌛ CloudFront 캐시 무효화 진행 중..."
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.AWS_STORYBOOK_CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths '/*'
+          echo "[DEBUG][CF] ✅ CloudFront 캐시 무효화 완료"
