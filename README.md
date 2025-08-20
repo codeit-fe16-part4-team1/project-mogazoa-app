@@ -27,20 +27,20 @@
 ## 🚀 배포 사이트
 
 - [🧷 [배포 사이트]](https://new-project-final.link/)
-
+- [🔗 [Storybook]](https://storybook.new-project-final.link/)
 ---
 
 ### 💌 주제
 
 **[WIKIED]** - 지인들의 위키를 직접 작성하고 공유하는 플랫폼
 
-- 🧷 [가이드 문서]
+- [🧷 [가이드 문서]](https://codeit.notion.site/_-Mogazoa-631abba6780048859d73d74eabf0070f)
 
 ---
 
 ### 📝 프로젝트 수행 계획서
 
-- 🧷 [수행 계획서]
+- [🧷 [수행 계획서]](https://www.notion.so/4-1-23153353e9c18097abeeebffdbe9bb86?source=copy_link)
 
 ---
 
@@ -50,18 +50,18 @@
 
 ### 🔍 요구사항 분석
 
-- 🧷 [User Flow]
+- [🧷 [User Flow]](https://www.figma.com/board/UtX2n9LKDB12vmHnB0WRfl/Mogazoa-userFlow?node-id=0-1&p=f&t=iebj0N5Mn6z4PM6e-0)
 
 ---
 
 ### 🎨 디자인 시안
 
-- 🧷 [Figma - 원본]
+- [🧷 [Figma - 원본]](https://www.figma.com/design/mo37KmYpd3ZsJ6Ojay2u83/-CCC-Mogazoa?node-id=0-1&p=f&t=5YhaoW7Y9WMKQtCz-0)
 
 ---
 
 ### 🔌 API 정보
 
-- 🧷 [SWAGGER 문서]
+- [🧷 [SWAGGER 문서]](https://mogazoa-api.vercel.app/docs/#/)
 
 ---
