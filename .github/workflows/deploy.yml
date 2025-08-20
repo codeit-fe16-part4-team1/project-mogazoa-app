@@ -8,16 +8,6 @@ jobs:
   continuous-deployment:
     runs-on: ubuntu-latest
     steps:
-      # (선택) 저장소 체크아웃은 로컬 테스트/린트할 때만 필요
-      # - name: Git Checkout
-      #   uses: actions/checkout@v4
-
-      # (선택) 로컬에서 테스트/빌드를 돌릴 거면 Node 세팅
-      # - name: Use Node.js 18.x
-      #   uses: actions/setup-node@v4
-      #   with:
-      #     node-version: 18.x
-
       - name: Deploy on EC2 (git pull → build → restart)
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -26,43 +16,44 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             set -e
-            echo "[DEBUG] ✅ SSH 연결 성공"
+            echo "[DEBUG][SSH] ✅ SSH 연결 성공"
 
             [ -s "$HOME/.nvm/nvm.sh" ] && . "$HOME/.nvm/nvm.sh"
-            echo "[DEBUG] ✅ NVM 로드 완료"
+            echo "[DEBUG][NVM] ✅ NVM 로드 완료"
 
             # (EC2에 1회 적용) 스왑 2GB
             if ! sudo swapon --show | grep -q '/swapfile'; then
-              echo "[DEBUG] 스왑 생성 중..."
+              echo "[DEBUG][SWAP] ⌛ 스왑 생성 진행 중..."
               sudo fallocate -l 2G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=2048
               sudo chmod 600 /swapfile
               sudo mkswap /swapfile
               sudo swapon /swapfile
               echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
-              echo "[DEBUG] ✅ 스왑 생성 완료"
+              echo "[DEBUG][SWAP] ✅ 스왑 생성 완료"
             else
-              echo "[DEBUG] ✅ 스왑 이미 존재함"
+              echo "[DEBUG][SWAP] ✅ 스왑 이미 존재함"
             fi
 
             cd "${{ secrets.EC2_APP_DIR }}"
-            echo "[DEBUG] 현재 디렉토리: $(pwd)"
+            echo "[DEBUG][DIR] ✅ 현재 디렉토리: $(pwd)"
 
             # 최신 코드 가져오기
-            echo "[DEBUG] Git fetch & reset..."
+            echo "[DEBUG][GIT] ⌛ Git fetch & reset 진행 중..."
             git fetch --all
             git reset --hard origin/main
-            echo "[DEBUG] ✅ Git 최신화 완료"
+            echo "[DEBUG][GIT] ✅ Git 최신화 완료"
 
             # 빌드
-            echo "[DEBUG] npm 설치 시작..."
+            echo "[DEBUG][NPM] ⌛ 의존성 설치 진행 중..."
             HUSKY=0 npm ci
-            echo "[DEBUG] ✅ 의존성 설치 완료"
-            echo "[DEBUG] ✅ npm 빌드 시작..."
+            echo "[DEBUG][NPM] ✅ 의존성 설치 완료"
+
+            echo "[DEBUG][BUILD] ⌛ 빌드 진행 중..."
             NODE_ENV=production npm run build
-            echo "[DEBUG] ✅ 빌드 완료"
+            echo "[DEBUG][BUILD] ✅ 빌드 완료"
 
             # 빌드 산출물만 남기고 소스코드/불필요한 파일 삭제
-            echo "[DEBUG] 불필요 파일 삭제..."
+            echo "[DEBUG][CLEANUP] ⌛ 불필요 파일 삭제 진행 중..."
             find . -mindepth 1 -maxdepth 1 \
               ! -name '.git' \
               ! -name '.next' \
@@ -70,15 +61,15 @@ jobs:
               ! -name 'package.json' \
               ! -name 'package-lock.json' \
               -exec rm -rf {} +
-            echo "[DEBUG] ✅ 불필요 파일 삭제완료"
+            echo "[DEBUG][CLEANUP] ✅ 불필요 파일 삭제 완료"
 
             # PM2 재시작
-            echo "[DEBUG] PM2 재시작..."
+            echo "[DEBUG][PM2] ⌛ PM2 재시작 진행 중..."
             pm2 describe project-final-app > /dev/null \
               && pm2 reload project-final-app \
               || pm2 start "npm run start" --name "project-final-app"
             pm2 save
-            echo "[DEBUG] ✅ PM2 재시작 완료"
+            echo "[DEBUG][PM2] ✅ PM2 재시작 완료"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -89,6 +80,6 @@ jobs:
 
       - name: CloudFront Invalidate Cache
         run: |
-          echo "[DEBUG] CloudFront 캐시 무효화 시작..."
+          echo "[DEBUG][CF] ⌛ CloudFront 캐시 무효화 진행 중..."
           aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
-          echo "[DEBUG] ✅ CloudFront 캐시 무효화 완료"
+          echo "[DEBUG][CF] ✅ CloudFront 캐시 무효화 완료"
