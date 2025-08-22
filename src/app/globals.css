@@ -1,8 +1,37 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  --white: #ffffff;
+  --black: #000000;
+
+  /* Primary (Orange) */
+  --primary-orange-100: #fffcf2;
+  --primary-orange-200: #ffe59e;
+  --primary-orange-300: #ffcb7b;
+  --primary-orange-400: #ffb84d;
+  --primary-orange-500: #ff9a00;
+  --primary-orange-600: #fd7e35;
+  --primary-orange-700: #e56611;
+  --primary-orange-800: #bf550e;
+  --primary-orange-900: #873c0a;
+
+  /* Gray */
+  --gray-100: #f9fafb;
+  --gray-200: #eff0f3;
+  --gray-300: #dbdce1;
+  --gray-400: #c4c6cc;
+  --gray-500: #a8abb3;
+  --gray-600: #8c8f98;
+  --gray-700: #6e727c;
+  --gray-800: #4b4f58;
+  --gray-900: #2f323a;
+
+  --state-error: #ff0000;
 }
 
 @theme inline {
