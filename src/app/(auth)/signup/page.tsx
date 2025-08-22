@@ -131,7 +131,7 @@ const SignupPage = () => {
         disabled={isSubmitting || !isValid}
         className='w-full p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-400'
       >
-        {isSubmitting ? '로그인 중...' : '로그인'}
+        {isSubmitting ? '회원가입 중...' : '회원가입'}
       </button>
     </form>
   );
