@@ -1,6 +1,23 @@
+@import url(//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css);
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Cafe24 Supermagic 폰트 로드 */
+@font-face {
+  font-family: 'Cafe24 Supermagic';
+  src: url('/fonts/Cafe24Supermagic-Regular-v1.0.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Cafe24 Supermagic';
+  src: url('/fonts/Cafe24Supermagic-Bold-v1.0.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
+}
 
 :root {
   --background: #ffffff;

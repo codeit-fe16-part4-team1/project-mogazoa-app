@@ -36,6 +36,30 @@ const config: Config = {
         },
         'state-error': '#ff0000',
       },
+      fontFamily: {
+        'cafe24-supermagic': ['Cafe24 Supermagic', 'sans-serif'],
+        'spoqa-han-sans-neo': ['Spoqa Han Sans Neo', 'sans-serif'],
+      },
+
+      fontSize: {
+        //Header
+        h1: ['32px', { lineHeight: 'auto' }],
+        h2: ['28px', { lineHeight: 'auto' }],
+        h3: ['24px', { lineHeight: 'auto' }],
+        h4: ['20px', { lineHeight: 'auto' }],
+
+        // Body
+        'sub-headline': ['18px', { lineHeight: 'auto' }],
+        body1: ['16px', { lineHeight: 'auto' }],
+        body2: ['14px', { lineHeight: 'auto' }],
+        caption: ['12px', { lineHeight: 'auto' }],
+      },
+      fontWeight: {
+        bold: 'bold',
+        medium: 500,
+        regular: 'normal',
+        light: 300,
+      },
     },
   },
   plugins: [],
