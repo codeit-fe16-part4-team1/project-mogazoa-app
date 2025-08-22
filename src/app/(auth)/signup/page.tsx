@@ -23,15 +23,17 @@ const signupSchema = z
     password: z
       .string()
       .min(1, '비밀번호는 필수 입력입니다.') //빈칸 에러메시지
-      .min(8, '비밀번호는 최소 8자 이상입니다.'), //비밀번호 형식 검사
+      .min(8, '비밀번호는 최소 8자 이상입니다.') //비밀번호 형식 검사
+      .regex(/^[a-zA-Z0-9!@#$%^&*]+$/, '비밀번호는 숫자, 영문, 특수문자로만 가능합니다.'),
     passwordConfirmation: z
       .string()
       .min(1, '비밀번호는 필수 입력입니다.') //빈칸 에러메시지
-      .min(8, '비밀번호는 최소 8자 이상입니다.'), //비밀번호 확인 형식 검사
+      .min(8, '비밀번호는 최소 8자 이상입니다.') //비밀번호 확인 형식 검사
+      .regex(/^[a-zA-Z0-9!@#$%^&*]+$/, '비밀번호는 숫자, 영문, 특수문자로만 가능합니다.'),
   })
   .refine((data) => data.password === data.passwordConfirmation, {
     message: '비밀번호가 일치하지 않습니다.',
-    path: ['passwordConfirm'],
+    path: ['passwordConfirmation'],
   });
 
 type SignupFormInputs = z.infer<typeof signupSchema>;
