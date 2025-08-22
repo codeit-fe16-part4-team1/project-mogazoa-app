@@ -94,6 +94,14 @@ jobs:
           echo "[DEBUG][EC2] ✅ 소스코드 압축 해제 완료"
 
           cd "${APP_DIR}"
+
+          # 환경 변수 파일 생성
+          echo "[DEBUG][ENV] ⌛ .env 파일 생성 진행 중..."
+          cat > .env <<EOF
+          NEXT_PUBLIC_API_BASE_URL=${{ vars.NEXT_PUBLIC_API_BASE_URL }}
+          EOF
+          echo "[DEBUG][ENV] ✅ .env 파일 생성 완료"
+
           echo "[DEBUG][EC2] ⌛ npm 의존성 설치 진행 중..."
           if [ -f package-lock.json ]; then
             npm ci
