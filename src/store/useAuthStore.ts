@@ -6,17 +6,7 @@ import { signUpAPI, SignUpPayload } from '@/api/auth/signUpAPI';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import Cookies from 'js-cookie';
-
-export interface User {
-  id: number;
-  email: string;
-  description: string;
-  image: string;
-  teamId: string;
-  nickname: string;
-  updatedAt: string;
-  createdAt: string;
-}
+import { User } from '@/types/api';
 
 interface AuthStore {
   isAuthenticated: boolean;
