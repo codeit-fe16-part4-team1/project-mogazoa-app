@@ -1,4 +1,4 @@
-name: Sync all issues estimate
+name: Bulk Update Point Estimates to Project
 
 # 수동 실행
 on:
@@ -78,13 +78,17 @@ jobs:
               fi
             done <<< "$issues_data"
             
-            # 다음 페이지 체크
-            has_next=$(echo "$response" | jq -r '.data.repository.issues.pageInfo.hasNextPage // false')
-            cursor=$(echo "$response" | jq -r '.data.repository.issues.pageInfo.endCursor // ""')
+            # 다음 페이지 체크 (에러 방지)
+            has_next=$(echo "$response" | jq -r '.data.repository.issues.pageInfo.hasNextPage // false' 2>/dev/null)
+            cursor=$(echo "$response" | jq -r '.data.repository.issues.pageInfo.endCursor // ""' 2>/dev/null)
             
-            if [ "$has_next" = "false" ] || [ "$cursor" = "null" ] || [ -z "$cursor" ]; then
+            if [ "$has_next" != "true" ] || [ "$cursor" = "null" ] || [ -z "$cursor" ]; then
               break
             fi
+          else
+            echo "Failed to get valid response, breaking pagination loop"
+            break
+          fi
           done
 
           echo "Found issues with point labels in $ORG_NAME/$REPO_NAME:"
