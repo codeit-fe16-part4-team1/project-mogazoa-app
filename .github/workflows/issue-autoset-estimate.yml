@@ -1,0 +1,31 @@
+name: Auto set estimate from label
+
+on:
+  issues:
+    types: [opened, labeled]
+
+jobs:
+  set-estimate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up GitHub CLI
+        uses: cli/gh-actions@v2
+        with:
+          version: latest
+
+      - name: Authenticate GitHub CLI
+        run: gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Sync estimate when labeled
+        run: |
+          LABEL="${{ github.event.label.name }}"
+          ISSUE_NUMBER=${{ github.event.issue.number }}
+
+          if [[ "$LABEL" =~ ^point:[[:space:]]*([0-9]+)$ ]]; then
+            ESTIMATE="${BASH_REMATCH[1]}"
+            echo "Setting Estimate=$ESTIMATE for issue #$ISSUE_NUMBER"
+            gh project item-edit 2 \
+              --owner codeit-fe16-part4-team1 \
+              --field "Estimate=$ESTIMATE" \
+              --issue "$ISSUE_NUMBER"
+          fi
