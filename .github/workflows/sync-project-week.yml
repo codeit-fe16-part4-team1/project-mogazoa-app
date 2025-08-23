@@ -1,0 +1,313 @@
+name: Auto Update Week Field on Start Date Change
+
+# GitHub Project의 Start Date 필드가 변경되면 자동으로 Week 필드 업데이트
+on:
+  schedule:
+    # 매일 자정에 실행 (필요시 더 자주 실행하도록 변경 가능)
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    inputs:
+      force_update:
+        description: 'Force update all items'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+
+jobs:
+  update-week-fields:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get all project items with start dates
+        id: get-items
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROJECT_TOKEN }}
+          PROJECT_ID: ${{ vars.PROJECT_ID }}
+        run: |
+          echo "Fetching project items with start dates..."
+
+          # 프로젝트의 모든 아이템과 필드 값들을 조회
+          query='query($projectId: ID!) {
+            node(id: $projectId) {
+              ... on ProjectV2 {
+                title
+                items(first: 100) {
+                  nodes {
+                    id
+                    fieldValues(first: 20) {
+                      nodes {
+                        ... on ProjectV2ItemFieldDateValue {
+                          field {
+                            ... on ProjectV2Field {
+                              id
+                              name
+                            }
+                          }
+                          date
+                        }
+                        ... on ProjectV2ItemFieldSingleSelectValue {
+                          field {
+                            ... on ProjectV2SingleSelectField {
+                              id
+                              name
+                            }
+                          }
+                          optionId
+                          name
+                        }
+                      }
+                    }
+                    content {
+                      ... on Issue {
+                        id
+                        number
+                        title
+                        repository {
+                          name
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }'
+
+          response=$(gh api graphql -f query="$query" -f projectId="$PROJECT_ID")
+
+          # JSON 파일로 저장
+          echo "$response" > project_items.json
+
+          # 아이템 개수 확인
+          item_count=$(echo "$response" | jq -r '.data.node.items.nodes | length')
+          echo "Found $item_count project items"
+          echo "item_count=$item_count" >> $GITHUB_OUTPUT
+
+      - name: Get week field iterations
+        id: get-week-iterations
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROJECT_TOKEN }}
+          WEEK_FIELD_ID: ${{ vars.WEEK_FIELD_ID }}
+        run: |
+          echo "Getting week field iterations..."
+
+          # Week 필드의 iteration 정보 조회
+          query='query($fieldId: ID!) {
+            node(id: $fieldId) {
+              ... on ProjectV2IterationField {
+                id
+                name
+                configuration {
+                  iterations {
+                    id
+                    title
+                    startDate
+                  }
+                }
+              }
+            }
+          }'
+
+          response=$(gh api graphql -f query="$query" -f fieldId="$WEEK_FIELD_ID")
+          iterations=$(echo "$response" | jq -r '.data.node.configuration.iterations')
+
+          echo "Week iterations: $iterations"
+          echo "$iterations" > week_iterations.json
+
+      - name: Update week fields based on start dates
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROJECT_TOKEN }}
+          PROJECT_ID: ${{ vars.PROJECT_ID }}
+          START_DATE_FIELD_ID: ${{ vars.START_DATE_FIELD_ID }}
+          WEEK_FIELD_ID: ${{ vars.WEEK_FIELD_ID }}
+        run: |
+          echo "Processing items to update week fields..."
+
+          # Start date에 맞는 week 찾기 (week 옵션 이름에서 날짜 파싱)
+          get_week_for_date() {
+            local start_date=$1
+            local week_options=$(cat week_options.json)
+            
+            # start_date를 Unix timestamp로 변환  
+            start_timestamp=$(date -d "$start_date" +%s 2>/dev/null)
+            if [ $? -ne 0 ]; then
+              echo ""
+              return
+            fi
+            
+            # 각 week 옵션에서 날짜 범위를 동적으로 파싱
+            echo "$week_options" | jq -r '.[] | "\(.name)"' | while read -r week_name; do
+              if [ -n "$week_name" ]; then
+                # 다양한 날짜 형식 지원: "Aug 23 - Aug 29", "week 1" 등
+                
+                # 날짜 범위가 있는 경우 파싱 시도 (예: "Aug 23 - Aug 29")
+                if echo "$week_name" | grep -qE "[A-Za-z]+ [0-9]+ - [A-Za-z]+ [0-9]+"; then
+                  # 시작일과 종료일 추출
+                  start_part=$(echo "$week_name" | sed -E 's/.*([A-Za-z]+ [0-9]+) - ([A-Za-z]+ [0-9]+).*/\1/')
+                  end_part=$(echo "$week_name" | sed -E 's/.*([A-Za-z]+ [0-9]+) - ([A-Za-z]+ [0-9]+).*/\2/')
+                  
+                  # 2025년 가정하여 완전한 날짜로 변환
+                  week_start=$(date -d "2025 $start_part" +%s 2>/dev/null)
+                  week_end=$(date -d "2025 $end_part 23:59:59" +%s 2>/dev/null)
+                  
+                  if [ $? -eq 0 ] && [ "$week_start" -gt 0 ] && [ "$week_end" -gt 0 ]; then
+                    if [ "$start_timestamp" -ge "$week_start" ] && [ "$start_timestamp" -le "$week_end" ]; then
+                      echo "$week_name"
+                      return
+                    fi
+                  fi
+                fi
+                
+                # 만약 날짜 파싱이 실패하면 첫 번째 옵션을 기본값으로 (fallback)
+                # 이 부분은 제거하거나 로그만 남길 수 있음
+              fi
+            done
+            
+            # 매칭되는 week를 찾지 못한 경우
+            echo ""
+          }
+
+          processed=0
+          updated=0
+          errors=0
+
+          # 각 프로젝트 아이템 처리
+          while IFS= read -r item; do
+            if [ -n "$item" ] && [ "$item" != "null" ]; then
+              item_id=$(echo "$item" | jq -r '.id')
+              issue_number=$(echo "$item" | jq -r '.content.number // "N/A"')
+              issue_title=$(echo "$item" | jq -r '.content.title // "N/A"')
+              
+              echo "Processing item: #$issue_number - $issue_title"
+              
+              # Start Date 값 찾기
+              start_date=$(echo "$item" | jq -r --arg field_id "$START_DATE_FIELD_ID" '
+                .fieldValues.nodes[] | 
+                select(.field.id == $field_id and .date != null) | 
+                .date
+              ' 2>/dev/null)
+              
+              # 현재 Week 값 찾기
+              current_week_option_id=$(echo "$item" | jq -r --arg field_id "$WEEK_FIELD_ID" '
+                .fieldValues.nodes[] | 
+                select(.field.id == $field_id and .optionId != null) | 
+                .optionId
+              ' 2>/dev/null)
+              
+              current_week_name=$(echo "$item" | jq -r --arg field_id "$WEEK_FIELD_ID" '
+                .fieldValues.nodes[] | 
+                select(.field.id == $field_id and .name != null) | 
+                .name
+              ' 2>/dev/null)
+              
+              if [ -n "$start_date" ] && [ "$start_date" != "null" ]; then
+                echo "  Start date: $start_date"
+                echo "  Current week: $current_week_name"
+                
+                # Start date에 맞는 week 결정
+                target_week=$(get_week_for_date "$start_date")
+                
+                if [ -n "$target_week" ]; then
+                  echo "  Target week: $target_week"
+                  
+                  # 현재 week와 다른 경우에만 업데이트
+                  if [ "$current_week_name" != "$target_week" ]; then
+                    # week 옵션 ID 찾기
+                    week_option_id=$(jq -r --arg week_name "$target_week" '.[] | select(.name == $week_name) | .id' week_options.json)
+                    
+                    if [ -n "$week_option_id" ] && [ "$week_option_id" != "null" ]; then
+                      echo "  Updating week to: $target_week (ID: $week_option_id)"
+                      
+                      # Week 필드 업데이트
+                      update_response=$(gh api graphql \
+                        -f query='mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
+                          updateProjectV2ItemFieldValue(input: {
+                            projectId: $projectId,
+                            itemId: $itemId,
+                            fieldId: $fieldId,
+                            value: {
+                              singleSelectOptionId: $optionId
+                            }
+                          }) {
+                            projectV2Item {
+                              id
+                            }
+                          }
+                        }' \
+                        -f projectId="$PROJECT_ID" \
+                        -f itemId="$item_id" \
+                        -f fieldId="$WEEK_FIELD_ID" \
+                        -f optionId="$week_option_id")
+                      
+                      if echo "$update_response" | jq -e '.data.updateProjectV2ItemFieldValue.projectV2Item.id' > /dev/null; then
+                        echo "  ✓ Successfully updated week to $target_week"
+                        ((updated++))
+                      else
+                        echo "  ✗ Failed to update week field"
+                        echo "  Response: $update_response"
+                        ((errors++))
+                      fi
+                    else
+                      echo "  ✗ Week option ID not found for: $target_week"
+                      ((errors++))
+                    fi
+                  else
+                    echo "  ✓ Week already correct, no update needed"
+                  fi
+                else
+                  echo "  - Start date $start_date doesn't match any week range"
+                fi
+              else
+                echo "  - No start date set"
+                
+                # Start date가 없는데 week 필드에 값이 있으면 비우기
+                if [ -n "$current_week_name" ] && [ "$current_week_name" != "null" ]; then
+                  echo "  Clearing week field (no start date)"
+                  
+                  # Week 필드 비우기
+                  clear_response=$(gh api graphql \
+                    -f query='mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!) {
+                      clearProjectV2ItemFieldValue(input: {
+                        projectId: $projectId,
+                        itemId: $itemId,
+                        fieldId: $fieldId
+                      }) {
+                        projectV2Item {
+                          id
+                        }
+                      }
+                    }' \
+                    -f projectId="$PROJECT_ID" \
+                    -f itemId="$item_id" \
+                    -f fieldId="$WEEK_FIELD_ID")
+                  
+                  if echo "$clear_response" | jq -e '.data.clearProjectV2ItemFieldValue.projectV2Item.id' > /dev/null; then
+                    echo "  ✓ Successfully cleared week field"
+                    ((updated++))
+                  else
+                    echo "  ✗ Failed to clear week field"
+                    echo "  Response: $clear_response"
+                    ((errors++))
+                  fi
+                else
+                  echo "  ✓ Week field already empty, no action needed"
+                fi
+              fi
+              
+              ((processed++))
+              sleep 0.5
+            fi
+          done <<< "$(jq -c '.data.node.items.nodes[]' project_items.json)"
+
+          echo ""
+          echo "Update Summary:"
+          echo "  • Total processed: $processed"
+          echo "  • Week fields updated: $updated"
+          echo "  • Errors: $errors"
+
+      - name: Cleanup
+        run: |
+          rm -f project_items.json week_options.json
