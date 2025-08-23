@@ -128,6 +128,10 @@ jobs:
           added_to_project=0
           errors=0
 
+          # 전체 처리 결과를 catch 하기 위해 set 추가
+          set -e  # 에러 발생시 즉시 중단하지 않고 계속 진행
+          set +e  # 일단 에러 무시 모드로
+
           while IFS= read -r issue; do
             if [ -n "$issue" ] && [ "$issue" != "null" ]; then
               # JSON 파싱 에러 체크
@@ -218,9 +222,13 @@ jobs:
                 echo "  ✓ Already in project"
               fi
               
+              # 에러 발생 시에도 계속 진행하도록 설정
+              set +e
+              
               # Estimate 필드 업데이트 (NUMBER 필드용)
               echo "  Updating estimate to $point_value..."
               
+              echo "  DEBUG: Running GraphQL mutation..."
               update_response=$(gh api graphql \
                 -f query='mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $value: Float!) {
                   updateProjectV2ItemFieldValue(input: {
@@ -241,16 +249,25 @@ jobs:
                 -f fieldId="$ESTIMATE_FIELD_ID" \
                 -f value="$point_value" 2>&1)
               
+              mutation_exit_code=$?
+              echo "  DEBUG: GraphQL command exit code: $mutation_exit_code"
+              
               # API 에러 체크
               if echo "$update_response" | grep -q "error\|Error"; then
-                echo "  ✗ API error while updating estimate: $update_response"
+                echo "  ✗ API error while updating estimate:"
+                echo "  $update_response"
                 ((errors++))
               elif echo "$update_response" | jq -e '.data.updateProjectV2ItemFieldValue.projectV2Item.id' >/dev/null 2>&1; then
                 echo "  ✓ Updated estimate to $point_value"
                 ((updated++))
               else
-                echo "  ✗ Failed to update estimate (no valid response)"
-                echo "  Response: $update_response"
+                echo "  ✗ Failed to update estimate (unexpected response format)"
+                echo "  Full response: $update_response"
+                echo "  Debugging info:"
+                echo "    PROJECT_ID: $PROJECT_ID"
+                echo "    item_id: $item_id" 
+                echo "    ESTIMATE_FIELD_ID: $ESTIMATE_FIELD_ID"
+                echo "    point_value: $point_value"
                 ((errors++))
               fi
               
