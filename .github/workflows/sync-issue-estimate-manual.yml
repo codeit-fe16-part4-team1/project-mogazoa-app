@@ -1,7 +1,7 @@
 name: Sync all issues estimate
 
 on:
-  workflow_dispatch: # 수동 실행용
+  workflow_dispatch:
 
 jobs:
   sync:
@@ -14,8 +14,23 @@ jobs:
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
 
-      - name: Get all open issues and update Estimate
+      - name: Get project and field IDs
+        id: ids
         run: |
+          # 1) 프로젝트 ID 찾기
+          PROJECT_ID=$(gh project list --owner codeit-fe16-part4-team1 --format json | jq -r '.[] | select(.number==2) | .id')
+          echo "PROJECT_ID=$PROJECT_ID" >> $GITHUB_ENV
+
+          # 2) Estimate 필드 ID 찾기
+          FIELD_ID=$(gh project field-list "$PROJECT_ID" --format json | jq -r '.fields[] | select(.name=="Estimate") | .id')
+          echo "FIELD_ID=$FIELD_ID" >> $GITHUB_ENV
+
+          echo "Using PROJECT_ID=$PROJECT_ID"
+          echo "Using FIELD_ID=$FIELD_ID"
+
+      - name: Update issues
+        run: |
+          # 모든 이슈 가져오기
           gh issue list \
             --repo ${{ github.repository }} \
             --state all \
@@ -24,12 +39,21 @@ jobs:
           | while read issue; do
               number=$(echo "$issue" | jq -r .number)
               label=$(echo "$issue" | jq -r '.labels[].name | select(startswith("point:"))' | head -n1)
+
               if [[ -n "$label" ]]; then
                 estimate=$(echo "$label" | sed 's/point: *//')
-                echo "Updating issue #$number with Estimate=$estimate"
-                gh project item-edit 2 \
-                  --owner codeit-fe16-part4-team1 \
-                  --field "Estimate=$estimate" \
-                  --issue "$number"
+
+                # 아이템 ID 찾기
+                ITEM_ID=$(gh project item-list "$PROJECT_ID" --format json | jq -r ".items[] | select(.content.number==$number) | .id")
+
+                if [[ -n "$ITEM_ID" ]]; then
+                  echo "Updating issue #$number with Estimate=$estimate (ITEM_ID=$ITEM_ID)"
+                  gh project item-edit \
+                    --id "$ITEM_ID" \
+                    --field-id "$FIELD_ID" \
+                    --number "$estimate"
+                else
+                  echo "⚠️ Issue #$number not found in project, skipping."
+                fi
               fi
             done
