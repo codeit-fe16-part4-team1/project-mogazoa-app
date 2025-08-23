@@ -186,28 +186,28 @@ jobs:
                 echo "  ✓ Already in project"
               fi
               
-              # Estimate 필드 업데이트
+              # Estimate 필드 업데이트 (NUMBER 필드용)
               echo "  Updating estimate to $point_value..."
               
-              update_mutation='mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $value: ProjectV2FieldValue!) {
-                updateProjectV2ItemFieldValue(input: {
-                  projectId: $projectId,
-                  itemId: $itemId,
-                  fieldId: $fieldId,
-                  value: $value
-                }) {
-                  projectV2Item {
-                    id
-                  }
-                }
-              }'
-              
               update_response=$(gh api graphql \
-                -f query="$update_mutation" \
-                -f projectId="$PROJECT_ID" \
-                -f itemId="$item_id" \
-                -f fieldId="$ESTIMATE_FIELD_ID" \
-                -f value="{\"number\": $point_value}")
+                --field query="mutation(\$projectId: ID!, \$itemId: ID!, \$fieldId: ID!, \$value: Float!) {
+                  updateProjectV2ItemFieldValue(input: {
+                    projectId: \$projectId,
+                    itemId: \$itemId,
+                    fieldId: \$fieldId,
+                    value: {
+                      number: \$value
+                    }
+                  }) {
+                    projectV2Item {
+                      id
+                    }
+                  }
+                }" \
+                --field projectId="$PROJECT_ID" \
+                --field itemId="$item_id" \
+                --field fieldId="$ESTIMATE_FIELD_ID" \
+                --field value="$point_value")
               
               if echo "$update_response" | jq -e '.data.updateProjectV2ItemFieldValue.projectV2Item.id' > /dev/null; then
                 echo "  ✓ Updated estimate to $point_value"
