@@ -1,59 +1,226 @@
 name: Sync all issues estimate
 
+# 수동 실행
 on:
-  workflow_dispatch:
+  workflow_dispatch: # 수동 실행 버튼
+  # schedule:  # 매일 자정에 자동 실행 (필요시 활성화)
+  #   - cron: '0 0 * * *'
 
 jobs:
-  sync:
+  bulk-update-estimates:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: Authenticate GitHub CLI
+      - name: Get all open issues with point labels
+        id: get-issues
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROJECT_TOKEN }}
+          ORG_NAME: ${{ vars.ORG_NAME }}
+          REPO_NAME: ${{ vars.REPO_NAME }}
         run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+          echo "🔍 Fetching open issues from $ORG_NAME/$REPO_NAME"
 
-      - name: Get project and field IDs
-        id: ids
-        run: |
-          # 1) 프로젝트 ID 찾기
-          PROJECT_ID=$(gh project list --owner codeit-fe16-part4-team1 --format json | jq -r '.[] | select(.number==2) | .id')
-          echo "PROJECT_ID=$PROJECT_ID" >> $GITHUB_ENV
+          # 특정 레포지토리의 열린 이슈만 조회
+          query='query($org: String!, $repo: String!, $cursor: String) {
+            repository(owner: $org, name: $repo) {
+              issues(states: OPEN, first: 100, after: $cursor) {
+                pageInfo {
+                  hasNextPage
+                  endCursor
+                }
+                nodes {
+                  id
+                  number
+                  title
+                  url
+                  repository {
+                    name
+                    owner {
+                      login
+                    }
+                  }
+                  labels(first: 20) {
+                    nodes {
+                      name
+                    }
+                  }
+                }
+              }
+            }
+          }'
 
-          # 2) Estimate 필드 ID 찾기
-          FIELD_ID=$(gh project field-list "$PROJECT_ID" --format json | jq -r '.fields[] | select(.name=="Estimate") | .id')
-          echo "FIELD_ID=$FIELD_ID" >> $GITHUB_ENV
+          # 특정 레포지토리의 이슈 데이터 수집
+          all_issues='[]'
+          has_next=true
+          cursor=""
 
-          echo "Using PROJECT_ID=$PROJECT_ID"
-          echo "Using FIELD_ID=$FIELD_ID"
-
-      - name: Update issues
-        run: |
-          # 모든 이슈 가져오기
-          gh issue list \
-            --repo ${{ github.repository }} \
-            --state all \
-            --json number,labels \
-          | jq -c '.[]' \
-          | while read issue; do
-              number=$(echo "$issue" | jq -r .number)
-              label=$(echo "$issue" | jq -r '.labels[].name | select(startswith("point:"))' | head -n1)
-
-              if [[ -n "$label" ]]; then
-                estimate=$(echo "$label" | sed 's/point: *//')
-
-                # 아이템 ID 찾기
-                ITEM_ID=$(gh project item-list "$PROJECT_ID" --format json | jq -r ".items[] | select(.content.number==$number) | .id")
-
-                if [[ -n "$ITEM_ID" ]]; then
-                  echo "Updating issue #$number with Estimate=$estimate (ITEM_ID=$ITEM_ID)"
-                  gh project item-edit \
-                    --id "$ITEM_ID" \
-                    --field-id "$FIELD_ID" \
-                    --number "$estimate"
-                else
-                  echo "⚠️ Issue #$number not found in project, skipping."
+          while [ "$has_next" = "true" ]; do
+            if [ -z "$cursor" ]; then
+              response=$(gh api graphql -f query="$query" -f org="$ORG_NAME" -f repo="$REPO_NAME")
+            else
+              response=$(gh api graphql -f query="$query" -f org="$ORG_NAME" -f repo="$REPO_NAME" -f cursor="$cursor")
+            fi
+            
+            # 이슈 데이터 처리
+            issues_data=$(echo "$response" | jq -r '.data.repository.issues.nodes[]')
+            
+            while IFS= read -r issue; do
+              if [ -n "$issue" ] && [ "$issue" != "null" ]; then
+                # point: 라벨이 있는 이슈만 필터링
+                point_label=$(echo "$issue" | jq -r '.labels.nodes[] | select(.name | test("^point: [1-6]$")) | .name' | head -1)
+                
+                if [ -n "$point_label" ] && [ "$point_label" != "null" ]; then
+                  point_value=$(echo "$point_label" | cut -d' ' -f2)
+                  
+                  issue_with_point=$(echo "$issue" | jq --arg point "$point_value" '. + {pointValue: ($point | tonumber)}')
+                  all_issues=$(echo "$all_issues" | jq ". + [$issue_with_point]")
                 fi
               fi
-            done
+            done <<< "$issues_data"
+            
+            # 다음 페이지 체크
+            has_next=$(echo "$response" | jq -r '.data.repository.issues.pageInfo.hasNextPage // false')
+            cursor=$(echo "$response" | jq -r '.data.repository.issues.pageInfo.endCursor // ""')
+            
+            if [ "$has_next" = "false" ] || [ "$cursor" = "null" ] || [ -z "$cursor" ]; then
+              break
+            fi
+          done
+
+          echo "Found issues with point labels in $ORG_NAME/$REPO_NAME:"
+          echo "$all_issues" | jq -r '.[] | "• #\(.number) (\(.repository.name)) - \(.title) [point:\(.pointValue)]"'
+
+          issue_count=$(echo "$all_issues" | jq length)
+          echo "📊 Total issues with point labels: $issue_count"
+
+          # 결과를 파일로 저장 (다음 단계에서 사용)
+          echo "$all_issues" > issues_with_points.json
+          echo "issue_count=$issue_count" >> $GITHUB_OUTPUT
+
+      - name: Add issues to project and update estimates
+        if: steps.get-issues.outputs.issue_count > 0
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROJECT_TOKEN }}
+          PROJECT_ID: ${{ vars.PROJECT_ID }}
+          ESTIMATE_FIELD_ID: ${{ vars.ESTIMATE_FIELD_ID }}
+        run: |
+          echo "🚀 Processing ${{ steps.get-issues.outputs.issue_count }} issues..."
+
+          # 처리된 이슈 카운터
+          processed=0
+          updated=0
+          added_to_project=0
+          errors=0
+
+          # 각 이슈 처리
+          while IFS= read -r issue; do
+            if [ -n "$issue" ] && [ "$issue" != "null" ]; then
+              issue_id=$(echo "$issue" | jq -r '.id')
+              issue_number=$(echo "$issue" | jq -r '.number')
+              issue_title=$(echo "$issue" | jq -r '.title')
+              repo_name=$(echo "$issue" | jq -r '.repository.name')
+              point_value=$(echo "$issue" | jq -r '.pointValue')
+              
+              echo ""
+              echo "📝 Processing Issue #$issue_number ($repo_name): $issue_title"
+              echo "   Point value: $point_value"
+              
+              # 1. 이슈가 프로젝트에 있는지 확인
+              check_query='query($projectId: ID!, $issueId: ID!) {
+                node(id: $projectId) {
+                  ... on ProjectV2 {
+                    items(first: 100) {
+                      nodes {
+                        id
+                        content {
+                          ... on Issue {
+                            id
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }'
+              
+              check_response=$(gh api graphql -f query="$check_query" -f projectId="$PROJECT_ID" -f issueId="$issue_id")
+              item_id=$(echo "$check_response" | jq -r '.data.node.items.nodes[] | select(.content.id == env.issue_id) | .id')
+              
+              # 2. 프로젝트에 없으면 추가
+              if [ -z "$item_id" ] || [ "$item_id" = "null" ]; then
+                echo "   📌 Adding to project..."
+                
+                add_mutation='mutation($projectId: ID!, $contentId: ID!) {
+                  addProjectV2ItemById(input: {projectId: $projectId, contentId: $contentId}) {
+                    item {
+                      id
+                    }
+                  }
+                }'
+                
+                add_response=$(gh api graphql -f query="$add_mutation" -f projectId="$PROJECT_ID" -f contentId="$issue_id")
+                item_id=$(echo "$add_response" | jq -r '.data.addProjectV2ItemById.item.id')
+                
+                if [ -n "$item_id" ] && [ "$item_id" != "null" ]; then
+                  echo "   ✅ Added to project with item ID: $item_id"
+                  ((added_to_project++))
+                else
+                  echo "   ❌ Failed to add to project"
+                  ((errors++))
+                  ((processed++))
+                  continue
+                fi
+              else
+                echo "   ✅ Already in project with item ID: $item_id"
+              fi
+              
+              # 3. Estimate 필드 업데이트
+              echo "   🔄 Updating estimate to $point_value..."
+              
+              update_mutation='mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $value: ProjectV2FieldValue!) {
+                updateProjectV2ItemFieldValue(input: {
+                  projectId: $projectId,
+                  itemId: $itemId,
+                  fieldId: $fieldId,
+                  value: $value
+                }) {
+                  projectV2Item {
+                    id
+                  }
+                }
+              }'
+              
+              update_response=$(gh api graphql \
+                -f query="$update_mutation" \
+                -f projectId="$PROJECT_ID" \
+                -f itemId="$item_id" \
+                -f fieldId="$ESTIMATE_FIELD_ID" \
+                -f value="{\"number\": $point_value}")
+              
+              if echo "$update_response" | jq -e '.data.updateProjectV2ItemFieldValue.projectV2Item.id' > /dev/null; then
+                echo "   ✅ Updated estimate to $point_value"
+                ((updated++))
+              else
+                echo "   ❌ Failed to update estimate"
+                echo "   Response: $update_response"
+                ((errors++))
+              fi
+              
+              ((processed++))
+              
+              # API 레이트 리밋 방지를 위한 약간의 딜레이
+              sleep 0.5
+            fi
+          done <<< "$(jq -c '.[]' issues_with_points.json)"
+
+          echo ""
+          echo "🎉 Bulk update completed!"
+          echo "📊 Summary:"
+          echo "   • Total processed: $processed"
+          echo "   • Added to project: $added_to_project"
+          echo "   • Estimates updated: $updated"
+          echo "   • Errors: $errors"
+
+      - name: Cleanup
+        run: |
+          rm -f issues_with_points.json
