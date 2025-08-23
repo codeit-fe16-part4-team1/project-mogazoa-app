@@ -10,13 +10,9 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Set up GitHub CLI
-        uses: cli/gh-actions@v2
-        with:
-          version: latest
-
       - name: Authenticate GitHub CLI
-        run: gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
 
       - name: Get all open issues and update Estimate
         run: |

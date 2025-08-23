@@ -8,24 +8,25 @@ jobs:
   set-estimate:
     runs-on: ubuntu-latest
     steps:
-      - name: Set up GitHub CLI
-        uses: cli/gh-actions@v2
-        with:
-          version: latest
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
       - name: Authenticate GitHub CLI
-        run: gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
 
       - name: Sync estimate when labeled
         run: |
           LABEL="${{ github.event.label.name }}"
           ISSUE_NUMBER=${{ github.event.issue.number }}
 
-          if [[ "$LABEL" =~ ^point:[[:space:]]*([0-9]+)$ ]]; then
+          if [[ "${LABEL,,}" =~ ^point:[[:space:]]*([0-9]+)$ ]]; then
             ESTIMATE="${BASH_REMATCH[1]}"
             echo "Setting Estimate=$ESTIMATE for issue #$ISSUE_NUMBER"
             gh project item-edit 2 \
               --owner codeit-fe16-part4-team1 \
               --field "Estimate=$ESTIMATE" \
               --issue "$ISSUE_NUMBER"
+          else
+            echo "No point: label found, skipping."
           fi
