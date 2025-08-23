@@ -1,11 +1,7 @@
-import type { Config } from 'tailwindcss';
+import { type Config } from 'tailwindcss';
 
 const config: Config = {
-  content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
-  ],
+  content: ['./src/**/*.{js,ts,jsx,tsx}', './styles//*.{css,scss}'],
   theme: {
     extend: {
       colors: {
@@ -36,9 +32,10 @@ const config: Config = {
         },
         'state-error': '#ff0000',
       },
+
       fontFamily: {
+        sans: ['Spoqa Han Sans Neo', 'sans-serif'],
         'cafe24-supermagic': ['Cafe24 Supermagic', 'sans-serif'],
-        'spoqa-han-sans-neo': ['Spoqa Han Sans Neo', 'sans-serif'],
       },
 
       fontSize: {
@@ -54,6 +51,7 @@ const config: Config = {
         body2: ['14px', { lineHeight: 'auto' }],
         caption: ['12px', { lineHeight: 'auto' }],
       },
+
       fontWeight: {
         bold: 'bold',
         medium: 500,
