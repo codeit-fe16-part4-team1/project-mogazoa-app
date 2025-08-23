@@ -40,23 +40,47 @@ const config: Config = {
 
       fontSize: {
         //Header
-        h1: ['32px', { lineHeight: 'auto' }],
-        h2: ['28px', { lineHeight: 'auto' }],
-        h3: ['24px', { lineHeight: 'auto' }],
-        h4: ['20px', { lineHeight: 'auto' }],
+
+        h1: ['32px', { lineHeight: 'auto', fontWeight: 'normal' }],
+        h2: ['28px', { lineHeight: 'auto', fontWeight: 'normal' }],
+        h3: ['24px', { lineHeight: 'auto', fontWeight: 'normal' }],
+        h4: ['20px', { lineHeight: 'auto', fontWeight: 'normal' }],
+
+        'h1-bold': ['32px', { lineHeight: 'auto', fontWeight: 'bold' }],
+        'h2-bold': ['28px', { lineHeight: 'auto', fontWeight: 'bold' }],
+        'h3-bold': ['24px', { lineHeight: 'auto', fontWeight: 'bold' }],
+        'h4-bold': ['20px', { lineHeight: 'auto', fontWeight: 'bold' }],
+
+        'h1-medium': ['32px', { lineHeight: 'auto', fontWeight: '500' }],
+        'h2-medium': ['28px', { lineHeight: 'auto', fontWeight: '500' }],
+        'h3-medium': ['24px', { lineHeight: 'auto', fontWeight: '500' }],
+        'h4-medium': ['20px', { lineHeight: 'auto', fontWeight: '500' }],
+
+        'h1-light': ['32px', { lineHeight: 'auto', fontWeight: '300' }],
+        'h2-light': ['28px', { lineHeight: 'auto', fontWeight: '300' }],
+        'h3-light': ['24px', { lineHeight: 'auto', fontWeight: '300' }],
+        'h4-light': ['20px', { lineHeight: 'auto', fontWeight: '300' }],
 
         // Body
-        'sub-headline': ['18px', { lineHeight: 'auto' }],
-        body1: ['16px', { lineHeight: 'auto' }],
-        body2: ['14px', { lineHeight: 'auto' }],
-        caption: ['12px', { lineHeight: 'auto' }],
-      },
+        'sub-headline': ['18px', { lineHeight: 'auto', fontWeight: 'normal' }],
+        body1: ['16px', { lineHeight: 'auto', fontWeight: 'normal' }],
+        body2: ['14px', { lineHeight: 'auto', fontWeight: 'normal' }],
+        caption: ['12px', { lineHeight: 'auto', fontWeight: 'normal' }],
 
-      fontWeight: {
-        bold: 'bold',
-        medium: 500,
-        regular: 'normal',
-        light: 300,
+        'sub-headline-bold': ['18px', { lineHeight: 'auto', fontWeight: 'bold' }],
+        'body1-bold': ['16px', { lineHeight: 'auto', fontWeight: 'bold' }],
+        'body2-bold': ['14px', { lineHeight: 'auto', fontWeight: 'bold' }],
+        'caption-bold': ['12px', { lineHeight: 'auto', fontWeight: 'bold' }],
+
+        'sub-headline-medium': ['18px', { lineHeight: 'auto', fontWeight: '500' }],
+        'body1-medium': ['16px', { lineHeight: 'auto', fontWeight: '500' }],
+        'body2-medium': ['14px', { lineHeight: 'auto', fontWeight: '500' }],
+        'caption-medium': ['12px', { lineHeight: 'auto', fontWeight: '500' }],
+
+        'sub-headline-light': ['18px', { lineHeight: 'auto', fontWeight: '300' }],
+        'body1-light': ['16px', { lineHeight: 'auto', fontWeight: '300' }],
+        'body2-light': ['14px', { lineHeight: 'auto', fontWeight: '300' }],
+        'caption-light': ['12px', { lineHeight: 'auto', fontWeight: '300' }],
       },
     },
   },
