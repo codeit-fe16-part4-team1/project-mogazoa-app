@@ -2,9 +2,7 @@ name: Bulk Update Point Estimates to Project
 
 # 수동 실행
 on:
-  workflow_dispatch: # 수동 실행 버튼
-  # schedule:  # 매일 자정에 자동 실행 (필요시 활성화)
-  #   - cron: '0 0 * * *'
+  workflow_dispatch:
 
 jobs:
   bulk-update-estimates:
@@ -18,9 +16,8 @@ jobs:
           ORG_NAME: ${{ vars.ORG_NAME }}
           REPO_NAME: ${{ vars.REPO_NAME }}
         run: |
-          echo "🔍 Fetching open issues from $ORG_NAME/$REPO_NAME"
+          echo "Fetching open issues from $ORG_NAME/$REPO_NAME"
 
-          # 특정 레포지토리의 열린 이슈만 조회
           query='query($org: String!, $repo: String!, $cursor: String) {
             repository(owner: $org, name: $repo) {
               issues(states: OPEN, first: 100, after: $cursor) {
@@ -49,55 +46,71 @@ jobs:
             }
           }'
 
-          # 특정 레포지토리의 이슈 데이터 수집
           all_issues='[]'
           has_next=true
           cursor=""
 
           while [ "$has_next" = "true" ]; do
+            echo "Fetching page..."
+            
             if [ -z "$cursor" ]; then
               response=$(gh api graphql -f query="$query" -f org="$ORG_NAME" -f repo="$REPO_NAME")
             else
               response=$(gh api graphql -f query="$query" -f org="$ORG_NAME" -f repo="$REPO_NAME" -f cursor="$cursor")
             fi
             
-            # 이슈 데이터 처리
-            issues_data=$(echo "$response" | jq -r '.data.repository.issues.nodes[]')
-            
-            while IFS= read -r issue; do
-              if [ -n "$issue" ] && [ "$issue" != "null" ]; then
-                # point: 라벨이 있는 이슈만 필터링
-                point_label=$(echo "$issue" | jq -r '.labels.nodes[] | select(.name | test("^point: [1-6]$")) | .name' | head -1)
-                
-                if [ -n "$point_label" ] && [ "$point_label" != "null" ]; then
-                  point_value=$(echo "$point_label" | cut -d' ' -f2)
-                  
-                  issue_with_point=$(echo "$issue" | jq --arg point "$point_value" '. + {pointValue: ($point | tonumber)}')
-                  all_issues=$(echo "$all_issues" | jq ". + [$issue_with_point]")
-                fi
-              fi
-            done <<< "$issues_data"
-            
-            # 다음 페이지 체크 (에러 방지)
-            has_next=$(echo "$response" | jq -r '.data.repository.issues.pageInfo.hasNextPage // false' 2>/dev/null)
-            cursor=$(echo "$response" | jq -r '.data.repository.issues.pageInfo.endCursor // ""' 2>/dev/null)
-            
-            if [ "$has_next" != "true" ] || [ "$cursor" = "null" ] || [ -z "$cursor" ]; then
+            # 에러 체크
+            if echo "$response" | grep -q "error"; then
+              echo "API Error: $response"
               break
             fi
-          else
-            echo "Failed to get valid response, breaking pagination loop"
-            break
-          fi
+            
+            # JSON 파싱 체크
+            if ! echo "$response" | jq empty 2>/dev/null; then
+              echo "Invalid JSON: $response"
+              break
+            fi
+            
+            issues_count=$(echo "$response" | jq -r '.data.repository.issues.nodes | length')
+            echo "Found $issues_count issues"
+            
+            if [ "$issues_count" -gt 0 ]; then
+              for i in $(seq 0 $((issues_count - 1))); do
+                issue=$(echo "$response" | jq -r ".data.repository.issues.nodes[$i]")
+                issue_number=$(echo "$issue" | jq -r '.number')
+                
+                # point 라벨 찾기 (point:4 또는 point: 4)
+                point_labels=$(echo "$issue" | jq -r '.labels.nodes[].name' | grep -E '^point:?[ ]?[1-6]$')
+                
+                if [ -n "$point_labels" ]; then
+                  point_label=$(echo "$point_labels" | head -1)
+                  echo "Issue #$issue_number has label: $point_label"
+                  
+                  # 숫자만 추출
+                  point_value=$(echo "$point_label" | grep -oE '[1-6]')
+                  
+                  if [ -n "$point_value" ]; then
+                    issue_with_point=$(echo "$issue" | jq --arg point "$point_value" '. + {pointValue: ($point | tonumber)}')
+                    all_issues=$(echo "$all_issues" | jq ". + [$issue_with_point]")
+                  fi
+                fi
+              done
+            fi
+            
+            has_next=$(echo "$response" | jq -r '.data.repository.issues.pageInfo.hasNextPage')
+            cursor=$(echo "$response" | jq -r '.data.repository.issues.pageInfo.endCursor')
+            
+            if [ "$has_next" != "true" ] || [ "$cursor" = "null" ]; then
+              break
+            fi
           done
 
-          echo "Found issues with point labels in $ORG_NAME/$REPO_NAME:"
-          echo "$all_issues" | jq -r '.[] | "• #\(.number) (\(.repository.name)) - \(.title) [point:\(.pointValue)]"'
+          echo "Found issues with point labels:"
+          echo "$all_issues" | jq -r '.[] | "• #\(.number) - \(.title) [point:\(.pointValue)]"'
 
           issue_count=$(echo "$all_issues" | jq length)
-          echo "📊 Total issues with point labels: $issue_count"
+          echo "Total issues with point labels: $issue_count"
 
-          # 결과를 파일로 저장 (다음 단계에서 사용)
           echo "$all_issues" > issues_with_points.json
           echo "issue_count=$issue_count" >> $GITHUB_OUTPUT
 
@@ -108,29 +121,24 @@ jobs:
           PROJECT_ID: ${{ vars.PROJECT_ID }}
           ESTIMATE_FIELD_ID: ${{ vars.ESTIMATE_FIELD_ID }}
         run: |
-          echo "🚀 Processing ${{ steps.get-issues.outputs.issue_count }} issues..."
+          echo "Processing ${{ steps.get-issues.outputs.issue_count }} issues..."
 
-          # 처리된 이슈 카운터
           processed=0
           updated=0
           added_to_project=0
           errors=0
 
-          # 각 이슈 처리
           while IFS= read -r issue; do
             if [ -n "$issue" ] && [ "$issue" != "null" ]; then
               issue_id=$(echo "$issue" | jq -r '.id')
               issue_number=$(echo "$issue" | jq -r '.number')
               issue_title=$(echo "$issue" | jq -r '.title')
-              repo_name=$(echo "$issue" | jq -r '.repository.name')
               point_value=$(echo "$issue" | jq -r '.pointValue')
               
-              echo ""
-              echo "📝 Processing Issue #$issue_number ($repo_name): $issue_title"
-              echo "   Point value: $point_value"
+              echo "Processing Issue #$issue_number: $issue_title (point: $point_value)"
               
-              # 1. 이슈가 프로젝트에 있는지 확인
-              check_query='query($projectId: ID!, $issueId: ID!) {
+              # 프로젝트에 있는지 확인
+              check_query='query($projectId: ID!) {
                 node(id: $projectId) {
                   ... on ProjectV2 {
                     items(first: 100) {
@@ -147,12 +155,12 @@ jobs:
                 }
               }'
               
-              check_response=$(gh api graphql -f query="$check_query" -f projectId="$PROJECT_ID" -f issueId="$issue_id")
-              item_id=$(echo "$check_response" | jq -r '.data.node.items.nodes[] | select(.content.id == env.issue_id) | .id')
+              check_response=$(gh api graphql -f query="$check_query" -f projectId="$PROJECT_ID")
+              item_id=$(echo "$check_response" | jq -r --arg issue_id "$issue_id" '.data.node.items.nodes[] | select(.content.id == $issue_id) | .id')
               
-              # 2. 프로젝트에 없으면 추가
+              # 프로젝트에 없으면 추가
               if [ -z "$item_id" ] || [ "$item_id" = "null" ]; then
-                echo "   📌 Adding to project..."
+                echo "  Adding to project..."
                 
                 add_mutation='mutation($projectId: ID!, $contentId: ID!) {
                   addProjectV2ItemById(input: {projectId: $projectId, contentId: $contentId}) {
@@ -166,20 +174,20 @@ jobs:
                 item_id=$(echo "$add_response" | jq -r '.data.addProjectV2ItemById.item.id')
                 
                 if [ -n "$item_id" ] && [ "$item_id" != "null" ]; then
-                  echo "   ✅ Added to project with item ID: $item_id"
+                  echo "  ✓ Added to project"
                   ((added_to_project++))
                 else
-                  echo "   ❌ Failed to add to project"
+                  echo "  ✗ Failed to add to project"
                   ((errors++))
                   ((processed++))
                   continue
                 fi
               else
-                echo "   ✅ Already in project with item ID: $item_id"
+                echo "  ✓ Already in project"
               fi
               
-              # 3. Estimate 필드 업데이트
-              echo "   🔄 Updating estimate to $point_value..."
+              # Estimate 필드 업데이트
+              echo "  Updating estimate to $point_value..."
               
               update_mutation='mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $value: ProjectV2FieldValue!) {
                 updateProjectV2ItemFieldValue(input: {
@@ -202,29 +210,24 @@ jobs:
                 -f value="{\"number\": $point_value}")
               
               if echo "$update_response" | jq -e '.data.updateProjectV2ItemFieldValue.projectV2Item.id' > /dev/null; then
-                echo "   ✅ Updated estimate to $point_value"
+                echo "  ✓ Updated estimate to $point_value"
                 ((updated++))
               else
-                echo "   ❌ Failed to update estimate"
-                echo "   Response: $update_response"
+                echo "  ✗ Failed to update estimate"
                 ((errors++))
               fi
               
               ((processed++))
-              
-              # API 레이트 리밋 방지를 위한 약간의 딜레이
               sleep 0.5
             fi
           done <<< "$(jq -c '.[]' issues_with_points.json)"
 
           echo ""
-          echo "🎉 Bulk update completed!"
-          echo "📊 Summary:"
-          echo "   • Total processed: $processed"
-          echo "   • Added to project: $added_to_project"
-          echo "   • Estimates updated: $updated"
-          echo "   • Errors: $errors"
+          echo "Summary:"
+          echo "  • Total processed: $processed"
+          echo "  • Added to project: $added_to_project" 
+          echo "  • Estimates updated: $updated"
+          echo "  • Errors: $errors"
 
       - name: Cleanup
-        run: |
-          rm -f issues_with_points.json
+        run: rm -f issues_with_points.json
