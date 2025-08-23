@@ -247,7 +247,7 @@ jobs:
                 -f projectId="$PROJECT_ID" \
                 -f itemId="$item_id" \
                 -f fieldId="$ESTIMATE_FIELD_ID" \
-                -f value="$point_value" 2>&1)
+                -F value="$point_value" 2>&1)
               
               mutation_exit_code=$?
               echo "  DEBUG: GraphQL command exit code: $mutation_exit_code"
