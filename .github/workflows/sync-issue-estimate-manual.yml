@@ -1,0 +1,39 @@
+name: Sync all issues estimate
+
+on:
+  workflow_dispatch: # 수동 실행용
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up GitHub CLI
+        uses: cli/gh-actions@v2
+        with:
+          version: latest
+
+      - name: Authenticate GitHub CLI
+        run: gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Get all open issues and update Estimate
+        run: |
+          gh issue list \
+            --repo ${{ github.repository }} \
+            --state all \
+            --json number,labels \
+          | jq -c '.[]' \
+          | while read issue; do
+              number=$(echo "$issue" | jq -r .number)
+              label=$(echo "$issue" | jq -r '.labels[].name | select(startswith("point:"))' | head -n1)
+              if [[ -n "$label" ]]; then
+                estimate=$(echo "$label" | sed 's/point: *//')
+                echo "Updating issue #$number with Estimate=$estimate"
+                gh project item-edit 2 \
+                  --owner codeit-fe16-part4-team1 \
+                  --field "Estimate=$estimate" \
+                  --issue "$number"
+              fi
+            done
