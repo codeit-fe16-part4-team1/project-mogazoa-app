@@ -48,15 +48,15 @@ jobs:
                           }
                           date
                         }
-                        ... on ProjectV2ItemFieldSingleSelectValue {
+                        ... on ProjectV2ItemFieldIterationValue {
                           field {
-                            ... on ProjectV2SingleSelectField {
+                            ... on ProjectV2IterationField {
                               id
                               name
                             }
                           }
-                          optionId
-                          name
+                          iterationId
+                          title
                         }
                       }
                     }
@@ -126,10 +126,10 @@ jobs:
         run: |
           echo "Processing items to update week fields..."
 
-          # Start date에 맞는 week 찾기 (week 옵션 이름에서 날짜 파싱)
+          # Start date에 맞는 week iteration 찾기
           get_week_for_date() {
             local start_date=$1
-            local week_options=$(cat week_options.json)
+            local iterations=$(cat week_iterations.json)
             
             # start_date를 Unix timestamp로 변환  
             start_timestamp=$(date -d "$start_date" +%s 2>/dev/null)
@@ -138,35 +138,33 @@ jobs:
               return
             fi
             
-            # 각 week 옵션에서 날짜 범위를 동적으로 파싱
-            echo "$week_options" | jq -r '.[] | "\(.name)"' | while read -r week_name; do
-              if [ -n "$week_name" ]; then
-                # 다양한 날짜 형식 지원: "Aug 23 - Aug 29", "week 1" 등
+            # 가장 적절한 iteration 찾기 (start_date 이후 가장 가까운 iteration)
+            best_iteration=""
+            best_id=""
+            min_diff=9999999999
+            
+            echo "$iterations" | jq -r '.[] | "\(.id)|\(.title)|\(.startDate)"' | while read -r line; do
+              if [ -n "$line" ]; then
+                iteration_id=$(echo "$line" | cut -d'|' -f1)
+                iteration_title=$(echo "$line" | cut -d'|' -f2) 
+                iteration_start=$(echo "$line" | cut -d'|' -f3)
                 
-                # 날짜 범위가 있는 경우 파싱 시도 (예: "Aug 23 - Aug 29")
-                if echo "$week_name" | grep -qE "[A-Za-z]+ [0-9]+ - [A-Za-z]+ [0-9]+"; then
-                  # 시작일과 종료일 추출
-                  start_part=$(echo "$week_name" | sed -E 's/.*([A-Za-z]+ [0-9]+) - ([A-Za-z]+ [0-9]+).*/\1/')
-                  end_part=$(echo "$week_name" | sed -E 's/.*([A-Za-z]+ [0-9]+) - ([A-Za-z]+ [0-9]+).*/\2/')
-                  
-                  # 2025년 가정하여 완전한 날짜로 변환
-                  week_start=$(date -d "2025 $start_part" +%s 2>/dev/null)
-                  week_end=$(date -d "2025 $end_part 23:59:59" +%s 2>/dev/null)
-                  
-                  if [ $? -eq 0 ] && [ "$week_start" -gt 0 ] && [ "$week_end" -gt 0 ]; then
-                    if [ "$start_timestamp" -ge "$week_start" ] && [ "$start_timestamp" -le "$week_end" ]; then
-                      echo "$week_name"
+                # iteration 시작일을 timestamp로 변환
+                iteration_timestamp=$(date -d "$iteration_start" +%s 2>/dev/null)
+                
+                if [ $? -eq 0 ] && [ "$iteration_timestamp" -gt 0 ]; then
+                  # start_date가 iteration 시작일 이후인 경우만 고려
+                  if [ "$start_timestamp" -ge "$iteration_timestamp" ]; then
+                    diff=$((start_timestamp - iteration_timestamp))
+                    if [ "$diff" -lt "$min_diff" ]; then
+                      echo "$iteration_title|$iteration_id"
                       return
                     fi
                   fi
                 fi
-                
-                # 만약 날짜 파싱이 실패하면 첫 번째 옵션을 기본값으로 (fallback)
-                # 이 부분은 제거하거나 로그만 남길 수 있음
               fi
             done
             
-            # 매칭되는 week를 찾지 못한 경우
             echo ""
           }
 
@@ -191,67 +189,61 @@ jobs:
               ' 2>/dev/null)
               
               # 현재 Week 값 찾기
-              current_week_option_id=$(echo "$item" | jq -r --arg field_id "$WEEK_FIELD_ID" '
+              current_week_iteration_id=$(echo "$item" | jq -r --arg field_id "$WEEK_FIELD_ID" '
                 .fieldValues.nodes[] | 
-                select(.field.id == $field_id and .optionId != null) | 
-                .optionId
+                select(.field.id == $field_id and .iterationId != null) | 
+                .iterationId
               ' 2>/dev/null)
               
-              current_week_name=$(echo "$item" | jq -r --arg field_id "$WEEK_FIELD_ID" '
+              current_week_title=$(echo "$item" | jq -r --arg field_id "$WEEK_FIELD_ID" '
                 .fieldValues.nodes[] | 
-                select(.field.id == $field_id and .name != null) | 
-                .name
+                select(.field.id == $field_id and .title != null) | 
+                .title
               ' 2>/dev/null)
               
               if [ -n "$start_date" ] && [ "$start_date" != "null" ]; then
                 echo "  Start date: $start_date"
-                echo "  Current week: $current_week_name"
+                echo "  Current week: $current_week_title"
                 
-                # Start date에 맞는 week 결정
-                target_week=$(get_week_for_date "$start_date")
+                # Start date에 맞는 week iteration 결정
+                week_result=$(get_week_for_date "$start_date")
                 
-                if [ -n "$target_week" ]; then
-                  echo "  Target week: $target_week"
+                if [ -n "$week_result" ]; then
+                  target_week_title=$(echo "$week_result" | cut -d'|' -f1)
+                  target_week_id=$(echo "$week_result" | cut -d'|' -f2)
+                  echo "  Target week: $target_week_title (ID: $target_week_id)"
                   
                   # 현재 week와 다른 경우에만 업데이트
-                  if [ "$current_week_name" != "$target_week" ]; then
-                    # week 옵션 ID 찾기
-                    week_option_id=$(jq -r --arg week_name "$target_week" '.[] | select(.name == $week_name) | .id' week_options.json)
+                  if [ "$current_week_iteration_id" != "$target_week_id" ]; then
+                    echo "  Updating week to: $target_week_title"
                     
-                    if [ -n "$week_option_id" ] && [ "$week_option_id" != "null" ]; then
-                      echo "  Updating week to: $target_week (ID: $week_option_id)"
-                      
-                      # Week 필드 업데이트
-                      update_response=$(gh api graphql \
-                        -f query='mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
-                          updateProjectV2ItemFieldValue(input: {
-                            projectId: $projectId,
-                            itemId: $itemId,
-                            fieldId: $fieldId,
-                            value: {
-                              singleSelectOptionId: $optionId
-                            }
-                          }) {
-                            projectV2Item {
-                              id
-                            }
+                    # Week iteration 필드 업데이트
+                    update_response=$(gh api graphql \
+                      -f query='mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $iterationId: String!) {
+                        updateProjectV2ItemFieldValue(input: {
+                          projectId: $projectId,
+                          itemId: $itemId,
+                          fieldId: $fieldId,
+                          value: {
+                            iterationId: $iterationId
                           }
-                        }' \
-                        -f projectId="$PROJECT_ID" \
-                        -f itemId="$item_id" \
-                        -f fieldId="$WEEK_FIELD_ID" \
-                        -f optionId="$week_option_id")
-                      
-                      if echo "$update_response" | jq -e '.data.updateProjectV2ItemFieldValue.projectV2Item.id' > /dev/null; then
-                        echo "  ✓ Successfully updated week to $target_week"
-                        ((updated++))
-                      else
-                        echo "  ✗ Failed to update week field"
-                        echo "  Response: $update_response"
-                        ((errors++))
-                      fi
+                        }) {
+                          projectV2Item {
+                            id
+                          }
+                        }
+                      }' \
+                      -f projectId="$PROJECT_ID" \
+                      -f itemId="$item_id" \
+                      -f fieldId="$WEEK_FIELD_ID" \
+                      -f iterationId="$target_week_id")
+                    
+                    if echo "$update_response" | jq -e '.data.updateProjectV2ItemFieldValue.projectV2Item.id' > /dev/null; then
+                      echo "  ✓ Successfully updated week to $target_week_title"
+                      ((updated++))
                     else
-                      echo "  ✗ Week option ID not found for: $target_week"
+                      echo "  ✗ Failed to update week field"
+                      echo "  Response: $update_response"
                       ((errors++))
                     fi
                   else
@@ -264,7 +256,7 @@ jobs:
                 echo "  - No start date set"
                 
                 # Start date가 없는데 week 필드에 값이 있으면 비우기
-                if [ -n "$current_week_name" ] && [ "$current_week_name" != "null" ]; then
+                if [ -n "$current_week_title" ] && [ "$current_week_title" != "null" ]; then
                   echo "  Clearing week field (no start date)"
                   
                   # Week 필드 비우기
@@ -310,4 +302,4 @@ jobs:
 
       - name: Cleanup
         run: |
-          rm -f project_items.json week_options.json
+          rm -f project_items.json week_iterations.json
