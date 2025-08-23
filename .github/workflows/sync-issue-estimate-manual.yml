@@ -130,10 +130,24 @@ jobs:
 
           while IFS= read -r issue; do
             if [ -n "$issue" ] && [ "$issue" != "null" ]; then
-              issue_id=$(echo "$issue" | jq -r '.id')
-              issue_number=$(echo "$issue" | jq -r '.number')
-              issue_title=$(echo "$issue" | jq -r '.title')
-              point_value=$(echo "$issue" | jq -r '.pointValue')
+              # JSON 파싱 에러 체크
+              if ! echo "$issue" | jq empty 2>/dev/null; then
+                echo "Skipping invalid JSON issue data"
+                ((processed++))
+                continue
+              fi
+              
+              issue_id=$(echo "$issue" | jq -r '.id' 2>/dev/null)
+              issue_number=$(echo "$issue" | jq -r '.number' 2>/dev/null)
+              issue_title=$(echo "$issue" | jq -r '.title' 2>/dev/null)
+              point_value=$(echo "$issue" | jq -r '.pointValue' 2>/dev/null)
+              
+              # 필수 필드 체크
+              if [ -z "$issue_id" ] || [ "$issue_id" = "null" ] || [ -z "$point_value" ] || [ "$point_value" = "null" ]; then
+                echo "Skipping issue with missing data: #$issue_number"
+                ((processed++))
+                continue
+              fi
               
               echo "Processing Issue #$issue_number: $issue_title (point: $point_value)"
               
@@ -155,8 +169,17 @@ jobs:
                 }
               }'
               
-              check_response=$(gh api graphql -f query="$check_query" -f projectId="$PROJECT_ID")
-              item_id=$(echo "$check_response" | jq -r --arg issue_id "$issue_id" '.data.node.items.nodes[] | select(.content.id == $issue_id) | .id')
+              check_response=$(gh api graphql -f query="$check_query" -f projectId="$PROJECT_ID" 2>&1)
+              
+              # API 에러 체크
+              if echo "$check_response" | grep -q "error\|Error"; then
+                echo "  ✗ API error while checking project: $check_response"
+                ((errors++))
+                ((processed++))
+                continue
+              fi
+              
+              item_id=$(echo "$check_response" | jq -r --arg issue_id "$issue_id" '.data.node.items.nodes[] | select(.content.id == $issue_id) | .id' 2>/dev/null)
               
               # 프로젝트에 없으면 추가
               if [ -z "$item_id" ] || [ "$item_id" = "null" ]; then
@@ -170,14 +193,23 @@ jobs:
                   }
                 }'
                 
-                add_response=$(gh api graphql -f query="$add_mutation" -f projectId="$PROJECT_ID" -f contentId="$issue_id")
-                item_id=$(echo "$add_response" | jq -r '.data.addProjectV2ItemById.item.id')
+                add_response=$(gh api graphql -f query="$add_mutation" -f projectId="$PROJECT_ID" -f contentId="$issue_id" 2>&1)
+                
+                # API 에러 체크
+                if echo "$add_response" | grep -q "error\|Error"; then
+                  echo "  ✗ API error while adding to project: $add_response"
+                  ((errors++))
+                  ((processed++))
+                  continue
+                fi
+                
+                item_id=$(echo "$add_response" | jq -r '.data.addProjectV2ItemById.item.id' 2>/dev/null)
                 
                 if [ -n "$item_id" ] && [ "$item_id" != "null" ]; then
                   echo "  ✓ Added to project"
                   ((added_to_project++))
                 else
-                  echo "  ✗ Failed to add to project"
+                  echo "  ✗ Failed to add to project (no item_id returned)"
                   ((errors++))
                   ((processed++))
                   continue
@@ -207,18 +239,30 @@ jobs:
                 --field projectId="$PROJECT_ID" \
                 --field itemId="$item_id" \
                 --field fieldId="$ESTIMATE_FIELD_ID" \
-                --field value="$point_value")
+                --field value="$point_value" 2>&1)
               
-              if echo "$update_response" | jq -e '.data.updateProjectV2ItemFieldValue.projectV2Item.id' > /dev/null; then
+              # API 에러 체크
+              if echo "$update_response" | grep -q "error\|Error"; then
+                echo "  ✗ API error while updating estimate: $update_response"
+                ((errors++))
+              elif echo "$update_response" | jq -e '.data.updateProjectV2ItemFieldValue.projectV2Item.id' >/dev/null 2>&1; then
                 echo "  ✓ Updated estimate to $point_value"
                 ((updated++))
               else
-                echo "  ✗ Failed to update estimate"
+                echo "  ✗ Failed to update estimate (no valid response)"
+                echo "  Response: $update_response"
                 ((errors++))
               fi
               
               ((processed++))
-              sleep 0.5
+              
+              # API 레이트 리밋 방지
+              if [ $((processed % 10)) -eq 0 ]; then
+                echo "  ... processed $processed issues, pausing briefly"
+                sleep 2
+              else
+                sleep 0.5
+              fi
             fi
           done <<< "$(jq -c '.[]' issues_with_points.json)"
 
