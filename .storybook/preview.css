@@ -1,0 +1,20 @@
+@import url(//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css);
+
+@font-face {
+  font-family: 'Cafe24Supermagic';
+  src: url('/fonts/Cafe24Supermagic-Regular-v1.0.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Cafe24Supermagic';
+  src: url('/fonts/Cafe24Supermagic-Bold-v1.0.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* CSS 변수도 수동으로 선언 */
+:root {
+  --font-cafe24-supermagic: 'Cafe24Supermagic', sans-serif;
+}
