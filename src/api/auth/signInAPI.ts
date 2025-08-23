@@ -1,5 +1,5 @@
 import { authAPI } from '@/lib/authAPI';
-import { User } from '@/store/useAuthStore';
+import { User } from '@/types/api';
 
 export interface SignInPayload {
   email: string;

@@ -1,20 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
+import { User } from '@/types/api';
 
 const BaseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 interface SignInResponse {
   accessToken: string;
-  user: {
-    id: number;
-    email: string;
-    description: string;
-    image: string;
-    teamId: string;
-    nickname: string;
-    updatedAt: string;
-    createdAt: string;
-  };
+  user: User;
 }
 
 export const POST = async (req: NextRequest) => {
