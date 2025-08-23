@@ -5,15 +5,28 @@ export default {
 };
 
 const typeStyles = [
-  { name: 'h1', description: 'Header 1 - 32px, normal' },
-  { name: 'h2', description: 'Header 2 - 28px, normal' },
-  { name: 'h3', description: 'Header 3 - 24px, normal' },
-  { name: 'h4', description: 'Header 4 - 20px, normal' },
-  { name: 'sub-headline', description: 'Sub Headline - 18px, normal' },
-  { name: 'body1', description: 'Body 1 - 16px, normal' },
-  { name: 'body2', description: 'Body 2 - 14px, normal' },
-  { name: 'caption', description: 'Caption - 12px, normal' },
-  { name: 'Cafe24 H1', className: 'text-h1 font-bold font-cafe24-supermagic' },
+  // 일반 폰트 스타일
+  { name: 'h1', className: 'font-sans text-h1' },
+  { name: 'h2', className: 'font-sans text-h2' },
+  { name: 'h3', className: 'font-sans text-h3' },
+  { name: 'h4', className: 'font-sans text-h4' },
+  { name: 'sub-headline', className: 'font-sans text-sub-headline' },
+  { name: 'body1', className: 'font-sans text-body1' },
+  { name: 'body2', className: 'font-sans text-body2' },
+  { name: 'caption', className: 'font-sans text-caption' },
+  // 볼드 폰트 스타일
+  { name: 'h1-bold', className: 'font-sans text-h1-bold' },
+  { name: 'h2-bold', className: 'font-sans text-h2-bold' },
+  { name: 'h3-bold', className: 'font-sans text-h3-bold' },
+  // Cafe24 폰트 스타일
+  {
+    name: 'Cafe24 H1',
+    className: 'font-cafe24-supermagic text-h1-bold',
+    description: 'Cafe24 폰트가 적용된 H1',
+  },
+  // 폰트 크기 예시
+  { name: 'text-32px', className: 'font-sans text-[32px]' },
+  { name: 'text-28px', className: 'font-sans text-[28px]' },
 ];
 
 export const TypeSpecimens = () => (
