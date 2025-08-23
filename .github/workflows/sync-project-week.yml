@@ -124,6 +124,7 @@ jobs:
           START_DATE_FIELD_ID: ${{ vars.START_DATE_FIELD_ID }}
           WEEK_FIELD_ID: ${{ vars.WEEK_FIELD_ID }}
         run: |
+          set +e  # 에러가 발생해도 스크립트 계속 실행
           echo "Processing items to update week fields..."
 
           # Start date에 맞는 week iteration 찾기
@@ -138,34 +139,27 @@ jobs:
               return
             fi
             
-            # 가장 적절한 iteration 찾기 (start_date 이후 가장 가까운 iteration)
-            best_iteration=""
-            best_id=""
-            min_diff=9999999999
+            # 각 iteration을 확인하여 가장 적절한 것 찾기
+            best_match=""
+            best_diff=9999999999
             
-            echo "$iterations" | jq -r '.[] | "\(.id)|\(.title)|\(.startDate)"' | while read -r line; do
-              if [ -n "$line" ]; then
-                iteration_id=$(echo "$line" | cut -d'|' -f1)
-                iteration_title=$(echo "$line" | cut -d'|' -f2) 
-                iteration_start=$(echo "$line" | cut -d'|' -f3)
-                
+            # jq로 각 iteration 정보 처리
+            while IFS='|' read -r iter_id iter_title iter_start; do
+              if [ -n "$iter_start" ]; then
                 # iteration 시작일을 timestamp로 변환
-                iteration_timestamp=$(date -d "$iteration_start" +%s 2>/dev/null)
+                iter_timestamp=$(date -d "$iter_start" +%s 2>/dev/null)
                 
-                if [ $? -eq 0 ] && [ "$iteration_timestamp" -gt 0 ]; then
-                  # start_date가 iteration 시작일 이후인 경우만 고려
-                  if [ "$start_timestamp" -ge "$iteration_timestamp" ]; then
-                    diff=$((start_timestamp - iteration_timestamp))
-                    if [ "$diff" -lt "$min_diff" ]; then
-                      echo "$iteration_title|$iteration_id"
-                      return
-                    fi
+                if [ $? -eq 0 ] && [ "$iter_timestamp" -le "$start_timestamp" ]; then
+                  diff=$((start_timestamp - iter_timestamp))
+                  if [ "$diff" -lt "$best_diff" ]; then
+                    best_match="$iter_title|$iter_id"
+                    best_diff="$diff"
                   fi
                 fi
               fi
-            done
+            done <<< "$(echo "$iterations" | jq -r '.[] | "\(.id)|\(.title)|\(.startDate)"')"
             
-            echo ""
+            echo "$best_match"
           }
 
           processed=0
@@ -175,97 +169,72 @@ jobs:
           # 각 프로젝트 아이템 처리
           while IFS= read -r item; do
             if [ -n "$item" ] && [ "$item" != "null" ]; then
-              item_id=$(echo "$item" | jq -r '.id')
-              issue_number=$(echo "$item" | jq -r '.content.number // "N/A"')
-              issue_title=$(echo "$item" | jq -r '.content.title // "N/A"')
+              # 기본 정보 추출 (에러 방지)
+              item_id=$(echo "$item" | jq -r '.id // ""' 2>/dev/null || echo "")
+              issue_number=$(echo "$item" | jq -r '.content.number // "N/A"' 2>/dev/null || echo "N/A")
+              issue_title=$(echo "$item" | jq -r '.content.title // "N/A"' 2>/dev/null || echo "N/A")
+              
+              if [ -z "$item_id" ]; then
+                echo "Skipping item with missing ID"
+                ((processed++))
+                continue
+              fi
               
               echo "Processing item: #$issue_number - $issue_title"
               
               # Start Date 값 찾기
               start_date=$(echo "$item" | jq -r --arg field_id "$START_DATE_FIELD_ID" '
-                .fieldValues.nodes[] | 
-                select(.field.id == $field_id and .date != null) | 
+                .fieldValues.nodes[]? | 
+                select(.field.id == $field_id and .date != null and .date != "") | 
                 .date
-              ' 2>/dev/null)
+              ' 2>/dev/null | head -1 || echo "")
+              
+              # start date가 없으면 건너뛰기
+              if [ -z "$start_date" ] || [ "$start_date" = "null" ]; then
+                echo "  - No start date, skipping"
+                ((processed++))
+                continue
+              fi
+              
+              echo "  Start date: $start_date"
               
               # 현재 Week 값 찾기
               current_week_iteration_id=$(echo "$item" | jq -r --arg field_id "$WEEK_FIELD_ID" '
-                .fieldValues.nodes[] | 
+                .fieldValues.nodes[]? | 
                 select(.field.id == $field_id and .iterationId != null) | 
                 .iterationId
-              ' 2>/dev/null)
+              ' 2>/dev/null | head -1 || echo "")
               
               current_week_title=$(echo "$item" | jq -r --arg field_id "$WEEK_FIELD_ID" '
-                .fieldValues.nodes[] | 
+                .fieldValues.nodes[]? | 
                 select(.field.id == $field_id and .title != null) | 
                 .title
-              ' 2>/dev/null)
+              ' 2>/dev/null | head -1 || echo "")
               
-              if [ -n "$start_date" ] && [ "$start_date" != "null" ]; then
-                echo "  Start date: $start_date"
-                echo "  Current week: $current_week_title"
+              echo "  Current week: $current_week_title"
+              
+              # Start date에 맞는 week iteration 결정
+              week_result=$(get_week_for_date "$start_date")
+              
+              if [ -n "$week_result" ]; then
+                target_week_title=$(echo "$week_result" | cut -d'|' -f1)
+                target_week_id=$(echo "$week_result" | cut -d'|' -f2)
+                echo "  Target week: $target_week_title (ID: $target_week_id)"
                 
-                # Start date에 맞는 week iteration 결정
-                week_result=$(get_week_for_date "$start_date")
-                
-                if [ -n "$week_result" ]; then
-                  target_week_title=$(echo "$week_result" | cut -d'|' -f1)
-                  target_week_id=$(echo "$week_result" | cut -d'|' -f2)
-                  echo "  Target week: $target_week_title (ID: $target_week_id)"
+                # 현재 week와 다른 경우에만 업데이트
+                if [ "$current_week_iteration_id" != "$target_week_id" ]; then
+                  echo "  Updating week to: $target_week_title"
                   
-                  # 현재 week와 다른 경우에만 업데이트
-                  if [ "$current_week_iteration_id" != "$target_week_id" ]; then
-                    echo "  Updating week to: $target_week_title"
-                    
-                    # Week iteration 필드 업데이트
-                    update_response=$(gh api graphql \
-                      -f query='mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $iterationId: String!) {
-                        updateProjectV2ItemFieldValue(input: {
-                          projectId: $projectId,
-                          itemId: $itemId,
-                          fieldId: $fieldId,
-                          value: {
-                            iterationId: $iterationId
-                          }
-                        }) {
-                          projectV2Item {
-                            id
-                          }
-                        }
-                      }' \
-                      -f projectId="$PROJECT_ID" \
-                      -f itemId="$item_id" \
-                      -f fieldId="$WEEK_FIELD_ID" \
-                      -f iterationId="$target_week_id")
-                    
-                    if echo "$update_response" | jq -e '.data.updateProjectV2ItemFieldValue.projectV2Item.id' > /dev/null; then
-                      echo "  ✓ Successfully updated week to $target_week_title"
-                      ((updated++))
-                    else
-                      echo "  ✗ Failed to update week field"
-                      echo "  Response: $update_response"
-                      ((errors++))
-                    fi
-                  else
-                    echo "  ✓ Week already correct, no update needed"
-                  fi
-                else
-                  echo "  - Start date $start_date doesn't match any week range"
-                fi
-              else
-                echo "  - No start date set"
-                
-                # Start date가 없는데 week 필드에 값이 있으면 비우기
-                if [ -n "$current_week_title" ] && [ "$current_week_title" != "null" ]; then
-                  echo "  Clearing week field (no start date)"
-                  
-                  # Week 필드 비우기
-                  clear_response=$(gh api graphql \
-                    -f query='mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!) {
-                      clearProjectV2ItemFieldValue(input: {
+                  # Week iteration 필드 업데이트
+                  update_response=$(gh api graphql \
+                    -f query='mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $iterationId: String!) {
+                      updateProjectV2ItemFieldValue(input: {
                         projectId: $projectId,
                         itemId: $itemId,
-                        fieldId: $fieldId
+                        fieldId: $fieldId,
+                        value: {
+                          iterationId: $iterationId
+                        }
                       }) {
                         projectV2Item {
                           id
@@ -274,19 +243,22 @@ jobs:
                     }' \
                     -f projectId="$PROJECT_ID" \
                     -f itemId="$item_id" \
-                    -f fieldId="$WEEK_FIELD_ID")
+                    -f fieldId="$WEEK_FIELD_ID" \
+                    -f iterationId="$target_week_id")
                   
-                  if echo "$clear_response" | jq -e '.data.clearProjectV2ItemFieldValue.projectV2Item.id' > /dev/null; then
-                    echo "  ✓ Successfully cleared week field"
+                  if echo "$update_response" | jq -e '.data.updateProjectV2ItemFieldValue.projectV2Item.id' > /dev/null; then
+                    echo "  ✓ Successfully updated week to $target_week_title"
                     ((updated++))
                   else
-                    echo "  ✗ Failed to clear week field"
-                    echo "  Response: $clear_response"
+                    echo "  ✗ Failed to update week field"
+                    echo "  Response: $update_response"
                     ((errors++))
                   fi
                 else
-                  echo "  ✓ Week field already empty, no action needed"
+                  echo "  ✓ Week already correct, no update needed"
                 fi
+              else
+                echo "  - Start date doesn't match any week range"
               fi
               
               ((processed++))
