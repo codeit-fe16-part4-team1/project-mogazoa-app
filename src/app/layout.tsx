@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Providers } from './Providers';
 import './globals.css';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -14,6 +15,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
+      <head>
+        <Script
+          src='https://t1.kakaocdn.net/kakao_js_sdk/2.7.6/kakao.min.js'
+          integrity='sha384-WAtVcQYcmTO/N+C1N+1m6Gp8qxh+3NlnP7X1U7qP6P5dQY/MsRBNTh+e1ahJrkEm'
+          crossOrigin='anonymous'
+          strategy='beforeInteractive'
+        />
+      </head>
       <body>
         <Providers>{children}</Providers>
       </body>
