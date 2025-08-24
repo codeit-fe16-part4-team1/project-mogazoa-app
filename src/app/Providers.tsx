@@ -1,4 +1,5 @@
 'use client';
+import useUserInitialize from '@/hooks/useUserInitialize';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { useState } from 'react';
@@ -9,6 +10,7 @@ interface Props {
 
 export const Providers = ({ children }: Props) => {
   const [queryClient] = useState(() => new QueryClient());
+  useUserInitialize();
   return (
     <QueryClientProvider client={queryClient}>
       {children}

@@ -43,6 +43,13 @@ jobs:
             git reset --hard origin/main
             echo "[DEBUG][GIT] ✅ Git 최신화 완료"
 
+            # 환경 변수 파일 생성
+            echo "[DEBUG][ENV] ⌛ .env 파일 생성 진행 중..."
+            cat > .env <<EOF
+            NEXT_PUBLIC_API_BASE_URL=${{ vars.NEXT_PUBLIC_API_BASE_URL }}
+            EOF
+            echo "[DEBUG][ENV] ✅ .env 파일 생성 완료"
+
             # 빌드
             echo "[DEBUG][NPM] ⌛ 의존성 설치 진행 중..."
             HUSKY=0 npm ci
