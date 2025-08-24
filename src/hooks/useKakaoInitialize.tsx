@@ -10,7 +10,7 @@ const useKakaoInitialize = () => {
       );
       return;
     }
-    console.log('[DEBUG] Initializing Kakao SDK with key:', JS_APP_KEY.substring(0, 8) + '...');
+    console.log('[DEBUG] Initializing Kakao SDK with key...');
     window.Kakao.init(JS_APP_KEY);
     const isInitialized = window.Kakao.isInitialized();
     if (!isInitialized) {
