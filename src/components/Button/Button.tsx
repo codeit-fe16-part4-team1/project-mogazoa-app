@@ -23,6 +23,8 @@ const buttonVariants = cva(
         S: 'w-[335px] h-[50px] py-6 text-body1-medium',
         M: 'w-[440px] h-[55px] py-6 text-body1-medium',
         L: 'w-[640px] h-[60px] py-5 text-sub-headline-medium',
+        // 반응형 스타일
+        mq: 'w-[335px] h-[50px] py-6 text-body1-medium md:w-[440px] md:h-[55px] md:py-6 lg:w-[640px] lg:h[-60px] lg:py-6 lg:text-sub-headline-medium transition-all duration-900',
       },
     },
 
