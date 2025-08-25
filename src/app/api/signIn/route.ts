@@ -1,31 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
-import { User } from '@/types/api';
+import { AuthResponse } from '@/types/api';
+import { DEFAULT_COOKIE_OPTIONS } from '@/utils/cookieOptions';
 
 const BaseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-interface SignInResponse {
-  accessToken: string;
-  user: User;
-}
 
 export const POST = async (req: NextRequest) => {
   try {
     const body = await req.json();
-
-    console.log(`${BaseURL}/auth/signUp`);
-    const response = await axios.post<SignInResponse>(`${BaseURL}/auth/signIn`, body);
+    const response = await axios.post<AuthResponse>(`${BaseURL}/auth/signIn`, body);
     const { accessToken, user } = response.data;
 
     const res = NextResponse.json(user, { status: 200 });
-    res.cookies.set('accessToken', accessToken, {
-      httpOnly: false,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 60 * 10,
-    });
-
+    res.cookies.set('accessToken', accessToken, DEFAULT_COOKIE_OPTIONS);
+    res.cookies.set('loginType', 'default', DEFAULT_COOKIE_OPTIONS);
     return res;
   } catch (err) {
     if (axios.isAxiosError(err) && err.response) {
