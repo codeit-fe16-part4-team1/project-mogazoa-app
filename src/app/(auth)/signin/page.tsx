@@ -58,8 +58,8 @@ const SigninPage = () => {
   };
 
   return (
-    <div className='max-w-sm mx-auto space-y-4'>
-      <form className='p-4 space-y-4 border rounded-md shadow-sm' onSubmit={handleSubmit(onSubmit)}>
+    <div className='mx-auto max-w-sm space-y-4'>
+      <form className='space-y-4 rounded-md border p-4 shadow-sm' onSubmit={handleSubmit(onSubmit)}>
         {/* 이메일 입력 */}
         <FormField>
           <FormLabel htmlFor='email'>이메일</FormLabel>
@@ -89,7 +89,7 @@ const SigninPage = () => {
         <button
           type='submit'
           disabled={isSubmitting || !isValid}
-          className='w-full p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-400'
+          className='w-full rounded-md bg-blue-500 p-2 text-white hover:bg-blue-600 disabled:bg-gray-400'
         >
           {isSubmitting ? '로그인 중...' : '로그인'}
         </button>
@@ -98,7 +98,7 @@ const SigninPage = () => {
       {/* 카카오 로그인 버튼 */}
       <button
         onClick={handleSigninClick}
-        className='w-full p-3 bg-yellow-400 text-black rounded-md hover:bg-yellow-500 font-medium flex items-center justify-center gap-2'
+        className='flex w-full items-center justify-center gap-2 rounded-md bg-yellow-400 p-3 font-medium text-black hover:bg-yellow-500'
       >
         <span>🗨️</span>
         카카오로 로그인

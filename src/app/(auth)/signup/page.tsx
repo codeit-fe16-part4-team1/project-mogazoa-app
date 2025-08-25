@@ -69,7 +69,7 @@ const SignupPage = () => {
 
   return (
     <form
-      className='max-w-sm mx-auto p-4 space-y-4 border rounded-md shadow-sm'
+      className='mx-auto max-w-sm space-y-4 rounded-md border p-4 shadow-sm'
       onSubmit={handleSubmit(onSubmit)}
     >
       {/* 이메일 입력 */}
@@ -131,7 +131,7 @@ const SignupPage = () => {
       <button
         type='submit'
         disabled={isSubmitting || !isValid}
-        className='w-full p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-400'
+        className='w-full rounded-md bg-blue-500 p-2 text-white hover:bg-blue-600 disabled:bg-gray-400'
       >
         {isSubmitting ? '회원가입 중...' : '회원가입'}
       </button>

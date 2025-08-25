@@ -23,7 +23,7 @@ const FormInput = ({
   return (
     <input
       id={id}
-      className={cn('w-full p-2 border rounded-md', className)}
+      className={cn('w-full rounded-md border p-2', className)}
       type={type}
       placeholder={placeholder}
       autoComplete={autoComplete}

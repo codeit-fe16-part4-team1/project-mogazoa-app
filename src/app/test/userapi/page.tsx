@@ -78,8 +78,8 @@ export default function UserApiTestPage() {
 
     if (Array.isArray(response)) {
       return (
-        <div className='mt-4 p-4 bg-gray-50 rounded'>
-          <h4 className='font-semibold mb-2'>Response (Array):</h4>
+        <div className='mt-4 rounded bg-gray-50 p-4'>
+          <h4 className='mb-2 font-semibold'>Response (Array):</h4>
           <pre className='text-sm'>{JSON.stringify(response, null, 2)}</pre>
         </div>
       );
@@ -102,8 +102,8 @@ export default function UserApiTestPage() {
       if (isFollowResponse) {
         const followResponse = response as GetUserFollowResponse;
         return (
-          <div className='mt-4 p-4 bg-gray-50 rounded'>
-            <h4 className='font-semibold mb-2'>Response (Follow Users):</h4>
+          <div className='mt-4 rounded bg-gray-50 p-4'>
+            <h4 className='mb-2 font-semibold'>Response (Follow Users):</h4>
             <pre className='text-sm'>{JSON.stringify(followResponse, null, 2)}</pre>
           </div>
         );
@@ -114,16 +114,16 @@ export default function UserApiTestPage() {
     if (typeof response === 'object' && 'list' in response) {
       const productsList = response as ProductsList;
       return (
-        <div className='mt-4 p-4 bg-gray-50 rounded'>
-          <h4 className='font-semibold mb-2'>Response (ProductsList):</h4>
+        <div className='mt-4 rounded bg-gray-50 p-4'>
+          <h4 className='mb-2 font-semibold'>Response (ProductsList):</h4>
           <pre className='text-sm'>{JSON.stringify(productsList, null, 2)}</pre>
         </div>
       );
     }
 
     return (
-      <div className='mt-4 p-4 bg-gray-50 rounded'>
-        <h4 className='font-semibold mb-2'>Response:</h4>
+      <div className='mt-4 rounded bg-gray-50 p-4'>
+        <h4 className='mb-2 font-semibold'>Response:</h4>
         <pre className='text-sm'>{JSON.stringify(response, null, 2)}</pre>
       </div>
     );
@@ -135,21 +135,21 @@ export default function UserApiTestPage() {
     apiFunction: () => Promise<ApiResponse>,
     formInputs?: JSX.Element,
   ) => (
-    <div className='border rounded-lg p-6 mb-6'>
-      <h2 className='text-xl font-semibold mb-4'>{title}</h2>
+    <div className='mb-6 rounded-lg border p-6'>
+      <h2 className='mb-4 text-xl font-semibold'>{title}</h2>
 
       {formInputs && <div className='mb-4'>{formInputs}</div>}
 
       <button
         onClick={() => handleApiCall(apiName, apiFunction)}
         disabled={loading[apiName]}
-        className='px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-blue-300'
+        className='rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:bg-blue-300'
       >
         {loading[apiName] ? 'Loading...' : `Call ${title} API`}
       </button>
 
       {errors[apiName] && (
-        <div className='mt-4 p-4 bg-red-50 border border-red-200 rounded text-red-700'>
+        <div className='mt-4 rounded border border-red-200 bg-red-50 p-4 text-red-700'>
           <strong>Error:</strong> {errors[apiName]}
         </div>
       )}
@@ -159,8 +159,8 @@ export default function UserApiTestPage() {
   );
 
   return (
-    <div className='container mx-auto p-6 max-w-4xl'>
-      <h1 className='text-3xl font-bold mb-8'>User API Test Page</h1>
+    <div className='container mx-auto max-w-4xl p-6'>
+      <h1 className='mb-8 text-3xl font-bold'>User API Test Page</h1>
 
       {renderApiSection('Get My Profile', 'getMyProfile', () => getMyProfileAPI())}
 
@@ -170,7 +170,7 @@ export default function UserApiTestPage() {
         () => getUserFollowsAPI(getUserFollowsForm),
         <div className='grid grid-cols-3 gap-4'>
           <div>
-            <label className='block text-sm font-medium mb-1'>User ID:</label>
+            <label className='mb-1 block text-sm font-medium'>User ID:</label>
             <input
               type='number'
               value={getUserFollowsForm.userId}
@@ -180,11 +180,11 @@ export default function UserApiTestPage() {
                   userId: parseInt(e.target.value) || 0,
                 }))
               }
-              className='w-full p-2 border rounded'
+              className='w-full rounded border p-2'
             />
           </div>
           <div>
-            <label className='block text-sm font-medium mb-1'>Cursor:</label>
+            <label className='mb-1 block text-sm font-medium'>Cursor:</label>
             <input
               type='number'
               value={getUserFollowsForm.cursor || 0}
@@ -194,11 +194,11 @@ export default function UserApiTestPage() {
                   cursor: parseInt(e.target.value) || 0,
                 }))
               }
-              className='w-full p-2 border rounded'
+              className='w-full rounded border p-2'
             />
           </div>
           <div>
-            <label className='block text-sm font-medium mb-1'>Type:</label>
+            <label className='mb-1 block text-sm font-medium'>Type:</label>
             <select
               value={getUserFollowsForm.type}
               onChange={(e) =>
@@ -207,7 +207,7 @@ export default function UserApiTestPage() {
                   type: e.target.value as 'followers' | 'followees',
                 }))
               }
-              className='w-full p-2 border rounded'
+              className='w-full rounded border p-2'
             >
               <option value='followers'>Followers</option>
               <option value='followees'>Followees</option>
@@ -222,7 +222,7 @@ export default function UserApiTestPage() {
         () => getUserProductsAPI(getUserProductsForm),
         <div className='grid grid-cols-3 gap-4'>
           <div>
-            <label className='block text-sm font-medium mb-1'>User ID:</label>
+            <label className='mb-1 block text-sm font-medium'>User ID:</label>
             <input
               type='number'
               value={getUserProductsForm.userId}
@@ -232,11 +232,11 @@ export default function UserApiTestPage() {
                   userId: parseInt(e.target.value) || 0,
                 }))
               }
-              className='w-full p-2 border rounded'
+              className='w-full rounded border p-2'
             />
           </div>
           <div>
-            <label className='block text-sm font-medium mb-1'>Cursor:</label>
+            <label className='mb-1 block text-sm font-medium'>Cursor:</label>
             <input
               type='number'
               value={getUserProductsForm.cursor || 0}
@@ -246,11 +246,11 @@ export default function UserApiTestPage() {
                   cursor: parseInt(e.target.value) || 0,
                 }))
               }
-              className='w-full p-2 border rounded'
+              className='w-full rounded border p-2'
             />
           </div>
           <div>
-            <label className='block text-sm font-medium mb-1'>Type:</label>
+            <label className='mb-1 block text-sm font-medium'>Type:</label>
             <select
               value={getUserProductsForm.type}
               onChange={(e) =>
@@ -259,7 +259,7 @@ export default function UserApiTestPage() {
                   type: e.target.value as 'created' | 'reviewed' | 'favorite',
                 }))
               }
-              className='w-full p-2 border rounded'
+              className='w-full rounded border p-2'
             >
               <option value='created'>Created</option>
               <option value='reviewed'>Reviewed</option>
@@ -274,7 +274,7 @@ export default function UserApiTestPage() {
         'getUserProfile',
         () => getUserProfileAPI(getUserProfileForm),
         <div>
-          <label className='block text-sm font-medium mb-1'>User ID:</label>
+          <label className='mb-1 block text-sm font-medium'>User ID:</label>
           <input
             type='number'
             value={getUserProfileForm.userId}
@@ -284,7 +284,7 @@ export default function UserApiTestPage() {
                 userId: parseInt(e.target.value) || 0,
               }))
             }
-            className='w-full p-2 border rounded max-w-xs'
+            className='w-full max-w-xs rounded border p-2'
           />
         </div>,
       )}
@@ -297,7 +297,7 @@ export default function UserApiTestPage() {
         () => updateMyProfileAPI(updateMyProfileForm),
         <div className='grid grid-cols-1 gap-4'>
           <div>
-            <label className='block text-sm font-medium mb-1'>Description:</label>
+            <label className='mb-1 block text-sm font-medium'>Description:</label>
             <textarea
               value={updateMyProfileForm.description}
               onChange={(e) =>
@@ -306,12 +306,12 @@ export default function UserApiTestPage() {
                   description: e.target.value,
                 }))
               }
-              className='w-full p-2 border rounded'
+              className='w-full rounded border p-2'
               rows={3}
             />
           </div>
           <div>
-            <label className='block text-sm font-medium mb-1'>Nickname:</label>
+            <label className='mb-1 block text-sm font-medium'>Nickname:</label>
             <input
               type='text'
               value={updateMyProfileForm.nickname}
@@ -321,11 +321,11 @@ export default function UserApiTestPage() {
                   nickname: e.target.value,
                 }))
               }
-              className='w-full p-2 border rounded'
+              className='w-full rounded border p-2'
             />
           </div>
           <div>
-            <label className='block text-sm font-medium mb-1'>Image URL:</label>
+            <label className='mb-1 block text-sm font-medium'>Image URL:</label>
             <input
               type='text'
               value={updateMyProfileForm.image}
@@ -335,7 +335,7 @@ export default function UserApiTestPage() {
                   image: e.target.value,
                 }))
               }
-              className='w-full p-2 border rounded'
+              className='w-full rounded border p-2'
             />
           </div>
         </div>,

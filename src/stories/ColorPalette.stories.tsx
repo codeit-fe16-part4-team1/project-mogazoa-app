@@ -39,9 +39,9 @@ interface ColorBoxProps {
 }
 
 const ColorBox: React.FC<ColorBoxProps> = ({ name, hex }) => (
-  <div className='flex flex-col items-center m-2 p-2'>
+  <div className='m-2 flex flex-col items-center p-2'>
     <div
-      className='w-24 h-24 rounded-lg shadow-md border border-gray-200'
+      className='h-24 w-24 rounded-lg border border-gray-200 shadow-md'
       style={{ backgroundColor: hex }}
     />
     <p className='mt-2 text-sm font-semibold'>{name}</p>
@@ -51,23 +51,23 @@ const ColorBox: React.FC<ColorBoxProps> = ({ name, hex }) => (
 
 export const ColorPalette = () => (
   <div className='p-8'>
-    <h1 className='text-3xl font-bold mb-6'>Color Palette</h1>
+    <h1 className='mb-6 text-3xl font-bold'>Color Palette</h1>
 
-    <h2 className='text-xl font-bold mt-4 mb-2'>Primary Orange</h2>
+    <h2 className='mt-4 mb-2 text-xl font-bold'>Primary Orange</h2>
     <div className='flex flex-wrap'>
       {Object.entries(colors['primary-orange']).map(([name, hex]) => (
         <ColorBox key={name} name={name} hex={hex} />
       ))}
     </div>
 
-    <h2 className='text-xl font-bold mt-4 mb-2'>Grayscale</h2>
+    <h2 className='mt-4 mb-2 text-xl font-bold'>Grayscale</h2>
     <div className='flex flex-wrap'>
       {Object.entries(colors.gray).map(([name, hex]) => (
         <ColorBox key={name} name={name} hex={hex} />
       ))}
     </div>
 
-    <h2 className='text-xl font-bold mt-4 mb-2'>Utilities</h2>
+    <h2 className='mt-4 mb-2 text-xl font-bold'>Utilities</h2>
     <div className='flex flex-wrap'>
       <ColorBox name='State Error' hex={colors['state-error']} />
     </div>
