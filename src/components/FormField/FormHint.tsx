@@ -6,7 +6,7 @@ interface HintProps {
 }
 
 const FormHint = ({ className, children }: HintProps) => {
-  return <p className={cn('text-red-500 text-sm mt-1', className)}>{children}</p>;
+  return <p className={cn('mt-1 text-sm text-red-500', className)}>{children}</p>;
 };
 
 export default FormHint;
