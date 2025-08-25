@@ -4,6 +4,7 @@ import localFont from 'next/font/local';
 import './globals.css';
 import Script from 'next/script';
 import { Suspense } from 'react';
+import Header from '@/components/Header/Header';
 
 const cafe24Supermagic = localFont({
   src: [
@@ -44,6 +45,8 @@ export default function RootLayout({
       <body>
         <Providers>
           <Suspense fallback={<div>로딩 중...</div>}>{children}</Suspense>
+          <Header />
+          {children}
         </Providers>
       </body>
     </html>
