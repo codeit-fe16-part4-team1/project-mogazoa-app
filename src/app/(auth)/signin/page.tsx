@@ -50,12 +50,16 @@ const SigninPage = () => {
     }
   };
 
+  const handleSigninClick = () => {
+    const redirectUri = `${window.location.origin}/oauth/signin/kakao/callback`;
+    Kakao.Auth.authorize({
+      redirectUri,
+    });
+  };
+
   return (
-    <div>
-      <form
-        className='mx-auto max-w-sm space-y-4 rounded-md border p-4 shadow-sm'
-        onSubmit={handleSubmit(onSubmit)}
-      >
+    <div className='mx-auto max-w-sm space-y-4'>
+      <form className='space-y-4 rounded-md border p-4 shadow-sm' onSubmit={handleSubmit(onSubmit)}>
         {/* 이메일 입력 */}
         <FormField>
           <FormLabel htmlFor='email'>이메일</FormLabel>
@@ -90,6 +94,15 @@ const SigninPage = () => {
           {isSubmitting ? '로그인 중...' : '로그인'}
         </button>
       </form>
+
+      {/* 카카오 로그인 버튼 */}
+      <button
+        onClick={handleSigninClick}
+        className='flex w-full items-center justify-center gap-2 rounded-md bg-yellow-400 p-3 font-medium text-black hover:bg-yellow-500'
+      >
+        <span>🗨️</span>
+        카카오로 로그인
+      </button>
     </div>
   );
 };

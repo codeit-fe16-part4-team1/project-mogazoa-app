@@ -9,6 +9,11 @@ export interface User {
   createdAt: string;
 }
 
+export interface AuthResponse {
+  accessToken: string;
+  user: User;
+}
+
 export interface Profile {
   updatedAt: string;
   createdAt: string;
