@@ -1,15 +1,15 @@
 'use client';
 import useUserInitialize from '@/hooks/useUserInitialize';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { getQueryClient } from '@/lib/queryClient';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { useState } from 'react';
 
 interface Props {
   children: React.ReactNode;
 }
 
 export const Providers = ({ children }: Props) => {
-  const [queryClient] = useState(() => new QueryClient());
+  const queryClient = getQueryClient();
   useUserInitialize();
   return (
     <QueryClientProvider client={queryClient}>
