@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Providers } from './Providers';
 import localFont from 'next/font/local';
 import './globals.css';
+import Header from '@/components/Header/Header';
 
 const cafe24Supermagic = localFont({
   src: [
@@ -32,7 +33,10 @@ export default function RootLayout({
   return (
     <html lang='ko' className={`${cafe24Supermagic.variable}`}>
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          <Header />
+          {children}
+        </Providers>
       </body>
     </html>
   );
