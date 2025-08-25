@@ -9,7 +9,7 @@ const meta: Meta<typeof Button> = {
     onClick: { action: 'clicked' },
     size: {
       control: 'select',
-      options: ['S', 'M', 'L'],
+      options: ['S', 'M', 'L', 'mq'],
     },
     state: {
       control: 'select',
