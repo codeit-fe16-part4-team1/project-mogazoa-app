@@ -44,9 +44,8 @@ export default function RootLayout({
       </head>
       <body>
         <Providers>
-          <Suspense fallback={<div>로딩 중...</div>}>{children}</Suspense>
           <Header />
-          {children}
+          <Suspense fallback={<div>로딩 중...</div>}>{children}</Suspense>
         </Providers>
       </body>
     </html>
