@@ -50,8 +50,8 @@ const SigninPage = () => {
     }
   };
 
-  const redirectUri = `${window.location.origin}/oauth/signin/kakao/callback`;
   const handleSigninClick = () => {
+    const redirectUri = `${window.location.origin}/oauth/signin/kakao/callback`;
     Kakao.Auth.authorize({
       redirectUri,
     });

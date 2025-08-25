@@ -27,8 +27,8 @@ const SigninKakao = () => {
     mode: 'onChange',
   });
 
-  const redirectUri = `${window.location.origin}/oauth/signup/kakao/callback`;
   const onSubmit = (data: KakaoSignupFormInputs) => {
+    const redirectUri = `${window.location.origin}/oauth/signup/kakao/callback`;
     Kakao.Auth.authorize({
       redirectUri,
       state: data.nickname,
