@@ -18,6 +18,7 @@ export const getUserProductsAPI = async ({
   cursor,
   type,
 }: GetUserProductsPayload): Promise<ProductsList> => {
-  const res = await baseAPI.get(`/users/${userId}/${TYPE_MAP[type]}?cursor=${cursor}`);
+  const cursorQuery = cursor ? `?cursor=${cursor}` : '';
+  const res = await baseAPI.get(`/users/${userId}/${TYPE_MAP[type]}${cursorQuery}`);
   return res.data;
 };

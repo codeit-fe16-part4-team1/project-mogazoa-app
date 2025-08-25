@@ -2,7 +2,11 @@
 
 import { JSX, useState } from 'react';
 import { getMyProfileAPI } from '@/api/user/getMyProfileAPI';
-import { getUserFollowsAPI, GetUserFollowPayload } from '@/api/user/getUserFollowsAPI';
+import {
+  getUserFollowsAPI,
+  GetUserFollowPayload,
+  GetUserFollowResponse,
+} from '@/api/user/getUserFollowsAPI';
 import { getUserProductsAPI, GetUserProductsPayload } from '@/api/user/getUserProductsAPI';
 import { getUserProfileAPI } from '@/api/user/getUserProfileAPI';
 import { getUserRankingAPI, GetUserRankingResponse } from '@/api/user/getUserRankingAPI';
@@ -14,6 +18,7 @@ import {
 import { Profile, ProductsList } from '@/types/api';
 
 type ApiResponse =
+  | GetUserFollowResponse
   | Profile
   | ProductsList
   | GetUserRankingResponse[]
@@ -67,45 +72,51 @@ export default function UserApiTestPage() {
   const renderResponse = (response: ApiResponse) => {
     if (!response) return null;
 
+    // 디버깅을 위한 로그 추가
+    console.log('Response type check:', response);
+    console.log('Response keys:', Object.keys(response as object));
+
     if (Array.isArray(response)) {
       return (
         <div className='mt-4 p-4 bg-gray-50 rounded'>
           <h4 className='font-semibold mb-2'>Response (Array):</h4>
-          {response.length === 0 ? (
-            <p>Empty array</p>
-          ) : (
-            <ul className='space-y-2'>
-              {response.map((item, index) => (
-                <li key={index} className='p-2 bg-white rounded border'>
-                  <pre className='text-sm'>{JSON.stringify(item, null, 2)}</pre>
-                </li>
-              ))}
-            </ul>
-          )}
+          <pre className='text-sm'>{JSON.stringify(response, null, 2)}</pre>
         </div>
       );
     }
 
+    // Follow Users 응답 체크 - 빈 배열이어도 GetUserFollowResponse 타입으로 감지
+    if (
+      typeof response === 'object' &&
+      'nextCursor' in response &&
+      'list' in response &&
+      Array.isArray((response as GetUserFollowResponse).list)
+    ) {
+      // list가 비어있지 않으면 첫 번째 아이템에서 followers/followees 키 확인
+      const testResponse = response as GetUserFollowResponse;
+      const isFollowResponse =
+        testResponse.list.length === 0 ||
+        (testResponse.list.length > 0 &&
+          ('follower' in testResponse.list[0] || 'followee' in testResponse.list[0]));
+
+      if (isFollowResponse) {
+        const followResponse = response as GetUserFollowResponse;
+        return (
+          <div className='mt-4 p-4 bg-gray-50 rounded'>
+            <h4 className='font-semibold mb-2'>Response (Follow Users):</h4>
+            <pre className='text-sm'>{JSON.stringify(followResponse, null, 2)}</pre>
+          </div>
+        );
+      }
+    }
+
+    // ProductsList 응답 체크
     if (typeof response === 'object' && 'list' in response) {
       const productsList = response as ProductsList;
       return (
         <div className='mt-4 p-4 bg-gray-50 rounded'>
           <h4 className='font-semibold mb-2'>Response (ProductsList):</h4>
-          <p className='mb-2'>
-            <strong>Next Cursor:</strong> {productsList.nextCursor}
-          </p>
-          <h5 className='font-medium mb-2'>Products:</h5>
-          {productsList.list.length === 0 ? (
-            <p>No products</p>
-          ) : (
-            <ul className='space-y-2'>
-              {productsList.list.map((item, index) => (
-                <li key={index} className='p-2 bg-white rounded border'>
-                  <pre className='text-sm'>{JSON.stringify(item, null, 2)}</pre>
-                </li>
-              ))}
-            </ul>
-          )}
+          <pre className='text-sm'>{JSON.stringify(productsList, null, 2)}</pre>
         </div>
       );
     }
