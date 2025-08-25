@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import useAuthStore from '@/store/useAuthStore';
 
@@ -43,7 +43,11 @@ const SigninKakaoCallback = () => {
 
     handleKakaoSignUp();
   }, [code, error, redirectUri, router, signupKakao, state]); // 의존성 배열도 추가
-  return <div>간편 회원가입중...</div>;
+  return (
+    <Suspense fallback={<div>페이지 로딩 중...</div>}>
+      <div>간편 회원가입중...</div>
+    </Suspense>
+  );
 };
 
 export default SigninKakaoCallback;
