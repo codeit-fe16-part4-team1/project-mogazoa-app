@@ -7,43 +7,54 @@ const meta: Meta<typeof Button> = {
   tags: ['autodocs'],
   argTypes: {
     onClick: { action: 'clicked' },
+    size: {
+      control: 'select',
+      options: ['S', 'M', 'L', 'mq'],
+    },
+    state: {
+      control: 'select',
+      options: ['default', 'active', 'disabled'],
+    },
+    // disabled prop을 boolean 토글로 설정
+    disabled: {
+      control: 'boolean',
+    },
+    // intent는 각 스토리에서 고정되므로, 컨트롤 패널에서 숨깁니다.
+    intent: { table: { disable: true } },
+    // children도 숨깁니다.
+    children: { table: { disable: true } },
   },
 };
 
 export default meta;
 type Story = StoryObj<typeof Button>;
 
-export const Default: Story = {
+// Primary 버튼 스토리
+export const Primary: Story = {
   args: {
-    children: '기본 버튼1',
+    intent: 'primary',
+    size: 'S', // 초기 사이즈
+    state: 'default', // 초기 상태
+    children: 'Primary Button', // 초기 텍스트
   },
 };
 
-export const Outline: Story = {
+// Secondary 버튼 스토리
+export const Secondary: Story = {
   args: {
-    children: '아웃라인 버튼',
-    variant: 'outline',
+    intent: 'secondary',
+    size: 'S',
+    state: 'default',
+    children: 'Secondary Button',
   },
 };
 
-export const Destructive: Story = {
+// Tertiary 버튼 스토리
+export const Tertiary: Story = {
   args: {
-    children: '삭제 버튼',
-    variant: 'destructive',
-  },
-};
-
-export const Large: Story = {
-  args: {
-    children: '큰 버튼',
-    size: 'lg',
-  },
-};
-
-export const SmallDisabled: Story = {
-  args: {
-    children: '작은 비활성 버튼',
-    size: 'sm',
-    disabled: true,
+    intent: 'tertiary',
+    size: 'S',
+    state: 'default',
+    children: 'Tertiary Button',
   },
 };
