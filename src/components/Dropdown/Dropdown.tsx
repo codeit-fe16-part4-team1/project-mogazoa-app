@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import DropdownIcon from '@/assets/icons/DropdownIcon.svg';
+import DropdownIcon from './DropdownIcon';
 import DropdownItem from './DropdownItem';
 
 interface DropdownProps {
   items: string[];
   placeholder: string;
-  size?: 'S' | 'L' | 'mq';
+  size?: 'S' | 'L';
 }
 
 const Dropdown: React.FC<DropdownProps> = ({
@@ -41,7 +41,7 @@ const Dropdown: React.FC<DropdownProps> = ({
     <div className='relative w-[550px]' ref={dropdownRef}>
       <button
         type='button'
-        className='rounded-x2 text-body1-medium inline-flex h-[50px] w-full items-center justify-between gap-3 border border-gray-400 bg-white py-5 pr-4 pl-6 text-gray-800'
+        className='rounded-x2 text-body2-medium inline-flex h-[50px] w-full items-center justify-between gap-3 border border-gray-400 bg-white py-5 pr-4 pl-6 text-gray-800'
         onClick={() => setIsOpen(!isOpen)}
       >
         <span>{selectedItem || placeholder}</span>

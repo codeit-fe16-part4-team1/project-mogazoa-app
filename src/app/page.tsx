@@ -15,12 +15,9 @@ const Home = () => {
       <p className='text-body2'>body 2</p>
       <p className='text-caption'>caption</p>
 
-      <div className='flex flex-col gap-5 px-10'>
-        <h1 className='font-cafe-24-supermagic text-h1 text-primary-orange-700'>
-          {' '}
-          드롭다운 컴포넌트 예제
-        </h1>
+      <div className='flex gap-5 px-10'>
         <Dropdown items={examepleItems} placeholder='카테고리 선택' size='S'></Dropdown>
+        <Dropdown items={examepleItems} placeholder='카테고리 선택' size='L'></Dropdown>
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+
 import Dropdown from './Dropdown';
 
 const meta: Meta<typeof Dropdown> = {
@@ -6,11 +7,13 @@ const meta: Meta<typeof Dropdown> = {
   component: Dropdown,
   tags: ['autodocs'],
   argTypes: {
-    items: { control: { type: 'array' }, description: '드롭다운에 표시될 아이템들의 배열입니다.' },
-    placeholder: { control: 'text', description: '선택전 표시될 기본 텍스트입니다.' },
+    placeholder: {
+      control: 'text',
+      description: '선택전 표시될 기본 텍스트입니다.',
+    },
     size: {
       control: 'select',
-      options: ['S', 'L', 'mq'],
+      options: ['S', 'L'],
       description: '드롭다운 아이템의 크기입니다.',
     },
   },
@@ -32,11 +35,5 @@ export const S: StoryObj<typeof Dropdown> = {
 export const L: StoryObj<typeof Dropdown> = {
   args: {
     size: 'L',
-  },
-};
-
-export const Mq: StoryObj<typeof Dropdown> = {
-  args: {
-    size: 'mq',
   },
 };

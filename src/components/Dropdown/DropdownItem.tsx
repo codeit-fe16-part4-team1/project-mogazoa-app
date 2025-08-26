@@ -7,13 +7,24 @@ const dropdownItemVariants = cva('block cursor-pointer py-2.5 px-5 rounded-x1', 
     size: {
       S: 'text-body2',
       L: 'text-body1',
-      mq: 'text-body2 md:text-body1',
     },
     isSelected: {
-      true: 'bg-primary-orange-200 text-primary-orange-600 text-body2-bold',
+      true: 'bg-primary-orange-200 text-primary-orange-600',
       false: 'bg-white text-gray-600 hover:bg-gray-100',
     },
   },
+  compoundVariants: [
+    {
+      size: 'S',
+      isSelected: true,
+      className: 'text-body2-medium',
+    },
+    {
+      size: 'L',
+      isSelected: true,
+      className: 'text-body1-medium',
+    },
+  ],
   defaultVariants: {
     size: 'S',
   },
