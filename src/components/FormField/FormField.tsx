@@ -12,9 +12,10 @@ interface FieldProps {
   id: string;
   type: keyof typeof FORMFIELD_ICON_MAP;
   placeholder?: string;
-  autoComplete: string;
+  autoComplete?: string;
   register?: UseFormRegisterReturn;
   error?: FieldError;
+  defaultHint?: string;
 }
 
 const FORMFIELD_ICON_MAP = {
@@ -28,12 +29,21 @@ const PASSWORD_VISIBLE_ICON_MAP = {
   true: iconVisible,
 };
 
-const FormField = ({ label, id, type, placeholder, autoComplete, register, error }: FieldProps) => {
+const FormField = ({
+  label,
+  id,
+  type,
+  placeholder,
+  autoComplete,
+  register,
+  error,
+  defaultHint,
+}: FieldProps) => {
   const [isDirty, setIsDirty] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
-  const errorState = !isDirty ? 'undefined' : !!error;
-  const hint = error?.message;
+  const errorState = isDirty ? !!error : 'undefined';
+  const hint = isDirty ? error?.message : defaultHint;
 
   const InputRegister = {
     ...register,
