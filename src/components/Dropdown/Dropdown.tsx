@@ -7,7 +7,7 @@ import DropdownItem from './DropdownItem';
 interface DropdownProps {
   items: string[];
   placeholder: string;
-  size?: 'S' | 'L';
+  size?: 'S' | 'L' | 'mq'; // 'mq' size is removed from DropdownItemProps
 }
 
 const Dropdown: React.FC<DropdownProps> = ({

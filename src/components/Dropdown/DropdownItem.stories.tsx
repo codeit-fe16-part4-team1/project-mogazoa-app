@@ -12,7 +12,7 @@ const meta: Meta<typeof DropdownItem> = {
     },
     size: {
       control: 'select',
-      options: ['S', 'L'],
+      options: ['S', 'L', 'mq'],
       description: '아이템의 크기입니다.',
     },
     isSelected: {

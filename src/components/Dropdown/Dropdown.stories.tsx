@@ -13,7 +13,7 @@ const meta: Meta<typeof Dropdown> = {
     },
     size: {
       control: 'select',
-      options: ['S', 'L'],
+      options: ['S', 'L', 'mq'],
       description: '드롭다운 아이템의 크기입니다.',
     },
   },
