@@ -83,9 +83,9 @@ const SignupPage = () => {
         id='nickname'
         type='text'
         placeholder='닉네임을 입력해 주세요'
-        autoComplete='email'
         register={register('nickname')}
         error={errors.nickname}
+        defaultHint='최대 10자 입력이 가능해요'
       />
       <FormField
         label='비밀번호'
@@ -102,6 +102,7 @@ const SignupPage = () => {
           },
         })}
         error={errors.password}
+        defaultHint='최소 8자 이상 입력해주세요'
       />
       <FormField
         label='비밀번호 확인'
