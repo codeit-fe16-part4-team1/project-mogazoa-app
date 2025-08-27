@@ -37,7 +37,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           {...TextAreaRegister}
           {...rest}
         />
-        <div className='text-body2 text-right text-gray-700'>{`${currentLength}/${maxLength}`}</div>
+        <p className='text-body2 text-right text-gray-700'>{`${currentLength}/${maxLength}`}</p>
       </div>
     );
   },
