@@ -1,4 +1,5 @@
 'use client';
+import useKakaoInitialize from '@/hooks/useKakaoInitialize';
 import useUserInitialize from '@/hooks/useUserInitialize';
 import { getQueryClient } from '@/lib/queryClient';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -11,6 +12,7 @@ interface Props {
 export const Providers = ({ children }: Props) => {
   const queryClient = getQueryClient();
   useUserInitialize();
+  useKakaoInitialize();
   return (
     <QueryClientProvider client={queryClient}>
       {children}

@@ -31,10 +31,10 @@ const typeStyles = [
 
 export const TypeSpecimens = () => (
   <div className='p-8'>
-    <h1 className='text-3xl font-bold mb-6'>Typography</h1>
+    <h1 className='mb-6 text-3xl font-bold'>Typography</h1>
     {typeStyles.map((style) => (
       <div key={style.name} className='mb-4'>
-        <h2 className='text-lg font-bold mb-1'>{style.name}</h2>
+        <h2 className='mb-1 text-lg font-bold'>{style.name}</h2>
         <p className={style.className}>가나다라마바사아자차카타파하 ABCabc 12345</p>
       </div>
     ))}

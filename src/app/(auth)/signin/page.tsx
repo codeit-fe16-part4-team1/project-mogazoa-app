@@ -1,8 +1,5 @@
 'use client';
 import FormField from '@/components/FormField/FormField';
-import FormHint from '@/components/FormField/FormHint';
-import FormInput from '@/components/FormField/FormInput';
-import FormLabel from '@/components/FormField/FormLabel';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
@@ -50,46 +47,55 @@ const SigninPage = () => {
     }
   };
 
+  const handleSigninClick = () => {
+    const redirectUri = `${window.location.origin}/oauth/signin/kakao/callback`;
+    Kakao.Auth.authorize({
+      redirectUri,
+    });
+  };
+
   return (
-    <div>
-      <form
-        className='max-w-sm mx-auto p-4 space-y-4 border rounded-md shadow-sm'
-        onSubmit={handleSubmit(onSubmit)}
-      >
+    <div className='mx-auto max-w-sm space-y-4'>
+      <form className='space-y-4 rounded-md border p-4 shadow-sm' onSubmit={handleSubmit(onSubmit)}>
         {/* 이메일 입력 */}
-        <FormField>
-          <FormLabel htmlFor='email'>이메일</FormLabel>
-          <FormInput
-            id='email'
-            type='email'
-            placeholder='이메일을 입력해주세요'
-            autoComplete='email'
-            register={register('email')}
-          />
-          <FormHint>{errors.email?.message}</FormHint>
-        </FormField>
+        <FormField
+          label='이메일'
+          id='email'
+          type='email'
+          placeholder='이메일을 입력해 주세요'
+          autoComplete='email'
+          register={register('email')}
+          error={errors.email}
+        />
         {/* 비밀번호 입력 */}
-        <FormField>
-          <FormLabel htmlFor='password'>비밀번호</FormLabel>
-          <FormInput
-            id='password'
-            type='password'
-            placeholder='비밀번호를 입력해 주세요'
-            autoComplete='current-password'
-            register={register('password')}
-          />
-          <FormHint>{errors.password?.message}</FormHint>
-        </FormField>
+        <FormField
+          label='비밀번호'
+          id='password'
+          type='password'
+          placeholder='비밀번호를 입력해 주세요'
+          autoComplete='new-password'
+          register={register('password')}
+          error={errors.password}
+        />
 
         {/* 제출 버튼 */}
         <button
           type='submit'
           disabled={isSubmitting || !isValid}
-          className='w-full p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-400'
+          className='w-full rounded-md bg-blue-500 p-2 text-white hover:bg-blue-600 disabled:bg-gray-400'
         >
           {isSubmitting ? '로그인 중...' : '로그인'}
         </button>
       </form>
+
+      {/* 카카오 로그인 버튼 */}
+      <button
+        onClick={handleSigninClick}
+        className='flex w-full items-center justify-center gap-2 rounded-md bg-yellow-400 p-3 font-medium text-black hover:bg-yellow-500'
+      >
+        <span>🗨️</span>
+        카카오로 로그인
+      </button>
     </div>
   );
 };
