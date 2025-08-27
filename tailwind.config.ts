@@ -30,6 +30,7 @@ const config: Config = {
           800: '#4b4f58',
           900: '#2f323a',
         },
+        'rating-star-active': '#FFC83C',
         'state-error': '#ff0000',
       },
 
