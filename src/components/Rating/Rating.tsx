@@ -37,6 +37,12 @@ interface RatingProps extends HTMLAttributes<HTMLDivElement> {
    * true일 경우, 사용자의 클릭 및 마우스 오버 이벤트에 반응하지 않음
    */
   readonly?: boolean;
+  /**
+   * 사용자가 별점을 클릭하여 선택했을 때 호출되는 콜백 함수
+   *
+   * @param {number} newRating - 사용자가 선택한 새로운 별점 값 (1부터 5까지의 정수)
+   */
+  onRatingChange?: (newRating: number) => void;
 }
 interface RatingProps extends HTMLAttributes<HTMLDivElement> {
   className?: string;
@@ -44,6 +50,7 @@ interface RatingProps extends HTMLAttributes<HTMLDivElement> {
   initialRating: number;
   size?: RatingStarSize;
   readonly?: boolean;
+  onRatingChange?: (newRating: number) => void;
 }
 
 /**
@@ -60,6 +67,7 @@ const Rating = ({
   initialRating,
   size,
   readonly = false,
+  onRatingChange,
 }: RatingProps) => {
   const [rating, setRating] = useState(initialRating);
   const [hoverRating, setHoverRating] = useState(0);
@@ -69,6 +77,9 @@ const Rating = ({
   const handleStarClick = (starIndex: number) => {
     if (readonly) return;
     setRating(starIndex);
+    if (onRatingChange) {
+      onRatingChange(starIndex);
+    }
   };
 
   const handleMouseEnter = (starIndex: number) => {
