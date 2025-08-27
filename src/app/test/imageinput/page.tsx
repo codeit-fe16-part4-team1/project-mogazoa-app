@@ -12,15 +12,10 @@ const schema = z.object({
 });
 type FormData = z.infer<typeof schema>;
 
-/*
-  state Type
-  filname: {
-    file: File;
-    url: string;
-  }
-*/
+type FileDataArray = [string, { file: File; url: string }][];
+
 export default function FileUploadForm() {
-  const [fileRecord, setFileRecord] = useState<Record<string, { file: File; url: string }>>({});
+  const [fileDataArray, setFileDataArray] = useState<FileDataArray>([]);
 
   const {
     register,
@@ -35,34 +30,31 @@ export default function FileUploadForm() {
     },
   });
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newFileArray = Array.from(e.target.files || []).map((f) => [
+  const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newFileDataArray = Array.from(e.target.files || []).map((f) => [
       f.name,
       { file: f, url: URL.createObjectURL(f) },
     ]);
-    const newFileRecord = Object.fromEntries(newFileArray);
-    const nextFileRecord = { ...fileRecord, ...newFileRecord } as typeof fileRecord;
+    const nextFileRecord = {
+      ...Object.fromEntries(fileDataArray),
+      ...Object.fromEntries(newFileDataArray),
+    };
+    const nextFileDataArray = Object.entries(nextFileRecord) as FileDataArray;
 
-    await updateHookFormState(nextFileRecord);
+    await updateHookFormState(nextFileDataArray);
   };
 
-  const removeFile = async (indexToRemove: number) => {
-    const nextFileArray = Object.entries(fileRecord).filter((_, index) => index !== indexToRemove);
-    const nextFileRecord = Object.fromEntries(nextFileArray);
-
-    await updateHookFormState(nextFileRecord);
+  const handleFileDeleteClick = async (indexToRemove: number) => {
+    const newFileDataArray = fileDataArray.filter((_, index) => index !== indexToRemove);
+    await updateHookFormState(newFileDataArray);
   };
 
-  const updateHookFormState = async (nextFileRecord: typeof fileRecord) => {
-    setFileRecord(nextFileRecord);
-
-    const nextFileList = Object.values(nextFileRecord).map((item) => item.file);
-
+  const updateHookFormState = async (nextFileDataArray: FileDataArray) => {
+    setFileDataArray(nextFileDataArray);
+    const nextFileList = nextFileDataArray.map((f) => f[1].file);
     setValue('images', nextFileList);
     await trigger('images');
   };
-
-  const fileArray = Object.values(fileRecord).map((item) => item.url);
 
   return (
     <form>
@@ -72,22 +64,22 @@ export default function FileUploadForm() {
           multiple
           accept='image/*'
           {...register('images')}
-          onChange={handleFileChange}
+          onChange={onFileChange}
         />
       </div>
 
       <button type='submit' disabled={!isValid}>
         업로드 {isValid ? '✓' : '✗'}
       </button>
-      {fileArray.map((url, index) => (
+      {fileDataArray.map((f, index) => (
         <div key={index} className='relative'>
           <div
             className='h-24 w-24 rounded-lg bg-cover bg-center'
-            style={{ backgroundImage: `url(${url})` }}
+            style={{ backgroundImage: `url(${f[1].url})` }}
           />
           <button
             type='button'
-            onClick={() => removeFile(index)}
+            onClick={() => handleFileDeleteClick(index)}
             className='absolute -top-2 -right-2 h-6 w-6 rounded-full bg-red-500 text-white'
           >
             ✕
