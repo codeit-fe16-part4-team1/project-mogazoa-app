@@ -9,7 +9,7 @@ const dropdownItemVariants = cva('block cursor-pointer py-2.5 px-5 rounded-x1', 
     size: {
       S: 'text-body2',
       L: 'text-body1',
-      mq: 'text-body2 md:text-body1', // 'mq' size is removed from DropdownProps
+      mq: 'text-body2 md:text-body1',
     },
     isSelected: {
       true: 'bg-primary-orange-200 text-primary-orange-600',
@@ -35,6 +35,7 @@ const dropdownItemVariants = cva('block cursor-pointer py-2.5 px-5 rounded-x1', 
   ],
   defaultVariants: {
     size: 'S',
+    isSelected: false,
   },
 });
 

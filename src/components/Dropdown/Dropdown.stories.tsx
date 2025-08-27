@@ -1,8 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 
 import Dropdown from './Dropdown';
-import DropdownList from './DropdownList';
-import DropdownItem from './DropdownItem';
 
 const meta: Meta<typeof Dropdown> = {
   title: 'Components/Dropdown',
@@ -38,11 +36,11 @@ export const Default: Story = {
   render: (args) => (
     // Dropdown에 props를 전달하고, 그 안의 DropdownList와 DropdownItem을 렌더링합니다.
     <Dropdown {...args}>
-      <DropdownList>
-        <DropdownItem label='음악' />
-        <DropdownItem label='운동' />
-        <DropdownItem label='게임' />
-      </DropdownList>
+      <Dropdown.List>
+        <Dropdown.Item label='음악' />
+        <Dropdown.Item label='운동' />
+        <Dropdown.Item label='게임' />
+      </Dropdown.List>
     </Dropdown>
   ),
 };

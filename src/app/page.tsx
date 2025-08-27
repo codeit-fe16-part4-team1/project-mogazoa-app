@@ -1,18 +1,16 @@
 import Dropdown from '@/components/Dropdown/Dropdown';
-import DropdownItem from '@/components/Dropdown/DropdownItem';
-import DropdownList from '@/components/Dropdown/DropdownList';
 
 const Home = () => {
   return (
     <div className='flex px-10 py-10'>
-      <Dropdown placeholder='카테고리 선택' size='mq'>
-        <DropdownList>
-          <DropdownItem label='음악' />
-          <DropdownItem label='운동' />
-          <DropdownItem label='게임' />
-          <DropdownItem label='여행' />
-          <DropdownItem label='스터디' />
-        </DropdownList>
+      <Dropdown placeholder='카테고리 선택' size='S'>
+        <Dropdown.List>
+          <Dropdown.Item label='음악' />
+          <Dropdown.Item label='운동' />
+          <Dropdown.Item label='게임' />
+          <Dropdown.Item label='여행' />
+          <Dropdown.Item label='스터디' />
+        </Dropdown.List>
       </Dropdown>
     </div>
   );

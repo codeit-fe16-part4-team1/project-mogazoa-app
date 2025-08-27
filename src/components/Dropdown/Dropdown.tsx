@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState, createContext } from 'react';
 import DropdownIcon from './DropdownIcon';
+import DropdownList from './DropdownList';
+import DropdownItem from './DropdownItem';
 
 interface DropdownContextProps {
   setSelectedItem: (item: string) => void;
@@ -62,4 +64,6 @@ const Dropdown = ({ children, placeholder = '카테고리 선택', size = 'S' }:
   );
 };
 
+Dropdown.List = DropdownList;
+Dropdown.Item = DropdownItem;
 export default Dropdown;
