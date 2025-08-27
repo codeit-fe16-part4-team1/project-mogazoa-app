@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Providers } from './Providers';
 import localFont from 'next/font/local';
 import './globals.css';
+import GlobalDialog from '@/components/Dialog/core/GlobalDialog';
 
 const cafe24Supermagic = localFont({
   src: [
@@ -33,6 +34,7 @@ export default function RootLayout({
     <html lang='ko' className={`${cafe24Supermagic.variable}`}>
       <body>
         <Providers>{children}</Providers>
+        <GlobalDialog />
       </body>
     </html>
   );
