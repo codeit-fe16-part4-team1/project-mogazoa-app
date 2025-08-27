@@ -1,7 +1,7 @@
 import { type Config } from 'tailwindcss';
 
 const config: Config = {
-  content: ['./src/**/*.{js,ts,jsx,tsx}', './styles//*.{css,scss}'],
+  content: ['./src/**/*.{js,ts,jsx,tsx}', './src/**/*.svg', './styles//*.{css,scss}'],
   theme: {
     extend: {
       colors: {
@@ -81,6 +81,11 @@ const config: Config = {
         'body1-light': ['16px', { lineHeight: 'auto', fontWeight: '300' }],
         'body2-light': ['14px', { lineHeight: 'auto', fontWeight: '300' }],
         'caption-light': ['12px', { lineHeight: 'auto', fontWeight: '300' }],
+      },
+      borderRadius: {
+        x1: '8px',
+        x2: '12px',
+        full: '9999px',
       },
     },
   },
