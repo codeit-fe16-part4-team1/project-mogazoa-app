@@ -1,6 +1,8 @@
-import { cva, VariantProps } from 'class-variance-authority';
-import clsx from 'clsx';
-import React from 'react';
+'use client';
+import { cn } from '@/lib/cn';
+import { cva } from 'class-variance-authority';
+import React, { useContext } from 'react';
+import { DropdownContext } from './Dropdown';
 
 const dropdownItemVariants = cva('block cursor-pointer py-2.5 px-5 rounded-x1', {
   variants: {
@@ -36,14 +38,30 @@ const dropdownItemVariants = cva('block cursor-pointer py-2.5 px-5 rounded-x1', 
   },
 });
 
-interface DropdownItemProps extends VariantProps<typeof dropdownItemVariants> {
+interface DropdownItemProps {
   label: string;
   onClick?: () => void;
 }
 
-const DropdownItem: React.FC<DropdownItemProps> = ({ label, onClick, size, isSelected }) => {
+const DropdownItem = ({ label, onClick }: DropdownItemProps) => {
+  const context = useContext(DropdownContext);
+  if (!context) {
+    throw new Error('DropdownItem must be used within a Dropdown');
+  }
+
+  const { selectedItem, setSelectedItem, size, setIsOpen } = context;
+  const isSelected = selectedItem === label;
+
+  const handleClick = () => {
+    setSelectedItem(label);
+    setIsOpen(false);
+    if (onClick) {
+      onClick();
+    }
+  };
+
   return (
-    <div className={clsx(dropdownItemVariants({ size, isSelected }))} onClick={onClick}>
+    <div className={cn(dropdownItemVariants({ size, isSelected }))} onClick={handleClick}>
       {label}
     </div>
   );
