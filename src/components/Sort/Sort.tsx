@@ -34,7 +34,7 @@ const Sort = ({ size = 'S' }: SortProps) => {
   };
 
   return (
-    <div className='relative w-[110px] md:w-[140px]' ref={sortRef}>
+    <div className='relative w-[115px] md:w-[140px]' ref={sortRef}>
       <button
         type='button'
         className='rounded-x2 text-body2 md:text-body1 inline-flex h-[42px] w-full items-center justify-between border border-gray-300 bg-white pt-3 pr-3 pb-3 pl-4 text-gray-600 md:h-13 md:pt-4 md:pr-3 md:pb-4 md:pl-4'
