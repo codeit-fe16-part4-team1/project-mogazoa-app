@@ -3,12 +3,10 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useState } from 'react';
+import { ImageInputSchema } from '@/components/ImageInput/ImageInput';
 
 const schema = z.object({
-  images: z
-    .array(z.instanceof(File)) // FileList가 아닌 File 배열로 변경
-    .min(1, '이미지를 1개 이상 선택해주세요')
-    .max(5, '최대 5개까지 선택 가능합니다'),
+  images: ImageInputSchema,
 });
 type FormData = z.infer<typeof schema>;
 
