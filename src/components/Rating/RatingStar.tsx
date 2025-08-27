@@ -10,7 +10,7 @@ interface RatingStarProps extends SVGProps<SVGSVGElement> {
   size?: RatingStarSize;
 }
 
-export const starVariants = cva('transition-colors duration-200', {
+export const starVariants = cva('transition-all duration-200', {
   variants: {
     state: {
       default: 'fill-gray-300', // 일반 상태 (회색)
@@ -18,7 +18,7 @@ export const starVariants = cva('transition-colors duration-200', {
       readonly: 'fill-gray-900', // 읽기 전용 상태
     },
     size: {
-      sm: 'w-3 h-3 md:w-4 md:h-4',
+      sm: 'w-3 h-3 md:w-5 md:h-5',
       md: 'w-7 h-7 md:w-10 md:h-10',
     },
   },
