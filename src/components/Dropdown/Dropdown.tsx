@@ -2,8 +2,7 @@
 
 import { useEffect, useRef, useState, createContext } from 'react';
 import DropdownIcon from './DropdownIcon';
-import DropdownList from './DropdownList';
-import DropdownItem from './DropdownItem';
+import { cn } from '@/lib/cn';
 
 interface DropdownContextProps {
   setSelectedItem: (item: string) => void;
@@ -46,15 +45,20 @@ const Dropdown = ({ children, placeholder = '카테고리 선택', size = 'S' }:
 
   return (
     <DropdownContext.Provider value={{ setSelectedItem, selectedItem, size, setIsOpen, isOpen }}>
-      <div className='relative w-[550px]' ref={dropdownRef}>
+      <div className={cn('relative w-[550px]')} ref={dropdownRef}>
         <button
           type='button'
-          className='rounded-x2 text-body2-medium inline-flex h-[50px] w-full items-center justify-between gap-3 border border-gray-400 bg-white py-5 pr-4 pl-6 text-gray-800'
+          className={cn(
+            'rounded-x2 text-body2-medium inline-flex h-[50px] w-full items-center justify-between gap-3 border border-gray-400 bg-white py-5 pr-4 pl-6 text-gray-800',
+          )}
           onClick={() => setIsOpen(!isOpen)}
         >
           <span>{selectedItem || placeholder}</span>
           <DropdownIcon
-            className={`h-6 w-6 self-center transition-transform duration-200 ${isOpen ? 'scale-y-[-1]' : ''} `}
+            className={cn(
+              'h-6 w-6 self-center transition-transform duration-200',
+              isOpen && 'scale-y-[-1]',
+            )}
             aria-hidden='true'
           />
         </button>
@@ -64,6 +68,4 @@ const Dropdown = ({ children, placeholder = '카테고리 선택', size = 'S' }:
   );
 };
 
-Dropdown.List = DropdownList;
-Dropdown.Item = DropdownItem;
 export default Dropdown;

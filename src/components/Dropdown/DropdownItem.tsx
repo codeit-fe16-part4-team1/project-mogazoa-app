@@ -1,5 +1,4 @@
 'use client';
-import { cn } from '@/lib/cn';
 import { cva } from 'class-variance-authority';
 import React, { useContext } from 'react';
 import { DropdownContext } from './Dropdown';
@@ -62,7 +61,7 @@ const DropdownItem = ({ label, onClick }: DropdownItemProps) => {
   };
 
   return (
-    <div className={cn(dropdownItemVariants({ size, isSelected }))} onClick={handleClick}>
+    <div className={dropdownItemVariants({ size, isSelected })} onClick={handleClick}>
       {label}
     </div>
   );
