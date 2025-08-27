@@ -12,11 +12,15 @@ const meta: Meta<typeof TextArea> = {
   parameters: {
     layout: 'centered',
     controls: {
-      exclude: ['register'], // 자동 감지된 register prop 제외
+      exclude: ['register', 'error', 'watchValue'], // 자동 감지된 register prop 제외
     },
   },
   tags: ['autodocs'],
   argTypes: {
+    minLength: {
+      control: { type: 'number' },
+      description: 'Minimum character length',
+    },
     maxLength: {
       control: { type: 'number' },
       description: 'Maximum character length',
@@ -24,10 +28,6 @@ const meta: Meta<typeof TextArea> = {
     placeholder: {
       control: { type: 'text' },
       description: 'Placeholder text',
-    },
-    className: {
-      control: { type: 'text' },
-      description: 'Additional CSS classes',
     },
   },
 };
@@ -39,6 +39,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     placeholder: 'Enter your text here...',
+    minLength: 1,
     maxLength: 10,
   },
 };
@@ -47,24 +48,39 @@ export const Default: Story = {
 export const WithValidation: Story = {
   render: (args) => {
     const schema = z.object({
-      newTextArea1: TextAreaSchema(args.maxLength || 100),
-      newTextArea2: TextAreaSchema(args.maxLength || 100),
+      newTextArea1: TextAreaSchema({
+        minLength: args.minLength || 1,
+        maxLength: args.maxLength || 100,
+      }),
+      newTextArea2: TextAreaSchema({
+        minLength: args.minLength || 1,
+        maxLength: args.maxLength || 100,
+      }),
     });
     type SigninFormInputs = z.infer<typeof schema>;
     const {
       register,
-      formState: { isValid },
+      formState: { errors, isValid },
+      watch,
     } = useForm<SigninFormInputs>({
       resolver: zodResolver(schema),
       mode: 'onChange',
     });
 
-    console.log(`isValid: ${isValid}`);
-
     return (
       <div className='flex w-96 flex-col items-center gap-4'>
-        <TextArea {...args} register={register('newTextArea1')} />
-        <TextArea {...args} register={register('newTextArea2')} />
+        <TextArea
+          {...args}
+          error={errors.newTextArea1}
+          register={register('newTextArea1')}
+          watchValue={watch('newTextArea1')}
+        />
+        <TextArea
+          {...args}
+          error={errors.newTextArea2}
+          register={register('newTextArea2')}
+          watchValue={watch('newTextArea2')}
+        />
         <Button disabled={!isValid} type='submit'>
           제출
         </Button>
@@ -73,6 +89,62 @@ export const WithValidation: Story = {
   },
   args: {
     placeholder: '값을 입력하세요',
+    minLength: 10,
+    maxLength: 50,
+  },
+};
+
+// TextArea with form validation
+export const WithValidationAndInitialValue: Story = {
+  render: (args) => {
+    const schema = z.object({
+      newTextArea1: TextAreaSchema({
+        minLength: args.minLength || 1,
+        maxLength: args.maxLength || 100,
+      }),
+      newTextArea2: TextAreaSchema({
+        minLength: args.minLength || 1,
+        maxLength: args.maxLength || 100,
+      }),
+    });
+    type SigninFormInputs = z.infer<typeof schema>;
+    const {
+      register,
+      formState: { errors, isValid },
+      watch,
+    } = useForm<SigninFormInputs>({
+      resolver: zodResolver(schema),
+      mode: 'onChange',
+      defaultValues: {
+        newTextArea1: '초기값입니다초기값입니다',
+        newTextArea2: '초기값입니다초기값입니다',
+      },
+    });
+
+    return (
+      <div className='flex w-96 flex-col items-center gap-4'>
+        <TextArea
+          {...args}
+          error={errors.newTextArea1}
+          register={register('newTextArea1')}
+          watchValue={watch('newTextArea1')}
+        />
+        <TextArea
+          {...args}
+          error={errors.newTextArea2}
+          register={register('newTextArea2')}
+          watchValue={watch('newTextArea2')}
+        />
+        <p>{errors.newTextArea2?.message}</p>
+        <Button disabled={!isValid} type='submit'>
+          제출
+        </Button>
+      </div>
+    );
+  },
+  args: {
+    placeholder: '값을 입력하세요',
+    minLength: 10,
     maxLength: 50,
   },
 };
