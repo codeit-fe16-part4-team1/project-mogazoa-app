@@ -8,6 +8,7 @@ const sortOptions = ['최신순', '별점 높은순', '별점 낮은순', '좋�
 
 interface SortProps {
   size: 'S' | 'L' | 'mq';
+  onSortChange?: (option: string) => void;
 }
 
 const Sort = ({ size = 'S' }: SortProps) => {
@@ -31,6 +32,7 @@ const Sort = ({ size = 'S' }: SortProps) => {
   const handleItemClick = (option: string) => {
     setSelectedItem(option);
     setIsOpen(false);
+    // onSortChange?.(option);
   };
 
   return (
