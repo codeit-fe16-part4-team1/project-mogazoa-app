@@ -32,6 +32,7 @@ const config: Config = {
           900: '#2f323a',
         },
         'rating-star-active': '#FFC83C',
+        'heart-liked': '#fda4af',
         'state-error': '#ff0000',
       },
 
