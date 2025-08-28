@@ -52,6 +52,7 @@ export const WithInitialValueAndHint: Story = {
     const {
       register,
       formState: { errors },
+      watch,
     } = useForm({
       resolver: zodResolver(schema),
       mode: 'onChange',
@@ -67,7 +68,7 @@ export const WithInitialValueAndHint: Story = {
           placeholder='텍스트를 입력해 주세요'
           register={register('input')}
           error={errors.input}
-          initialValue='Valid text'
+          watchValue={watch('input')}
         />
         <p>{errors.input?.message}</p>
       </div>

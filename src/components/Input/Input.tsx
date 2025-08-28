@@ -1,6 +1,6 @@
 'use client';
 import { FieldError, UseFormRegisterReturn } from 'react-hook-form';
-import { ChangeEvent, InputHTMLAttributes, useEffect, useState } from 'react';
+import { ChangeEvent, InputHTMLAttributes, useState } from 'react';
 import { cva, VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/cn';
 import z from 'zod';
@@ -26,7 +26,7 @@ interface InputProps extends VariantProps<typeof inputVariants> {
   autoComplete?: string;
   register?: UseFormRegisterReturn;
   error?: FieldError;
-  initialValue?: string;
+  watchValue?: string;
 }
 
 const inputVariants = cva(
@@ -52,12 +52,15 @@ const Input = ({
   autoComplete,
   register,
   error,
-  initialValue,
+  watchValue,
   size,
   ...rest
 }: InputProps) => {
-  const [isDirty, setIsDirty] = useState(false);
-
+  const [isDirty, setIsDirty] = useState(() => {
+    if (watchValue === undefined) return false;
+    if (watchValue.length === 0) return false;
+    return true;
+  });
   const errorState = isDirty ? !!error : 'undefined';
 
   const InputRegister = {
@@ -79,12 +82,6 @@ const Input = ({
   };
 
   const INPUT_STYLES = cn(inputVariants({ size }), ERROR_STATE_STYLES[`${errorState}`], className);
-
-  useEffect(() => {
-    console.log(initialValue);
-    if (!initialValue) return;
-    setIsDirty(true);
-  }, [initialValue]);
 
   return (
     <input
