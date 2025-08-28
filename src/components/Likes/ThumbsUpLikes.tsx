@@ -52,9 +52,9 @@ const ThumbsUpLikes = ({
   const { mutate } = useOptimisticMutation<Review, ReviewList, MutationParams>({
     mutationFn: liked ? removeLikeReview : addLikeReview,
     queryKey: reviewKeys.list(productId),
-    updater: (oldData, productId) => {
+    updater: (oldData, mutationReviewId) => {
       const updatedList = oldData.list.map((review) => {
-        if (review.id === productId) {
+        if (review.id === mutationReviewId) {
           return {
             ...review,
             isLiked: !review.isLiked,
