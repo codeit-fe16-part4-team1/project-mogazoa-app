@@ -68,5 +68,6 @@
     "**/*.{json,css,scss,md,yml,yaml}": [
       "prettier --write"
     ]
-  }
+  },
+  "type": "module"
 }
