@@ -9,6 +9,8 @@ export interface User {
   createdAt: string;
 }
 
+export type UserInfoInReivew = Pick<User, 'id' | 'nickname' | 'image'>;
+
 export interface AuthResponse {
   accessToken: string;
   user: User;
@@ -33,6 +35,15 @@ export interface Profile {
   isFollowing: boolean;
 }
 
+export interface Category {
+  id: number;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+type CategoryInProductDetail = Omit<Category, 'createdAt' | 'updatedAt'>;
+
 export interface ProductItem {
   updatedAt: string;
   createdAt: string;
@@ -50,3 +61,52 @@ export interface ProductsList {
   nextCursor: number;
   list: ProductItem[];
 }
+
+export interface CategoryMetric {
+  rating: number;
+  favoriteCount: number;
+  reviewCount: number;
+}
+
+export interface ProductDetail {
+  id: number;
+  name: string;
+  description: string;
+  image: string;
+  rating: number;
+  reviewCount: number;
+  favoriteCount: number;
+  categoryId: number;
+  createdAt: string;
+  updatedAt: string;
+  writerId: number;
+  isFavorite: boolean;
+  category: CategoryInProductDetail;
+  categoryMetric: CategoryMetric;
+}
+
+interface ReviewImage {
+  source: string;
+  id: number;
+}
+
+export interface Review {
+  id: number;
+  rating: number;
+  content: string;
+  likeCount: number;
+  createdAt: string;
+  updatedAt: string;
+  userId: number;
+  productId: number;
+  user: UserInfoInReivew;
+  reviewImages: ReviewImage[];
+  isLiked: boolean;
+}
+
+export interface ReviewList {
+  nextCursor: number;
+  list: Review[];
+}
+
+export type OrderOptions = 'recent' | 'ratingDesc' | 'ratingAsc' | 'likeCount';
