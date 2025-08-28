@@ -23,7 +23,7 @@ const thumbsUpButtonVariants = cva(cn(buttonLayoutStyle, buttonStyle), {
   defaultVariants: { liked: false },
 });
 
-const thumbsUpIconVariants = cva('size-4 fill-white md:size-5 transition-all duration-200', {
+const thumbsUpIconVariants = cva('size-4 fill-white md:size-5', {
   variants: {
     liked: {
       false: cn('stroke-gray-900'),
