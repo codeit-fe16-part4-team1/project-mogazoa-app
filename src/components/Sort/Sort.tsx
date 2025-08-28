@@ -8,12 +8,12 @@ const sortOptions = ['최신순', '별점 높은순', '별점 낮은순', '좋�
 
 interface SortProps {
   size: 'S' | 'L' | 'mq';
-  onSortChange?: (option: string) => void;
+  value: string;
+  onChange: (option: string) => void;
 }
 
-const Sort = ({ size = 'S' }: SortProps) => {
+const Sort = ({ size = 'S', value, onChange }: SortProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(sortOptions[0]);
   const sortRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -30,9 +30,8 @@ const Sort = ({ size = 'S' }: SortProps) => {
   }, []);
 
   const handleItemClick = (option: string) => {
-    setSelectedItem(option);
     setIsOpen(false);
-    // onSortChange?.(option);
+    onChange(option);
   };
 
   return (
@@ -42,7 +41,7 @@ const Sort = ({ size = 'S' }: SortProps) => {
         className='rounded-x2 text-body2 md:text-body1 inline-flex h-[42px] w-full items-center justify-between border border-gray-300 bg-white pt-3 pr-3 pb-3 pl-4 text-gray-600 md:h-13 md:pt-4 md:pr-3 md:pb-4 md:pl-4'
         onClick={() => setIsOpen(!isOpen)}
       >
-        <span>{selectedItem}</span>
+        <span>{value}</span>
         <DropdownIcon
           className={cn(
             'h-5 w-5 self-center text-gray-500 transition-transform duration-200',
@@ -59,7 +58,7 @@ const Sort = ({ size = 'S' }: SortProps) => {
                 key={option}
                 label={option}
                 size={size}
-                isSelected={selectedItem === option}
+                isSelected={value === option}
                 onClick={() => handleItemClick(option)}
               />
             ))}
