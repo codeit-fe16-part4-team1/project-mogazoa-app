@@ -2,10 +2,17 @@ import React, { HTMLAttributes } from 'react';
 import ThumbsUpIcon from '@/assets/icons/icon_thumbs_up.svg';
 import { cva, VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/cn';
+import { useOptimisticMutation } from '@/hooks/useOptimisticMutation';
+import { removeLikeReview } from '@/api/review/removeLikeReview';
+import { addLikeReview } from '@/api/review/addLikeReview';
+import { reviewKeys } from '@/constant/queryKeys';
+import { Review, ReviewList } from '@/types/api';
 
 interface ThumbsUpLikesProps
   extends HTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof thumbsUpButtonVariants> {
+  productId: number;
+  reviewId: number;
   likes: number;
 }
 
@@ -32,9 +39,41 @@ const thumbsUpIconVariants = cva('size-4 fill-white md:size-5', {
   defaultVariants: { liked: false },
 });
 
-const ThumbsUpLikes = ({ className, likes, liked = false, ...props }: ThumbsUpLikesProps) => {
+type MutationParams = number;
+
+const ThumbsUpLikes = ({
+  className,
+  productId,
+  reviewId,
+  likes,
+  liked = false,
+  ...props
+}: ThumbsUpLikesProps) => {
+  const { mutate } = useOptimisticMutation<Review, ReviewList, MutationParams>({
+    mutationFn: liked ? removeLikeReview : addLikeReview,
+    queryKey: reviewKeys.list(productId),
+    updater: (oldData, productId) => {
+      const updatedList = oldData.list.map((review) => {
+        if (review.id === productId) {
+          return {
+            ...review,
+            isLiked: !review.isLiked,
+            likeCount: review.isLiked ? review.likeCount - 1 : review.likeCount + 1,
+          };
+        }
+        return review;
+      });
+
+      return { ...oldData, list: updatedList };
+    },
+  });
+
   return (
-    <button className={cn(thumbsUpButtonVariants({ liked }), className)} {...props}>
+    <button
+      className={cn(thumbsUpButtonVariants({ liked }), className)}
+      onClick={() => mutate(reviewId)}
+      {...props}
+    >
       <ThumbsUpIcon className={cn(thumbsUpIconVariants({ liked }))} />
       <span className='text-caption md:text-body2'>도움이 돼요</span>
       <span className='text-caption-bold md:text-body2-bold'>{likes > 999 ? '999+' : likes}</span>
