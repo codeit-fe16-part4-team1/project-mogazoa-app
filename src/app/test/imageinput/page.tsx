@@ -3,8 +3,8 @@ import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import ImageInput, {
-  getInitialValue,
-  getUploadedImageList,
+  getInitialImageList,
+  getUploadedImageUrlArray,
   ImageInputSchema,
 } from '@/components/ImageInput/ImageInput';
 
@@ -22,7 +22,7 @@ export default function FileUploadForm() {
     resolver: zodResolver(schema),
     mode: 'onChange',
     defaultValues: {
-      images: getInitialValue([
+      images: getInitialImageList([
         'https://sprint-fe-project.s3.ap-northeast-2.amazonaws.com/Mogazoa/user/832/1756312692708/image.png',
       ]),
     },
@@ -30,7 +30,7 @@ export default function FileUploadForm() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const list = await getUploadedImageList(getValues('images'));
+    const list = await getUploadedImageUrlArray(getValues('images'));
     console.log(list);
   };
 

@@ -20,22 +20,22 @@ export const ImageInputSchema = (maxImageCount: number) => {
     );
 };
 
+type ImageList = Record<string, File | null>;
+
 // 이미지 url 배열을 Record<string, File | null> Type으로 변환
-export const getInitialValue = (images: string[]) => {
-  const initialValue: Record<string, File | null> = {};
-  images.forEach((url) => {
-    initialValue[url] = null;
+export const getInitialImageList = (imageUrlArray: string[]) => {
+  const initialImageList: ImageList = {};
+  imageUrlArray.forEach((url) => {
+    initialImageList[url] = null;
   });
-  return initialValue;
+  return initialImageList;
 };
 
 // Image 업로드 후 경로 반환
 // File이 null일 경우 key값(url)을 그대로 반환
-export const getUploadedImageList = async (
-  value: Record<string, File | null>,
-): Promise<string[]> => {
+export const getUploadedImageUrlArray = async (imageList: ImageList): Promise<string[]> => {
   const urlList: string[] = [];
-  Object.entries(value).forEach(async ([url, file]) => {
+  Object.entries(imageList).forEach(async ([url, file]) => {
     if (!file) {
       urlList.push(url);
       return;
@@ -48,17 +48,17 @@ export const getUploadedImageList = async (
 
 // ImageInput Type
 interface ImageInputProps {
-  value?: Record<string, File | null>;
-  onChange: (files: Record<string, File | null>) => void;
+  value?: ImageList;
+  onChange: (imageList: ImageList) => void;
   maxImageCount: number;
 }
 
-const ImageInput = ({ value = {}, onChange, maxImageCount }: ImageInputProps) => {
+const ImageInput = ({ value: imageList = {}, onChange, maxImageCount }: ImageInputProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleAddButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    if (Object.keys(value).length >= 3) {
+    if (Object.keys(imageList).length >= 3) {
       alert(`이미지는 최대 ${maxImageCount}개까지 선택 가능합니다.`);
       return;
     }
@@ -66,37 +66,37 @@ const ImageInput = ({ value = {}, onChange, maxImageCount }: ImageInputProps) =>
   };
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newFiles = Array.from(e.target.files || []);
-    const totalFilesCount = Object.keys(value).length + newFiles.length;
+    const newFileArray = Array.from(e.target.files || []);
+    const totalFilesCount = Object.keys(imageList).length + newFileArray.length;
 
     if (totalFilesCount > maxImageCount) {
       alert(
         `최대 선택 가능한 갯수를 초과했습니다.\n선택 가능한 이미지 갯수: ${maxImageCount}개 \n총 선택된 이미지 갯수: ${totalFilesCount}개`,
       );
     } else {
-      const newUrls: Record<string, File> = {};
-      newFiles.forEach((file) => {
+      const newImageList: Record<string, File> = {};
+      newFileArray.forEach((file) => {
         const url = URL.createObjectURL(file);
         // Record<string, File | null>
-        newUrls[url] = file;
+        newImageList[url] = file;
       });
       // 기존 파일과 합치기
-      const allFiles = { ...value, ...newUrls };
-      onChange(allFiles); // React Hook Form 업데이트
+      const nextImageList = { ...imageList, ...newImageList };
+      onChange(nextImageList); // React Hook Form 업데이트
     }
     e.target.value = '';
   };
 
   const handleFileDeleteClick = (deleteIndex: number) => {
-    const urls = Object.keys(value);
-    const urlToDelete = urls[deleteIndex];
+    const urlArray = Object.keys(imageList);
+    const urlToDelete = urlArray[deleteIndex];
 
     // 해당 URL 제거한 새로운 Record 생성
-    const nextFiles = { ...value };
+    const nextImageList = { ...imageList };
     URL.revokeObjectURL(urlToDelete);
-    delete nextFiles[urlToDelete];
+    delete nextImageList[urlToDelete];
 
-    onChange(nextFiles); // Record<string, File | null>
+    onChange(nextImageList); // Record<string, File | null>
   };
 
   const CONTAINER_STYLES = 'flex flex-row gap-5';
@@ -114,8 +114,8 @@ const ImageInput = ({ value = {}, onChange, maxImageCount }: ImageInputProps) =>
         <IconAdd />
         <span>이미지추가</span>
         <div>
-          <span className={clsx(Object.keys(value).length > 0 && 'text-primary-orange-700')}>
-            {Object.keys(value).length}
+          <span className={clsx(Object.keys(imageList).length > 0 && 'text-primary-orange-700')}>
+            {Object.keys(imageList).length}
           </span>
           <span>{`/${maxImageCount}`}</span>
         </div>
@@ -129,7 +129,7 @@ const ImageInput = ({ value = {}, onChange, maxImageCount }: ImageInputProps) =>
         onChange={onInputChange}
       />
 
-      {Object.keys(value).map((url, index) => (
+      {Object.keys(imageList).map((url, index) => (
         <div
           key={`${url}-${index}`}
           className={clsx(

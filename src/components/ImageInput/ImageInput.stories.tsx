@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import ImageInput, { getInitialValue, ImageInputSchema } from './ImageInput';
+import ImageInput, { getInitialImageList, ImageInputSchema } from './ImageInput';
 
 const meta: Meta<typeof ImageInput> = {
   title: 'Components/ImageInput',
@@ -34,7 +34,7 @@ export const Default: Story = {
 // 기본값이 있는 ImageInput 스토리
 export const WithInitialImages: Story = {
   args: {
-    value: getInitialValue([
+    value: getInitialImageList([
       'https://sprint-fe-project.s3.ap-northeast-2.amazonaws.com/Mogazoa/user/832/1756312692708/image.png',
     ]),
     maxImageCount: 3,
@@ -66,7 +66,7 @@ const FormWrapper = ({ maxImageCount }: { maxImageCount: number }) => {
     resolver: zodResolver(schema),
     mode: 'onChange',
     defaultValues: {
-      images: getInitialValue([]),
+      images: getInitialImageList([]),
       title: '',
     },
   });
