@@ -62,7 +62,7 @@ jobs:
 
           # 개발 의존성만 제거 (완전히 재설치하지 않고)
           echo "[DEBUG][GHA] ⌛ 개발 의존성 제거 진행 중..."
-          npm prune --production
+          npm prune --omit=dev
           echo "[DEBUG][GHA] ✅ 개발 의존성 제거 완료"
           echo "[DEBUG][GHA] 📦 prune 후 node_modules 크기: $(du -sh node_modules | cut -f1)"
 
