@@ -1,16 +1,25 @@
-import CompareBar from '@/components/CompareBar/CompareBar';
-import { ProductItem } from '@/types/api';
+import { HydrationBoundary, QueryClient, dehydrate } from '@tanstack/react-query';
+import { getProductsAPI } from '@/api/products/getProductsAPI';
+import HomeClient from './HomeClient';
 
-const Home = () => {
-  const handleProductSelection = (selectedProduct: ProductItem) => {
-    console.log('선택된 상품: ', selectedProduct.name);
-  };
+const Home = async () => {
+  const queryClient = new QueryClient();
+
+  await Promise.all([
+    queryClient.prefetchQuery({
+      queryKey: ['products', 'reviewCount'],
+      queryFn: () => getProductsAPI({ order: 'reviewCount' }),
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ['products', 'rating'],
+      queryFn: () => getProductsAPI({ order: 'rating' }),
+    }),
+  ]);
 
   return (
-    <div>
-      <h1>상품 비교 페이지</h1>
-      <CompareBar onSelectProduct={handleProductSelection} />
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <HomeClient />
+    </HydrationBoundary>
   );
 };
 

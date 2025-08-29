@@ -1,7 +1,7 @@
 'use client';
 import { cn } from '@/lib/cn';
 import { useState, useRef, useEffect } from 'react';
-import DropdownIcon from '../Dropdown/DropdownIcon';
+import DropdownIcon from '@/assets/icons/DropdownIcon.svg';
 import SortItem from './SortItem';
 
 const sortOptions = ['최신순', '별점 높은순', '별점 낮은순', '좋아요순'];
