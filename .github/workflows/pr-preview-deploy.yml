@@ -111,7 +111,33 @@ jobs:
           echo "[DEBUG][GHA] ✅ SSH Key 설정 완료"
 
           echo "[DEBUG][GHA] ⌛ EC2 인스턴스로 파일 복사 진행 중..."
+          echo "[DEBUG][GHA] 🔍 복사 전 EC2 메모리: $(ssh -o StrictHostKeyChecking=no ubuntu@"${EC2_HOST}" "free -h | grep '^Mem:' | awk '{print \$3 \"/\" \$2}'")"
+
+          # EC2에서 메모리 모니터링 시작
+          ssh -o StrictHostKeyChecking=no ubuntu@"${EC2_HOST}" "
+            (while true; do
+              CURRENT_MEM=\$(free -m | grep '^Mem:' | awk '{print \$3}')
+              TOTAL_MEM=\$(free -m | grep '^Mem:' | awk '{print \$2}')
+              PERCENT=\$(echo \"scale=1; \$CURRENT_MEM * 100 / \$TOTAL_MEM\" | bc -l)
+              echo \"[MONITOR] \$(date '+%H:%M:%S') - 메모리: \${CURRENT_MEM}MB/\${TOTAL_MEM}MB (\${PERCENT}%) | SCP 수신 중\"
+              sleep 1
+            done) > /tmp/scp-monitor.log 2>&1 &
+            echo \$! > /tmp/monitor.pid
+          "
+
+          # 파일 복사 실행
           scp -o StrictHostKeyChecking=no app-built.tar.gz deploy/preview.nginx.tpl ubuntu@"${EC2_HOST}":/tmp/
+
+          # 모니터링 종료 및 결과 출력
+          ssh -o StrictHostKeyChecking=no ubuntu@"${EC2_HOST}" "
+            sleep 2
+            kill \$(cat /tmp/monitor.pid) 2>/dev/null || true
+            echo '[DEBUG][EC2] 📊 파일 복사 중 메모리 모니터링 결과:'
+            cat /tmp/scp-monitor.log 2>/dev/null || echo '모니터링 로그 없음'
+            rm -f /tmp/monitor.pid /tmp/scp-monitor.log
+          "
+
+          echo "[DEBUG][GHA] 🔍 복사 후 EC2 메모리: $(ssh -o StrictHostKeyChecking=no ubuntu@"${EC2_HOST}" "free -h | grep '^Mem:' | awk '{print \$3 \"/\" \$2}'")"
           echo "[DEBUG][GHA] ✅ EC2 인스턴스로 파일 복사 완료"
 
           echo "[DEBUG][GHA] ⌛ EC2 인스턴스 연결 진행 중..."
