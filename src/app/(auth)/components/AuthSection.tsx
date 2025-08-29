@@ -8,9 +8,9 @@ interface Props {
 
 const AuthSection = ({ children }: Props) => {
   return (
-    <section className='mx-auto flex min-h-[calc(100vh-124px)] max-w-380 flex-col justify-between px-5 md:min-h-[calc(100vh-140px)] md:gap-10 md:px-18 lg:flex-row-reverse lg:items-center lg:gap-50 lg:[&>*]:flex-1'>
+    <section className='fullscreen layout-center mx-auto max-w-380 items-stretch px-5 md:gap-10 md:px-18 lg:flex-row-reverse lg:items-center lg:gap-50 lg:[&>*]:flex-1'>
       {children}
-      <div className='hidden flex-col items-center justify-center py-10 md:flex'>
+      <div className='layout-center hidden py-10 md:flex'>
         <IconFavicon className='mb-4 hidden w-25 lg:block' />
         <IconTitle className='mb-2 hidden w-35 md:block lg:w-60' />
         <p className='font-cafe24-supermagic lg:text-h2-bold hidden text-sm md:inline-block'>

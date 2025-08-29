@@ -11,8 +11,8 @@ const ErrorPage = () => {
   };
 
   return (
-    <section className='flex min-h-[calc(100vh-124px)] items-center justify-center'>
-      <div className='flex flex-col items-center justify-center'>
+    <section className='fullscreen flex items-center justify-center'>
+      <div className='layout-center'>
         <div className='relative mb-5 aspect-square w-50 md:w-70'>
           <Image fill src='/images/image_error.png' alt='error' className='object-cover' />
         </div>
