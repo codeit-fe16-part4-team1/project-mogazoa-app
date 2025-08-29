@@ -1,4 +1,4 @@
-interface DialogState {
+export interface DialogState {
   /** @type {string | number} 다이얼로그를 식별하는 고유한 이름 (식별 필요 시 사용) */
   dialogName: string | number;
 
@@ -9,7 +9,7 @@ interface DialogState {
   isBlockBackgroundClose?: boolean;
 }
 
-interface DialogStore {
+export interface DialogStore {
   /** @type {DialogState[]} 스택으로 관리되는 다이얼로그 히스토리로, GlobalDialog에서 가장 마지막에 추가된 다이얼로그를 타겟으로 오픈시킴 */
   dialogs: DialogState[];
 
@@ -51,9 +51,9 @@ interface DialogStore {
 
 /**
  * 다이얼로그 컴포넌트들을 담는 인터페이스
- * key는 컴포넌트를 식별하는 고유한 문자열이며, value는 React 엘리먼트
- * @interface IDialogComponents
+ * key는 컴포넌트를 식별하는 고유한 문자열이며, value는 props를 인자로 받아 React 엘리먼트를 반환하는 콜백
+ * @interface IDialogComponents<TProps>
  */
-interface IDialogComponents {
-  [key: string]: React.ReactElement;
+export interface IDialogComponents<TProps> {
+  [key: string]: (props: TProps) => React.ReactElement;
 }

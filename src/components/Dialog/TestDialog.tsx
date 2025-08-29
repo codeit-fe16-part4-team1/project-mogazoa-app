@@ -54,13 +54,19 @@ const TestDialog = () => {
       {/* Footer */}
       <DialogFooter>
         <Button
-          className='grow'
-          onClick={() => open({ dialogName: 'test-inner-dialog', isBlockBackgroundClose: true })}
+          className='w-full'
+          onClick={() =>
+            open({
+              dialogName: 'test-inner-dialog',
+              dialogProps: { id: 1 },
+              isBlockBackgroundClose: true,
+            })
+          }
         >
           내부 다이얼로그 열기
         </Button>
         <DialogClose asChild>
-          <Button className='grow'>닫기</Button>
+          <Button className='w-full'>닫기</Button>
         </DialogClose>
       </DialogFooter>
     </DialogContent>

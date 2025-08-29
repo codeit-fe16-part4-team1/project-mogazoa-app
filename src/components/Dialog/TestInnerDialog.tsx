@@ -7,10 +7,12 @@ import {
   DialogContent,
   DialogDescription,
   DialogClose,
+  DialogFooter,
 } from '@/components/Dialog/core/DialogComponents';
 import useDialog from '@/hooks/useDialog';
+import { TestInnerDialogProps } from '@/types/dialogProps.types';
 
-const TestInnerDialog = () => {
+const TestInnerDialog = ({ id }: TestInnerDialogProps) => {
   const { closeAll } = useDialog();
 
   const innerDialogContent = (
@@ -20,14 +22,15 @@ const TestInnerDialog = () => {
         <DialogDescription>
           기본 동작인 백그라운드 클릭 시 닫힘이 방지되어있습니다.
         </DialogDescription>
-        <div className='flex gap-4 justify-between items-center'>
+        <p>Props 전달 테스트: {id}</p>
+        <DialogFooter>
           <DialogClose asChild>
-            <Button className='grow'>이전</Button>
+            <Button className='w-full'>이전</Button>
           </DialogClose>
-          <Button className='grow' onClick={() => closeAll()}>
+          <Button className='w-full' onClick={() => closeAll()}>
             전체 닫기
           </Button>
-        </div>
+        </DialogFooter>
       </DialogHeader>
     </DialogContent>
   );

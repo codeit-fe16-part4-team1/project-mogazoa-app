@@ -5,15 +5,20 @@ import { DIALOG_COMPONENTS } from '@/components/Dialog/core/DialogMap';
 
 /**
  * 다이얼로그를 열기 위한 옵션 인터페이스
- * @interface IOpen
+ * @interface IOpen<TProps>
  */
-interface IOpen {
+interface IOpen<TProps> {
   /**
    * 열고자 하는 다이얼로그의 이름
    * `DIALOG_COMPONENTS`에 정의된 키(key) 중 하나여야 함
    * @type {keyof typeof DIALOG_COMPONENTS}
    */
   dialogName: keyof typeof DIALOG_COMPONENTS;
+  /**
+   * 다이얼로그에 전달할 Props
+   * `dialogProps.types.ts`에 정의된 Props 중 하나여야 함
+   */
+  dialogProps?: TProps;
   /**
    * 다이얼로그 외부를 클릭했을 때 다이얼로그가 닫히는 것을 막을지 여부
    * 기본값은 `false`
@@ -31,7 +36,7 @@ interface IOpen {
  * dialogs: DialogState[],
  * isOpen: boolean,
  * isClosing: boolean,
- * open: ({ dialogName, isBlockBackgroundClose }: IOpen) => void,
+ * open: ({ dialogName, dialogProps, isBlockBackgroundClose }: IOpen) => void,
  * close: () => void,
  * closeAll: () => void
  * }}
@@ -49,13 +54,14 @@ const useDialog = () => {
 
   /**
    * 새로운 다이얼로그 열기
-   * @param {IOpen} { dialogName, isBlockBackgroundClose } - 열고자 하는 다이얼로그의 이름과 배경 클릭 닫기 차단 여부
+   * @param {IOpen} { dialogName, dialogProps, isBlockBackgroundClose } - 열고자 하는 다이얼로그의 이름과 Props 및 배경 클릭 닫기 차단 여부
    */
-  const open = ({ dialogName, isBlockBackgroundClose }: IOpen) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const open = ({ dialogName, dialogProps = undefined, isBlockBackgroundClose }: IOpen<any>) => {
     router.push(`${pathname}#dialog=${dialogName}`);
     openDialog({
       dialogName,
-      dialogContent: DIALOG_COMPONENTS[dialogName],
+      dialogContent: DIALOG_COMPONENTS[dialogName](dialogProps),
       isBlockBackgroundClose,
     });
   };
