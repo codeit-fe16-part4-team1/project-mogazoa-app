@@ -29,7 +29,6 @@ const SigninKakaoCallback = () => {
         router.replace('/error?type=state_null');
         return;
       }
-
       if (!code) {
         router.replace('/error?type=code_null');
         return;

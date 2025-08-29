@@ -35,9 +35,9 @@ const SigninKakaoCallback = () => {
         });
         router.replace('/');
       } catch (err) {
-        console.error('[Error] Failed to Signin by Kakao', err);
         if (err instanceof AxiosError) {
-          if (err.status === 403 && err.response?.data.message === '등록되지 않은 사용자입니다.') {
+          const errorMsg = err.response?.data.message;
+          if (err.status === 403 && errorMsg === '등록되지 않은 사용자입니다.') {
             router.replace('/oauth/signup/kakao');
             return;
           }
