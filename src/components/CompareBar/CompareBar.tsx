@@ -1,5 +1,8 @@
+// CompareBar.tsx
+'use client';
+
 import { useState, useEffect } from 'react';
-import { getProductsAPI } from '@/api/getProductsAPI'; // 상품 목록 API
+import { getProductsAPI } from '@/api/getProductsAPI';
 import { ProductItem } from '@/types/api';
 
 interface CompareBarProps {
@@ -13,15 +16,13 @@ const CompareBar = ({ onSelectProduct }: CompareBarProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 1. 컴포넌트 마운트 시 전체 상품 목록 한 번만 불러오기
+  // 컴포넌트 마운트 시 전체 상품 목록 한 번만 불러오기
   useEffect(() => {
     const fetchAllProducts = async () => {
       try {
         setIsLoading(true);
-        // 빈 keyword로 API 호출하여 전체 목록을 가져옵니다.
         const { list } = await getProductsAPI({ keyword: '' });
         setAllProducts(list);
-        setFilteredProducts(list); // 초기에는 전체 목록을 보여줍니다.
       } catch (err) {
         setError('상품 목록을 불러오는 데 실패했습니다.');
         console.error(err);
@@ -32,7 +33,7 @@ const CompareBar = ({ onSelectProduct }: CompareBarProps) => {
     fetchAllProducts();
   }, []);
 
-  // 2. 입력값이 변경될 때마다 필터링
+  // 입력값이 변경될 때마다 필터링
   useEffect(() => {
     if (inputValue.length > 0) {
       const trimmedKeyword = inputValue.toLowerCase();
@@ -41,8 +42,7 @@ const CompareBar = ({ onSelectProduct }: CompareBarProps) => {
       );
       setFilteredProducts(newFilteredProducts);
     } else {
-      // 입력값이 없으면 전체 목록으로 되돌립니다.
-      setFilteredProducts(allProducts);
+      setFilteredProducts([]);
     }
   }, [inputValue, allProducts]);
 
@@ -65,21 +65,22 @@ const CompareBar = ({ onSelectProduct }: CompareBarProps) => {
   }
 
   return (
-    <div className='relative'>
+    <div className='relative w-full'>
       <input
         type='text'
         value={inputValue}
         onChange={handleInputChange}
         placeholder='상품명을 입력하세요'
+        className='border-primary-orange-600 text-body1-medium hover:border-primary-orange-700 w-full gap-3 rounded-full border-2 border-dashed px-5 py-[18px] text-gray-600 hover:border-solid focus:border-solid lg:w-[350px]'
       />
       {inputValue.length > 0 && (
-        <ul className='absolute z-10 w-full border border-gray-300 bg-white'>
+        <ul className='absolute z-10 mt-2 w-full rounded-md border border-gray-400 bg-white p-2 shadow-lg'>
           {filteredProducts.length > 0 ? (
             filteredProducts.map((product) => (
               <li
                 key={product.id}
                 onClick={() => handleSelect(product)}
-                className='cursor-pointer p-2 hover:bg-gray-100'
+                className='cursor-pointer rounded-md p-2 hover:bg-gray-100'
               >
                 {product.name}
               </li>
