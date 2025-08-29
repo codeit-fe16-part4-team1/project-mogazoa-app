@@ -10,7 +10,7 @@ const meta = {
     layout: 'centered',
   },
   argTypes: {
-    liked: {
+    favorite: {
       control: 'boolean',
       description: '좋아요 상태',
     },
@@ -21,9 +21,9 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  args: { liked: false },
+  args: { favorite: false, productId: 0 },
 };
 
 export const Liked: Story = {
-  args: { liked: true },
+  args: { favorite: true, productId: 0 },
 };
