@@ -49,6 +49,9 @@ jobs:
 
       # 5) 프로젝트 빌드
       - name: Build project
+        env:
+          NEXT_PUBLIC_API_BASE_URL: ${{ vars.NEXT_PUBLIC_API_BASE_URL }}
+          NEXT_PUBLIC_JS_KEY_KAKAO: ${{ secrets.NEXT_PUBLIC_JS_KEY_KAKAO }}
         run: |
           echo "[DEBUG][GHA] ⌛ 프로젝트 빌드 진행 중..."
           rm -rf .next
