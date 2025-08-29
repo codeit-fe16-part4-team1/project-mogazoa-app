@@ -33,6 +33,7 @@ const config: Config = {
         },
         'rating-star-active': '#FFC83C',
         'state-error': '#ff0000',
+        kakao: '#FEE500',
       },
 
       fontFamily: {
@@ -42,47 +43,46 @@ const config: Config = {
 
       fontSize: {
         //Header
+        h1: ['32px', { lineHeight: '39px', fontWeight: 'normal' }],
+        'h1-bold': ['32px', { lineHeight: '39px', fontWeight: 'bold' }],
+        'h1-medium': ['32px', { lineHeight: '39px', fontWeight: '500' }],
+        'h1-light': ['32px', { lineHeight: '39px', fontWeight: '300' }],
 
-        h1: ['32px', { lineHeight: 'auto', fontWeight: 'normal' }],
-        h2: ['28px', { lineHeight: 'auto', fontWeight: 'normal' }],
-        h3: ['24px', { lineHeight: 'auto', fontWeight: 'normal' }],
-        h4: ['20px', { lineHeight: 'auto', fontWeight: 'normal' }],
+        h2: ['28px', { lineHeight: '34px', fontWeight: 'normal' }],
+        'h2-bold': ['28px', { lineHeight: '34px', fontWeight: 'bold' }],
+        'h2-medium': ['28px', { lineHeight: '34px', fontWeight: '500' }],
+        'h2-light': ['28px', { lineHeight: '34px', fontWeight: '300' }],
 
-        'h1-bold': ['32px', { lineHeight: 'auto', fontWeight: 'bold' }],
-        'h2-bold': ['28px', { lineHeight: 'auto', fontWeight: 'bold' }],
-        'h3-bold': ['24px', { lineHeight: 'auto', fontWeight: 'bold' }],
-        'h4-bold': ['20px', { lineHeight: 'auto', fontWeight: 'bold' }],
+        h3: ['24px', { lineHeight: '29px', fontWeight: 'normal' }],
+        'h3-bold': ['24px', { lineHeight: '29px', fontWeight: 'bold' }],
+        'h3-medium': ['24px', { lineHeight: '29px', fontWeight: '500' }],
+        'h3-light': ['24px', { lineHeight: '29px', fontWeight: '300' }],
 
-        'h1-medium': ['32px', { lineHeight: 'auto', fontWeight: '500' }],
-        'h2-medium': ['28px', { lineHeight: 'auto', fontWeight: '500' }],
-        'h3-medium': ['24px', { lineHeight: 'auto', fontWeight: '500' }],
-        'h4-medium': ['20px', { lineHeight: 'auto', fontWeight: '500' }],
+        h4: ['20px', { lineHeight: '24px', fontWeight: 'normal' }],
+        'h4-bold': ['20px', { lineHeight: '24px', fontWeight: 'bold' }],
+        'h4-medium': ['20px', { lineHeight: '24px', fontWeight: '500' }],
+        'h4-light': ['20px', { lineHeight: '24px', fontWeight: '300' }],
 
-        'h1-light': ['32px', { lineHeight: 'auto', fontWeight: '300' }],
-        'h2-light': ['28px', { lineHeight: 'auto', fontWeight: '300' }],
-        'h3-light': ['24px', { lineHeight: 'auto', fontWeight: '300' }],
-        'h4-light': ['20px', { lineHeight: 'auto', fontWeight: '300' }],
+        'sub-headline': ['18px', { lineHeight: '23px', fontWeight: 'normal' }],
+        'sub-headline-bold': ['18px', { lineHeight: '23px', fontWeight: 'bold' }],
+        'sub-headline-medium': ['18px', { lineHeight: '23px', fontWeight: '500' }],
+        'sub-headline-light': ['18px', { lineHeight: '23px', fontWeight: '300' }],
 
         // Body
-        'sub-headline': ['18px', { lineHeight: 'auto', fontWeight: 'normal' }],
-        body1: ['16px', { lineHeight: 'auto', fontWeight: 'normal' }],
-        body2: ['14px', { lineHeight: 'auto', fontWeight: 'normal' }],
-        caption: ['12px', { lineHeight: 'auto', fontWeight: 'normal' }],
+        body1: ['16px', { lineHeight: '20px', fontWeight: 'normal' }],
+        'body1-bold': ['16px', { lineHeight: '20px', fontWeight: 'bold' }],
+        'body1-medium': ['16px', { lineHeight: '20px', fontWeight: '500' }],
+        'body1-light': ['16px', { lineHeight: '20px', fontWeight: '300' }],
 
-        'sub-headline-bold': ['18px', { lineHeight: 'auto', fontWeight: 'bold' }],
-        'body1-bold': ['16px', { lineHeight: 'auto', fontWeight: 'bold' }],
-        'body2-bold': ['14px', { lineHeight: 'auto', fontWeight: 'bold' }],
-        'caption-bold': ['12px', { lineHeight: 'auto', fontWeight: 'bold' }],
+        body2: ['14px', { lineHeight: '18px', fontWeight: 'normal' }],
+        'body2-bold': ['14px', { lineHeight: '18px', fontWeight: 'bold' }],
+        'body2-medium': ['14px', { lineHeight: '18px', fontWeight: '500' }],
+        'body2-light': ['14px', { lineHeight: '18px', fontWeight: '300' }],
 
-        'sub-headline-medium': ['18px', { lineHeight: 'auto', fontWeight: '500' }],
-        'body1-medium': ['16px', { lineHeight: 'auto', fontWeight: '500' }],
-        'body2-medium': ['14px', { lineHeight: 'auto', fontWeight: '500' }],
-        'caption-medium': ['12px', { lineHeight: 'auto', fontWeight: '500' }],
-
-        'sub-headline-light': ['18px', { lineHeight: 'auto', fontWeight: '300' }],
-        'body1-light': ['16px', { lineHeight: 'auto', fontWeight: '300' }],
-        'body2-light': ['14px', { lineHeight: 'auto', fontWeight: '300' }],
-        'caption-light': ['12px', { lineHeight: 'auto', fontWeight: '300' }],
+        caption: ['12px', { lineHeight: '15px', fontWeight: 'normal' }],
+        'caption-bold': ['12px', { lineHeight: '15px', fontWeight: 'bold' }],
+        'caption-medium': ['12px', { lineHeight: '15px', fontWeight: '500' }],
+        'caption-light': ['12px', { lineHeight: '15px', fontWeight: '300' }],
       },
       borderRadius: {
         x1: '8px',
