@@ -13,6 +13,7 @@ import AuthSection from '../components/AuthSection';
 import Divider from '../components/Divider';
 import KakaoButton from '../components/KakaoButton';
 import { cn } from '@/lib/cn';
+import { redirectKakaoAuth } from '@/lib/redirectKakaoAuth';
 
 const signupSchema = z
   .object({
@@ -57,8 +58,8 @@ const SignupPage = () => {
     mode: 'onChange',
   });
 
-  const handleKakaoSignupClick = () => {
-    router.push('/oauth/signup/kakao');
+  const handleKakaoSigninClick = () => {
+    redirectKakaoAuth.signin();
   };
 
   const onSubmit = async (data: SignupFormInputs) => {
@@ -146,7 +147,7 @@ const SignupPage = () => {
         </form>
         <div className='mt-25 flex flex-col gap-6 md:mt-10'>
           <Divider text='SNS로 바로 시작하기' />
-          <KakaoButton onClick={handleKakaoSignupClick}>카카오 회원가입</KakaoButton>
+          <KakaoButton onClick={handleKakaoSigninClick} />
         </div>
       </div>
     </AuthSection>
