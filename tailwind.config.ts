@@ -21,6 +21,7 @@ const config: Config = {
         },
         gray: {
           100: '#f9fafb',
+          150: '#f3f5f7',
           200: '#eff0f3',
           300: '#dbdce1',
           400: '#c4c6cc',
@@ -30,6 +31,7 @@ const config: Config = {
           800: '#4b4f58',
           900: '#2f323a',
         },
+        'rating-star-active': '#FFC83C',
         'state-error': '#ff0000',
       },
 
