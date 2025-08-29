@@ -2,6 +2,7 @@
 import { cn } from '@/lib/cn';
 import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
+import useFilterStore from '@/store/useFilterStore';
 import useAuthStore from '@/store/useAuthStore';
 import IconLogo from '@/assets/icons/logo.svg';
 import IconMenu from '@/assets/icons/menu.svg';
@@ -9,6 +10,7 @@ import IconSearch from '@/assets/icons/search.svg';
 
 const Header = () => {
   const { isAuthenticated } = useAuthStore();
+  const { searchQuery, setSearchQuery, clearSearchQuery } = useFilterStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -114,7 +116,10 @@ const Header = () => {
                   />
                 </div>
                 <button
-                  onClick={toggleSearch}
+                  onClick={() => {
+                    toggleSearch();
+                    clearSearchQuery();
+                  }}
                   className='ml-3 cursor-pointer p-2 text-xl text-gray-500 hover:text-gray-800'
                 >
                   ✕
@@ -140,6 +145,8 @@ const Header = () => {
                   type='text'
                   placeholder='상품 이름을 검색해 보세요'
                   className='bg-gray-150 text-body2 block h-full w-full rounded-full py-4 pr-4 pl-14 placeholder-gray-800 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none'
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
             </div>
