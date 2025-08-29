@@ -10,7 +10,7 @@ import { Button } from '@/components/Button/Button';
 import KakaoButton from '../components/KakaoButton';
 import Divider from '../components/Divider';
 import FormTitle from '../components/FormTitle';
-import FormFieldLayout from '../components/FormFieldLayout';
+import FormFieldContainer from '../components/FormFieldContainer';
 import AuthSection from '../components/AuthSection';
 import { cn } from '@/lib/cn';
 import { redirectKakaoAuth } from '@/lib/redirectKakaoAuth';
@@ -78,7 +78,7 @@ const SigninPage = () => {
             </p>
           </FormTitle>
           {/* 이메일 입력 */}
-          <FormFieldLayout>
+          <FormFieldContainer>
             <FormField
               label='이메일'
               id='email'
@@ -98,7 +98,7 @@ const SigninPage = () => {
               register={register('password')}
               error={errors.password}
             />
-          </FormFieldLayout>
+          </FormFieldContainer>
           <Button
             className='mt-10 w-full md:mt-20 md:h-16'
             type='submit'

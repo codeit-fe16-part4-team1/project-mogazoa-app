@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { AxiosError } from 'axios';
 import { Button } from '@/components/Button/Button';
 import FormTitle from '../components/FormTitle';
-import FormFieldLayout from '../components/FormFieldLayout';
+import FormFieldContainer from '../components/FormFieldContainer';
 import AuthSection from '../components/AuthSection';
 import Divider from '../components/Divider';
 import KakaoButton from '../components/KakaoButton';
@@ -89,7 +89,7 @@ const SignupPage = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <div>
             <FormTitle>회원가입</FormTitle>
-            <FormFieldLayout>
+            <FormFieldContainer>
               <FormField
                 label='이메일'
                 id='email'
@@ -134,7 +134,7 @@ const SignupPage = () => {
                 register={register('passwordConfirmation')}
                 error={errors.passwordConfirmation}
               />
-            </FormFieldLayout>
+            </FormFieldContainer>
             {/* 제출 버튼 */}
           </div>
           <Button
