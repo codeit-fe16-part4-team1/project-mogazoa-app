@@ -73,9 +73,9 @@ const CompareBar = ({ onSelectProduct, onRemoveProduct }: CompareBarProps) => {
   }
 
   return (
-    <div className='relative w-full'>
+    <div className='relative mx-auto w-full lg:w-[350px]'>
       {selectedProduct ? (
-        <div className='inline-flex w-full items-center justify-between gap-3 rounded-full bg-gray-900 px-5 py-[18px] text-white lg:w-[350px]'>
+        <div className='inline-flex w-full items-center justify-between gap-3 rounded-full bg-gray-900 px-5 py-[18px] text-white'>
           <span className='text-body1-bold'>{selectedProduct.name}</span>
           <button onClick={handleRemove} className='items-center justify-between'>
             <XbIcon className='h-5 w-5' />
@@ -88,7 +88,7 @@ const CompareBar = ({ onSelectProduct, onRemoveProduct }: CompareBarProps) => {
             value={inputValue}
             onChange={handleInputChange}
             placeholder='상품명을 입력해 주세요'
-            className='border-primary-orange-600 text-body1-medium focus:border-primary-orange-600 w-full gap-3 rounded-full border-2 border-dashed bg-white px-5 py-[18px] text-gray-600 focus:border-2 focus:border-solid focus:outline-none lg:w-[350px]'
+            className='border-primary-orange-600 text-body1-medium focus:border-primary-orange-600 w-full rounded-full border-2 border-dashed bg-white px-5 py-[18px] text-gray-600 focus:border-2 focus:border-solid focus:outline-none lg:w-[350px]'
           />
           {inputValue.length > 0 && (
             <ul className='rounded-x2 absolute mt-4 w-[340px] gap-[5px] border border-gray-400 bg-white p-2.5 md:w-[290px] lg:w-[350px]'>

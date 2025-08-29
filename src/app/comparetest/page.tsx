@@ -14,8 +14,8 @@ const CompareTestPage = () => {
 
   return (
     <div className='flex min-h-screen flex-col items-center p-8'>
-      <h1 className='mb-8 text-4xl font-bold'>상품 비교 바 테스트 페이지</h1>
-      <div className='w-[340px] md:w-[290px] lg:w-[405px]'>
+      <h1 className='text-h1-bold mb-4'>CompareBar Test</h1>
+      <div className='flex w-[340px] items-center justify-center md:w-[290px] lg:w-[405px]'>
         <CompareBar onSelectProduct={handleProductSelect} onRemoveProduct={handleProductRemove} />
       </div>
     </div>
