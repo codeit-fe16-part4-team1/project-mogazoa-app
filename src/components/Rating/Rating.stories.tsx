@@ -10,7 +10,7 @@ const meta: Meta<typeof Rating> = {
     layout: 'centered',
   },
   argTypes: {
-    initialRating: {
+    rating: {
       control: { type: 'number', min: 0, max: 5 },
       description: '초기 별점 값을 설정',
     },
@@ -32,14 +32,14 @@ type Story = StoryObj<typeof Rating>;
 
 export const Default: Story = {
   args: {
-    initialRating: 3,
+    rating: 3,
     size: 'md',
   },
 };
 
 export const Readonly: Story = {
   args: {
-    initialRating: 4,
+    rating: 4,
     size: 'sm',
     readonly: true,
   },
