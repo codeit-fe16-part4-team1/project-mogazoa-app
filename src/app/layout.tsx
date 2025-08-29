@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Providers } from './Providers';
 import localFont from 'next/font/local';
 import './globals.css';
-// import GlobalDialog from '@/components/Dialog/core/GlobalDialog';
+import GlobalDialog from '@/components/Dialog/core/GlobalDialog';
 import Script from 'next/script';
 import { Suspense } from 'react';
 import Header from '@/components/Header/Header';
@@ -48,7 +48,7 @@ export default function RootLayout({
           <Header />
           <Suspense fallback={<div>로딩 중...</div>}>{children}</Suspense>
         </Providers>
-        {/* <GlobalDialog /> */}
+        <GlobalDialog />
       </body>
     </html>
   );
