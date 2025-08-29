@@ -2,6 +2,7 @@
 import { useEffect } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import useAuthStore from '@/store/useAuthStore';
+import { AxiosError } from 'axios';
 
 const SigninKakaoCallback = () => {
   const searchParams = useSearchParams();
@@ -17,10 +18,13 @@ const SigninKakaoCallback = () => {
 
   useEffect(() => {
     const handleKakaoSignIn = async () => {
+      // 기본 에러처리
       if (error) {
+        router.replace(`/error?type=${error}`);
         return;
       }
       if (!code) {
+        router.replace('/error?type=code_null');
         return;
       }
 
@@ -29,10 +33,18 @@ const SigninKakaoCallback = () => {
           redirectUri,
           token: code,
         });
-      } catch (err) {
-        console.error('카카오 로그인 실패:', err);
-      } finally {
         router.replace('/');
+      } catch (err) {
+        console.error('[Error] Failed to Signin by Kakao', err);
+        if (err instanceof AxiosError) {
+          if (err.status === 403 && err.response?.data.message === '등록되지 않은 사용자입니다.') {
+            router.replace('/oauth/signup/kakao');
+            return;
+          }
+          router.replace('/error?type=signin_failed');
+        } else {
+          router.replace('/error?type=unknown_error');
+        }
       }
     };
 

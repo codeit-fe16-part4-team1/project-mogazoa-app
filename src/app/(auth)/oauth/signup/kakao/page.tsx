@@ -9,6 +9,7 @@ import { useForm } from 'react-hook-form';
 import z from 'zod';
 import IconBack from '@/assets/icons/icon_arrow_prev.svg';
 import { useRouter } from 'next/navigation';
+import { redirectKakaoAuth } from '@/lib/redirectKakaoAuth';
 
 const kakaoSignupSchema = z.object({
   nickname: z
@@ -36,11 +37,7 @@ const SigninKakao = () => {
   };
 
   const onSubmit = (data: KakaoSignupFormInputs) => {
-    const redirectUri = `${window.location.origin}/oauth/signup/kakao/callback`;
-    Kakao.Auth.authorize({
-      redirectUri,
-      state: data.nickname,
-    });
+    redirectKakaoAuth.signup({ state: data.nickname });
   };
 
   return (
