@@ -103,7 +103,7 @@ const FormField = ({
   );
 
   const HINT_STYLES = cn(
-    'mt-1 h-[17px] text-[14px]/[17px]',
+    'mt-3 h-[17px] text-[14px]/[17px]',
     ERROR_STATE_STYLES.text[`${errorState}`],
   );
 
