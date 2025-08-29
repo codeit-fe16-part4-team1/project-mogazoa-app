@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, createContext } from 'react';
-import DropdownIcon from './DropdownIcon';
+import DropdownIcon from '@/assets/icons/DropdownIcon.svg';
 import { cn } from '@/lib/cn';
 
 interface DropdownContextProps {

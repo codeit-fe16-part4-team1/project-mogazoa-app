@@ -1,12 +1,16 @@
 'use client';
 import { cn } from '@/lib/cn';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
+import useFilterStore from '@/store/useFilterStore';
 import useAuthStore from '@/store/useAuthStore';
+import IconLogo from '@/assets/icons/logo.svg';
+import IconMenu from '@/assets/icons/menu.svg';
+import IconSearch from '@/assets/icons/search.svg';
 
 const Header = () => {
   const { isAuthenticated } = useAuthStore();
+  const { searchQuery, setSearchQuery, clearSearchQuery } = useFilterStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -30,7 +34,7 @@ const Header = () => {
       }
     };
 
-    if (isMenuOpen || isSearchOpen) {
+    if (isMenuOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
@@ -41,7 +45,7 @@ const Header = () => {
 
   return (
     <header className={cn('border-b-1 border-gray-200 bg-white', 'header')}>
-      <div className='mx-auto max-w-[1680px] px-4 sm:px-5'>
+      <div className='mx-auto max-w-[1680px] px-5 md:px-8'>
         <div className='flex h-16 items-center justify-between md:h-20 lg:h-[100px]'>
           <div className='relative md:hidden' ref={menuRef}>
             <button
@@ -51,7 +55,7 @@ const Header = () => {
               )}
               onClick={toggleMenu}
             >
-              <Image src='/menu.svg' alt='메뉴' width={24} height={24} className='h-6 w-6' />
+              <IconMenu />
             </button>
             {isMenuOpen && (
               // TODO: 공통 드롭다운 만들어지면 수정
@@ -61,14 +65,14 @@ const Header = () => {
                     <>
                       <Link
                         href='/signin'
-                        className='block px-4 py-2 text-sm text-gray-700 transition-colors duration-150 hover:bg-gray-100 hover:text-gray-900'
+                        className='text-body2 block px-4 py-2 text-gray-700 transition-colors duration-150 hover:bg-gray-100 hover:text-gray-900'
                         onClick={() => setIsMenuOpen(false)}
                       >
                         로그인
                       </Link>
                       <Link
                         href='/signup'
-                        className='block px-4 py-2 text-sm text-gray-700 transition-colors duration-150 hover:bg-gray-100 hover:text-gray-900'
+                        className='text-body2 block px-4 py-2 text-gray-700 transition-colors duration-150 hover:bg-gray-100 hover:text-gray-900'
                         onClick={() => setIsMenuOpen(false)}
                       >
                         회원가입
@@ -78,14 +82,14 @@ const Header = () => {
                     <>
                       <Link
                         href='/compare'
-                        className='block px-4 py-2 text-sm text-gray-700 transition-colors duration-150 hover:bg-gray-100 hover:text-gray-900'
+                        className='text-body2 block px-4 py-2 text-gray-700 transition-colors duration-150 hover:bg-gray-100 hover:text-gray-900'
                         onClick={() => setIsMenuOpen(false)}
                       >
                         비교하기
                       </Link>
                       <Link
                         href='/profile'
-                        className='block px-4 py-2 text-sm text-gray-700 transition-colors duration-150 hover:bg-gray-100 hover:text-gray-900'
+                        className='text-body2 block px-4 py-2 text-gray-700 transition-colors duration-150 hover:bg-gray-100 hover:text-gray-900'
                         onClick={() => setIsMenuOpen(false)}
                       >
                         내 프로필
@@ -102,24 +106,21 @@ const Header = () => {
               <div className='flex h-16 items-center px-4'>
                 <div className='relative flex-1'>
                   <div className='pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4'>
-                    <Image
-                      src='/search.svg'
-                      alt='검색'
-                      width={24}
-                      height={24}
-                      className='h-5 w-5'
-                    />
+                    <IconSearch className='h-6 w-6 text-gray-600' />
                   </div>
                   <input
                     type='text'
                     placeholder='상품 이름을 검색해 보세요'
-                    className='block h-12 w-full rounded-full bg-[var(--gray-150)] py-3 pr-4 pl-12 text-sm placeholder-[var(--gray-800)] focus:border-[var(--primary-orange-600)] focus:ring-1 focus:ring-[var(--primary-orange-600)] focus:outline-none'
+                    className='bg-gray-150 text-body2 focus:border-primary-orange-500 focus:ring-primary-orange-500 block h-12 w-full rounded-full py-3 pr-4 pl-12 placeholder-gray-800 focus:ring-1 focus:outline-none'
                     autoFocus
                   />
                 </div>
                 <button
-                  onClick={toggleSearch}
-                  className='ml-3 cursor-pointer p-2 text-xl text-[var(--gray-500)] hover:text-[var(--gray-800)]'
+                  onClick={() => {
+                    toggleSearch();
+                    clearSearchQuery();
+                  }}
+                  className='ml-3 cursor-pointer p-2 text-xl text-gray-500 hover:text-gray-800'
                 >
                   ✕
                 </button>
@@ -127,35 +128,25 @@ const Header = () => {
             </div>
           )}
           <div className='flex items-center'>
-            <Link href='/'>
-              <Image
-                src='/logo.svg'
-                alt='mogazoa'
-                width={160}
-                height={40}
-                className='h-8 w-32 md:h-10 md:w-40'
-              />
+            <Link href='/' className='h-8 w-32 md:h-10 md:w-40'>
+              <IconLogo className='h-full w-full' />
             </Link>
           </div>
           <div className='flex items-center md:gap-7 lg:gap-15'>
             <button className='cursor-pointer md:hidden' onClick={toggleSearch}>
-              <Image src='/search.svg' alt='검색' width={24} height={24} className='h-6 w-6' />
+              <IconSearch className='h-6 w-6 text-gray-500 hover:text-gray-800' />
             </button>
             <div className='hidden h-13 h-14 w-75 md:flex lg:w-125'>
               <div className='relative w-full'>
                 <div className='pointer-events-none absolute inset-y-0 left-0 flex items-center pl-5'>
-                  <Image
-                    src='/search.svg'
-                    alt='검색'
-                    width={24}
-                    height={24}
-                    className='h-6 w-6 text-[var(--gray-600)]'
-                  />
+                  <IconSearch className='h-6 w-6 text-gray-600' />
                 </div>
                 <input
                   type='text'
                   placeholder='상품 이름을 검색해 보세요'
-                  className='block h-full w-full rounded-full bg-[var(--gray-150)] py-4 pr-4 pl-14 text-sm placeholder-[var(--gray-800)] focus:border-[var(--orange-500)] focus:ring-1 focus:ring-[var(--orange-500)] focus:outline-none'
+                  className='bg-gray-150 text-body2 block h-full w-full rounded-full py-4 pr-4 pl-14 placeholder-gray-800 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none'
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
             </div>
@@ -163,13 +154,13 @@ const Header = () => {
               <>
                 <Link
                   href='/signin'
-                  className='hidden py-2 text-sm font-medium text-[var(--gray-700)] hover:text-[var(--gray-800)] md:block'
+                  className='text-body2 hidden py-2 text-gray-700 hover:text-gray-800 md:block'
                 >
                   로그인
                 </Link>
                 <Link
                   href='/signup'
-                  className='hidden py-2 text-sm font-medium text-[var(--gray-700)] hover:text-[var(--gray-800)] md:block'
+                  className='text-body2 hidden py-2 text-gray-700 hover:text-gray-800 md:block'
                 >
                   회원가입
                 </Link>
@@ -178,13 +169,13 @@ const Header = () => {
               <>
                 <Link
                   href='/compare'
-                  className='hidden py-2 text-sm font-medium text-[var(--gray-700)] hover:text-[var(--gray-800)] md:block'
+                  className='text-body2 hidden py-2 text-gray-700 hover:text-gray-800 md:block'
                 >
                   비교하기
                 </Link>
                 <Link
-                  href='/profile'
-                  className='hidden py-2 text-sm font-medium text-[var(--gray-700)] hover:text-[var(--gray-800)] md:block'
+                  href='/mypage'
+                  className='text-body2 hidden py-2 text-gray-700 hover:text-gray-800 md:block'
                 >
                   내 프로필
                 </Link>
