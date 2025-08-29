@@ -3,7 +3,7 @@ import { cn } from '@/lib/cn';
 import { cva } from 'class-variance-authority';
 import { SVGProps } from 'react';
 import { RatingStarSize, RatingStarState } from '@/types/rating.types';
-import RatingStarIcon from './RatingStarIcon';
+import RatingStarIcon from '@/assets/icons/icon_rating_star.svg';
 
 interface RatingStarProps extends SVGProps<SVGSVGElement> {
   state?: RatingStarState;

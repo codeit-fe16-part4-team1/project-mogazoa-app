@@ -1,5 +1,6 @@
 'use client';
 
+import { DialogStore } from '@/types/dialog.types';
 import { create } from 'zustand';
 
 const OPEN_DIALOG_DELAY = 250;
