@@ -1,22 +1,23 @@
-// CompareBar.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getProductsAPI } from '@/api/getProductsAPI';
+import XbIcon from '@/assets/icons/XbIcon.svg';
+import { getProductsAPI } from '@/api/products/getProductsAPI';
 import { ProductItem } from '@/types/api';
 
 interface CompareBarProps {
   onSelectProduct: (product: ProductItem) => void;
+  onRemoveProduct: (product: ProductItem) => void;
 }
 
-const CompareBar = ({ onSelectProduct }: CompareBarProps) => {
+const CompareBar = ({ onSelectProduct, onRemoveProduct }: CompareBarProps) => {
   const [inputValue, setInputValue] = useState('');
   const [allProducts, setAllProducts] = useState<ProductItem[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<ProductItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(null);
 
-  // 컴포넌트 마운트 시 전체 상품 목록 한 번만 불러오기
   useEffect(() => {
     const fetchAllProducts = async () => {
       try {
@@ -33,9 +34,8 @@ const CompareBar = ({ onSelectProduct }: CompareBarProps) => {
     fetchAllProducts();
   }, []);
 
-  // 입력값이 변경될 때마다 필터링
   useEffect(() => {
-    if (inputValue.length > 0) {
+    if (inputValue.length > 0 && !selectedProduct) {
       const trimmedKeyword = inputValue.toLowerCase();
       const newFilteredProducts = allProducts.filter((product) =>
         product.name.toLowerCase().includes(trimmedKeyword),
@@ -44,16 +44,24 @@ const CompareBar = ({ onSelectProduct }: CompareBarProps) => {
     } else {
       setFilteredProducts([]);
     }
-  }, [inputValue, allProducts]);
+  }, [inputValue, allProducts, selectedProduct]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
   };
 
   const handleSelect = (product: ProductItem) => {
-    setInputValue(product.name);
-    setFilteredProducts([]); // 목록 숨기기
-    onSelectProduct(product); // 부모 컴포넌트에 선택된 상품 전달
+    setSelectedProduct(product);
+    setInputValue('');
+    setFilteredProducts([]);
+    onSelectProduct(product);
+  };
+
+  const handleRemove = () => {
+    if (selectedProduct) {
+      onRemoveProduct(selectedProduct);
+      setSelectedProduct(null);
+    }
   };
 
   if (isLoading) {
@@ -66,29 +74,40 @@ const CompareBar = ({ onSelectProduct }: CompareBarProps) => {
 
   return (
     <div className='relative w-full'>
-      <input
-        type='text'
-        value={inputValue}
-        onChange={handleInputChange}
-        placeholder='상품명을 입력하세요'
-        className='border-primary-orange-600 text-body1-medium hover:border-primary-orange-700 w-full gap-3 rounded-full border-2 border-dashed px-5 py-[18px] text-gray-600 hover:border-solid focus:border-solid lg:w-[350px]'
-      />
-      {inputValue.length > 0 && (
-        <ul className='absolute z-10 mt-2 w-full rounded-md border border-gray-400 bg-white p-2 shadow-lg'>
-          {filteredProducts.length > 0 ? (
-            filteredProducts.map((product) => (
-              <li
-                key={product.id}
-                onClick={() => handleSelect(product)}
-                className='cursor-pointer rounded-md p-2 hover:bg-gray-100'
-              >
-                {product.name}
-              </li>
-            ))
-          ) : (
-            <li className='p-2 text-gray-500'>검색 결과가 없습니다.</li>
+      {selectedProduct ? (
+        <div className='inline-flex w-full items-center justify-between gap-3 rounded-full bg-gray-900 px-5 py-[18px] text-white lg:w-[350px]'>
+          <span className='text-body1-bold'>{selectedProduct.name}</span>
+          <button onClick={handleRemove} className='items-center justify-between'>
+            <XbIcon className='h-5 w-5' />
+          </button>
+        </div>
+      ) : (
+        <>
+          <input
+            type='text'
+            value={inputValue}
+            onChange={handleInputChange}
+            placeholder='상품명을 입력해 주세요'
+            className='border-primary-orange-600 text-body1-medium focus:border-primary-orange-600 w-full gap-3 rounded-full border-2 border-dashed bg-white px-5 py-[18px] text-gray-600 focus:border-2 focus:border-solid focus:outline-none lg:w-[350px]'
+          />
+          {inputValue.length > 0 && (
+            <ul className='rounded-x2 absolute mt-4 w-[340px] gap-[5px] border border-gray-400 bg-white p-2.5 md:w-[290px] lg:w-[350px]'>
+              {filteredProducts.length > 0 ? (
+                filteredProducts.map((product) => (
+                  <li
+                    key={product.id}
+                    onClick={() => handleSelect(product)}
+                    className='rounded-x1 text-body1 w-full cursor-pointer px-5 py-2.5 text-gray-600 hover:bg-gray-100'
+                  >
+                    {product.name}
+                  </li>
+                ))
+              ) : (
+                <li className='px-5 py-2.5 text-gray-600'>검색 결과가 없습니다.</li>
+              )}
+            </ul>
           )}
-        </ul>
+        </>
       )}
     </div>
   );
