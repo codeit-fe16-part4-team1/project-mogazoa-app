@@ -50,6 +50,7 @@ const SignupPage = () => {
   const {
     register,
     handleSubmit,
+    setError,
     trigger,
     getValues,
     formState: { errors, isValid, isSubmitting },
@@ -68,8 +69,14 @@ const SignupPage = () => {
       router.replace('/');
     } catch (e) {
       if (e instanceof AxiosError) {
-        console.error(Object.keys(e.response?.data.details)[0]);
-        console.error(e.response?.data.message);
+        const errorKey = Object.keys(e.response?.data.details)[0];
+        const errorMessage = e.response?.data.message;
+        if (errorKey === 'email' || errorKey === 'nickname') {
+          setError(errorKey, {
+            type: 'manual',
+            message: errorMessage,
+          });
+        }
       } else {
         console.error(e);
       }

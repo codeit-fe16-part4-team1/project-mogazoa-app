@@ -35,6 +35,7 @@ const SigninPage = () => {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isValid, isSubmitting },
   } = useForm<SigninFormInputs>({
     resolver: zodResolver(signinSchema),
@@ -47,8 +48,14 @@ const SigninPage = () => {
       router.replace('/');
     } catch (e) {
       if (e instanceof AxiosError) {
-        console.error(Object.keys(e.response?.data.details)[0]);
-        console.error(e.response?.data.message);
+        const errorKey = Object.keys(e.response?.data.details)[0];
+        const errorMessage = e.response?.data.message;
+        if (errorKey === 'email' || errorKey === 'password') {
+          setError(errorKey, {
+            type: 'manual',
+            message: errorMessage,
+          });
+        }
       } else {
         console.error(e);
       }
