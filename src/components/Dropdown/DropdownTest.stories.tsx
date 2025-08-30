@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import type { Meta, StoryObj } from '@storybook/nextjs';
 
-import Dropdown from './Dropdown';
-import DropdownItem from './DropdownItem';
-import DropdownList from './DropdownList';
+import Dropdown from './DropdownTest';
+import DropdownItem from './DropdownItemTest';
+import DropdownList from './DropdownListTest';
 
 const meta: Meta<typeof Dropdown> = {
   title: 'Components/Dropdown',
@@ -53,14 +53,5 @@ export const Large: Story = {
     ...Default.args,
     placeholder: '라지 사이즈',
     size: 'L',
-  },
-};
-
-// 반응형 사이즈의 드롭다운 스토리
-export const Responsive: Story = {
-  args: {
-    ...Default.args,
-    placeholder: '반응형',
-    size: 'mq',
   },
 };

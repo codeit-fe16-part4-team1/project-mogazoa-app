@@ -1,69 +1,95 @@
-'use client';
 import { cva } from 'class-variance-authority';
-import React, { useContext } from 'react';
+import { cn } from '@/lib/cn';
+import { Menu } from '@headlessui/react';
 import { DropdownContext } from './Dropdown';
+import { Fragment, useContext } from 'react';
 
-const dropdownItemVariants = cva('block cursor-pointer py-2.5 px-5 rounded-x1', {
+const dropdownItemVariants = cva('block cursor-pointer rounded-x1 text-body2 md:text-body1', {
   variants: {
     size: {
-      S: 'text-body2',
-      L: 'text-body1',
-      mq: 'text-body2 md:text-body1',
+      S: 'py-2.5 px-3', //Dropdown 사이즈
+      L: 'py-2.5 px-5', //Sort 사이즈
     },
     isSelected: {
-      true: 'bg-primary-orange-200 text-primary-orange-600',
-      false: 'bg-white text-gray-600 hover:bg-gray-100',
+      true: '',
+      false: 'bg-white text-gray-600',
+    },
+    active: {
+      true: '',
+      false: '',
     },
   },
   compoundVariants: [
     {
-      size: 'S',
       isSelected: true,
-      className: 'text-body2-medium',
+      className: 'text-body2-medium md:text-body1-medium',
+    },
+    {
+      size: 'L',
+      isSelected: false,
+      active: true,
+      className: 'bg-white text-gray-600',
+    },
+    {
+      size: 'L',
+      isSelected: false,
+      active: true,
+      className: 'bg-gray-100',
     },
     {
       size: 'L',
       isSelected: true,
-      className: 'text-body1-medium',
+      className: 'bg-primary-orange-200 text-primary-orange-600',
     },
     {
-      size: 'mq',
+      size: 'S',
+      isSelected: false,
+      active: true,
+      className: 'bg-white text-gray-600',
+    },
+    {
+      size: 'S',
+      isSelected: false,
+      active: true,
+      className: 'bg-gray-150',
+    },
+    {
+      size: 'S',
       isSelected: true,
-      className: 'text-body2-medium md:text-body1-medium',
+      className: 'bg-gray-900 text-white',
     },
   ],
   defaultVariants: {
-    size: 'S',
+    size: 'L',
     isSelected: false,
+    active: false,
   },
 });
 
 interface DropdownItemProps {
   label: string;
-  onClick?: () => void;
 }
 
-const DropdownItem = ({ label, onClick }: DropdownItemProps) => {
+const DropdownItem = ({ label }: DropdownItemProps) => {
   const context = useContext(DropdownContext);
   if (!context) {
     throw new Error('DropdownItem must be used within a Dropdown');
   }
 
-  const { selectedItem, setSelectedItem, size, setIsOpen } = context;
+  const { selectedItem, setSelectedItem, size } = context;
   const isSelected = selectedItem === label;
 
-  const handleClick = () => {
-    setSelectedItem(label);
-    setIsOpen(false);
-    if (onClick) {
-      onClick();
-    }
-  };
-
   return (
-    <div className={dropdownItemVariants({ size, isSelected })} onClick={handleClick}>
-      {label}
-    </div>
+    <Menu.Item as={Fragment}>
+      {({ active }) => (
+        <div
+          className={cn(dropdownItemVariants({ size, isSelected, active }))}
+          onClick={() => setSelectedItem(label)}
+        >
+          {label}
+        </div>
+      )}
+    </Menu.Item>
   );
 };
 

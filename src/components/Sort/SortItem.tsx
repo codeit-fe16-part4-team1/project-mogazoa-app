@@ -4,8 +4,7 @@ const sortItemVariants = cva('block cursor-pointer py-2.5 px-3 rounded-x1', {
   variants: {
     size: {
       S: 'text-body2',
-      L: 'text-body1',
-      mq: 'text-body2 md:text-body1',
+      L: 'text-body2 md:text-body1',
     },
     isSelected: {
       true: 'bg-gray-900 text-white',
@@ -22,11 +21,6 @@ const sortItemVariants = cva('block cursor-pointer py-2.5 px-3 rounded-x1', {
       size: 'L',
       isSelected: true,
       className: 'text-body1-medium',
-    },
-    {
-      size: 'mq',
-      isSelected: true,
-      className: 'text-body2-medium md:text-body1-medium',
     },
   ],
 });
