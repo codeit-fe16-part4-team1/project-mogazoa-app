@@ -1,0 +1,65 @@
+'use client';
+import { Button } from '@/components/Button/Button';
+import { Profile } from '@/types/api';
+// import useAuthStore from '@/store/useAuthStore';
+import ProfileEditButton from './ProfileEditButton';
+import ProfileStats from './ProfileStats';
+import ProfileImage from './ProfileImage';
+import clsx from 'clsx';
+import ProfileFollow from './ProfileFollow';
+
+interface Props {
+  profile: Profile;
+}
+
+const ProfileSection = ({ profile }: Props) => {
+  // const { user } = useAuthStore();
+
+  // if (!user) return;
+
+  // const isMyProfile = profile.id === user.id;
+
+  const BUTTON_STYLES = 'mx-auto block w-full md:h-15 lg:w-160';
+
+  return (
+    <section className='rounded-b-4xl bg-white px-5 py-7 md:px-15 md:py-15 lg:py-10'>
+      <article className='mb-10 md:mb-12 lg:mb-10'>
+        <div className='relative mx-auto flex flex-row gap-5 md:gap-15 md:px-7 lg:max-w-170 lg:gap-16'>
+          <ProfileImage imageUrl={profile.image} />
+          <div className='flex flex-1 flex-col justify-center gap-2 md:gap-4'>
+            <p id='nickname' className='text-lg font-bold text-gray-900 md:text-2xl'>
+              {profile.nickname}
+            </p>
+            <p
+              id='description'
+              className={clsx('text-body1 hidden text-gray-900 md:inline-block', 'grow')}
+            >
+              {profile.description}
+            </p>
+            <ProfileFollow profile={profile} />
+          </div>
+          <ProfileEditButton />
+        </div>
+        <p className={clsx('text-body1 inline-block w-full text-gray-900 md:hidden', 'mx-2 mt-6')}>
+          {profile.description}
+        </p>
+      </article>
+      <ProfileStats profile={profile} />
+      {/* {isMyProfile && (
+        <Button intent='tertiary' size='S' className={BUTTON_STYLES}>
+          로그아웃
+        </Button>
+      )}
+      {!isMyProfile && (
+        <Button size='S' className={BUTTON_STYLES}>
+          팔로우
+        </Button>
+      )} */}
+      <Button intent='tertiary' size='S' className={BUTTON_STYLES}>
+        로그아웃
+      </Button>
+    </section>
+  );
+};
+
+export default ProfileSection;
