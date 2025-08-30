@@ -45,8 +45,10 @@ export default function RootLayout({
       </head>
       <body>
         <Providers>
-          <Header />
-          <Suspense fallback={<div>로딩 중...</div>}>{children}</Suspense>
+          <Suspense fallback={<div>로딩 중...</div>}>
+            <Header />
+            {children}
+          </Suspense>
         </Providers>
         <GlobalDialog />
       </body>
