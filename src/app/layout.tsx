@@ -2,6 +2,9 @@ import type { Metadata } from 'next';
 import { Providers } from './Providers';
 import localFont from 'next/font/local';
 import './globals.css';
+import Script from 'next/script';
+import { Suspense } from 'react';
+import Header from '@/components/Header/Header';
 
 const cafe24Supermagic = localFont({
   src: [
@@ -31,8 +34,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='ko' className={`${cafe24Supermagic.variable}`}>
+      <head>
+        <Script
+          src='https://t1.kakaocdn.net/kakao_js_sdk/2.7.6/kakao.min.js'
+          integrity='sha384-WAtVcQYcmTO/N+C1N+1m6Gp8qxh+3NlnP7X1U7qP6P5dQY/MsRBNTh+e1ahJrkEm'
+          crossOrigin='anonymous'
+          strategy='beforeInteractive'
+        />
+      </head>
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          <Header />
+          <Suspense fallback={<div>로딩 중...</div>}>{children}</Suspense>
+        </Providers>
       </body>
     </html>
   );

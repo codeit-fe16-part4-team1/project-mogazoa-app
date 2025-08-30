@@ -1,0 +1,199 @@
+name: Auto Update Point Estimate on Label Change
+
+# 이슈 라벨 변경 시 자동 실행
+on:
+  issues:
+    types: [opened, labeled, unlabeled, edited]
+
+jobs:
+  update-estimate:
+    runs-on: ubuntu-latest
+    if: github.event.issue.state == 'open'
+
+    steps:
+      - name: Extract point from issue labels
+        id: extract-point
+        env:
+          ISSUE_LABELS: ${{ toJson(github.event.issue.labels) }}
+        run: |
+          echo "Checking labels for issue #${{ github.event.issue.number }}"
+          echo "Labels: $ISSUE_LABELS"
+
+          # point: 라벨 찾기 (point:4 또는 point: 4)
+          point_labels=$(echo "$ISSUE_LABELS" | jq -r '.[].name' | grep -E '^point:?[ ]?[1-6]$' || true)
+
+          if [ -n "$point_labels" ]; then
+            point_label=$(echo "$point_labels" | head -1)
+            point_value=$(echo "$point_label" | grep -oE '[1-6]')
+            echo "Found point label: $point_label (value: $point_value)"
+            echo "point=$point_value" >> $GITHUB_OUTPUT
+            echo "has_point=true" >> $GITHUB_OUTPUT
+          else
+            echo "No point label found"
+            echo "point=" >> $GITHUB_OUTPUT
+            echo "has_point=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check if issue exists in project
+        id: check-project
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROJECT_TOKEN }}
+          PROJECT_ID: ${{ vars.PROJECT_ID }}
+          ISSUE_ID: ${{ github.event.issue.node_id }}
+        run: |
+          echo "Checking if issue exists in project..."
+
+          query='query($projectId: ID!) {
+            node(id: $projectId) {
+              ... on ProjectV2 {
+                items(first: 100) {
+                  nodes {
+                    id
+                    content {
+                      ... on Issue {
+                        id
+                        number
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }'
+
+          response=$(gh api graphql -f query="$query" -f projectId="$PROJECT_ID")
+          item_id=$(echo "$response" | jq -r --arg issue_id "$ISSUE_ID" '.data.node.items.nodes[] | select(.content.id == $issue_id) | .id')
+
+          if [ -n "$item_id" ] && [ "$item_id" != "null" ]; then
+            echo "Issue found in project with item_id: $item_id"
+            echo "item_id=$item_id" >> $GITHUB_OUTPUT
+            echo "in_project=true" >> $GITHUB_OUTPUT
+          else
+            echo "Issue not found in project"
+            echo "item_id=" >> $GITHUB_OUTPUT
+            echo "in_project=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Add issue to project if not exists
+        id: add-to-project
+        if: steps.extract-point.outputs.has_point == 'true' && steps.check-project.outputs.in_project == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROJECT_TOKEN }}
+          PROJECT_ID: ${{ vars.PROJECT_ID }}
+          ISSUE_ID: ${{ github.event.issue.node_id }}
+        run: |
+          echo "Adding issue #${{ github.event.issue.number }} to project..."
+
+          mutation='mutation($projectId: ID!, $contentId: ID!) {
+            addProjectV2ItemById(input: {projectId: $projectId, contentId: $contentId}) {
+              item {
+                id
+              }
+            }
+          }'
+
+          response=$(gh api graphql -f query="$mutation" -f projectId="$PROJECT_ID" -f contentId="$ISSUE_ID")
+          item_id=$(echo "$response" | jq -r '.data.addProjectV2ItemById.item.id')
+
+          if [ -n "$item_id" ] && [ "$item_id" != "null" ]; then
+            echo "Successfully added to project with item_id: $item_id"
+            echo "item_id=$item_id" >> $GITHUB_OUTPUT
+          else
+            echo "Failed to add to project"
+            echo "Response: $response"
+            exit 1
+          fi
+
+      - name: Update estimate field
+        if: steps.extract-point.outputs.has_point == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROJECT_TOKEN }}
+          PROJECT_ID: ${{ vars.PROJECT_ID }}
+          ESTIMATE_FIELD_ID: ${{ vars.ESTIMATE_FIELD_ID }}
+          ITEM_ID: ${{ steps.check-project.outputs.item_id || steps.add-to-project.outputs.item_id }}
+          POINT_VALUE: ${{ steps.extract-point.outputs.point }}
+        run: |
+          echo "Updating estimate to $POINT_VALUE for issue #${{ github.event.issue.number }}"
+
+          response=$(gh api graphql \
+            -f query='mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $value: Float!) {
+              updateProjectV2ItemFieldValue(input: {
+                projectId: $projectId,
+                itemId: $itemId,
+                fieldId: $fieldId,
+                value: {
+                  number: $value
+                }
+              }) {
+                projectV2Item {
+                  id
+                }
+              }
+            }' \
+            -f projectId="$PROJECT_ID" \
+            -f itemId="$ITEM_ID" \
+            -f fieldId="$ESTIMATE_FIELD_ID" \
+            -F value="$POINT_VALUE")
+
+          if echo "$response" | jq -e '.data.updateProjectV2ItemFieldValue.projectV2Item.id' > /dev/null; then
+            echo "Successfully updated estimate to $POINT_VALUE"
+          else
+            echo "Failed to update estimate"
+            echo "Response: $response"
+            exit 1
+          fi
+
+      - name: Clear estimate field
+        if: steps.extract-point.outputs.has_point == 'false' && steps.check-project.outputs.in_project == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROJECT_TOKEN }}
+          PROJECT_ID: ${{ vars.PROJECT_ID }}
+          ESTIMATE_FIELD_ID: ${{ vars.ESTIMATE_FIELD_ID }}
+          ITEM_ID: ${{ steps.check-project.outputs.item_id }}
+        run: |
+          echo "Clearing estimate field for issue #${{ github.event.issue.number }}"
+
+          response=$(gh api graphql \
+            -f query='mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!) {
+              clearProjectV2ItemFieldValue(input: {
+                projectId: $projectId,
+                itemId: $itemId,
+                fieldId: $fieldId
+              }) {
+                projectV2Item {
+                  id
+                }
+              }
+            }' \
+            -f projectId="$PROJECT_ID" \
+            -f itemId="$ITEM_ID" \
+            -f fieldId="$ESTIMATE_FIELD_ID")
+
+          if echo "$response" | jq -e '.data.clearProjectV2ItemFieldValue.projectV2Item.id' > /dev/null; then
+            echo "Successfully cleared estimate field"
+          else
+            echo "Failed to clear estimate field"
+            echo "Response: $response"
+          fi
+
+      - name: Summary
+        run: |
+          echo "Action Summary for Issue #${{ github.event.issue.number }}"
+          echo "Event: ${{ github.event.action }}"
+          echo "Issue Title: ${{ github.event.issue.title }}"
+
+          if [ "${{ steps.extract-point.outputs.has_point }}" = "true" ]; then
+            echo "Point Label: point:${{ steps.extract-point.outputs.point }}"
+            echo "Action: Set estimate to ${{ steps.extract-point.outputs.point }}"
+            
+            if [ "${{ steps.check-project.outputs.in_project }}" = "false" ]; then
+              echo "Also added issue to project"
+            fi
+          else
+            echo "Point Label: None"
+            if [ "${{ steps.check-project.outputs.in_project }}" = "true" ]; then
+              echo "Action: Cleared estimate field"
+            else
+              echo "Action: No action needed (not in project)"
+            fi
+          fi
