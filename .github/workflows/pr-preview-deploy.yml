@@ -143,7 +143,7 @@ jobs:
             CURRENT_MEM=\$(free -m | grep '^Mem:' | awk '{print \$3}')
             TOTAL_MEM=\$(free -m | grep '^Mem:' | awk '{print \$2}')
             PERCENT=\$(echo \"scale=1; \$CURRENT_MEM * 100 / \$TOTAL_MEM\" | bc -l)
-            echo \"[MONITOR] \$(date '+%H:%M:%S') - 메모리: \${CURRENT_MEM}MB/\${TOTAL_MEM}MB (\${PERCENT}%) | SCP 수신 중\"
+            echo \"[MONITOR] \$(date '+%H:%M:%S') - 메모리: \${CURRENT_MEM}MB/\${TOTAL_MEM}MB (\${PERCENT}%)"
             sleep 1
           done) &
           echo \$! > /tmp/monitor.pid
