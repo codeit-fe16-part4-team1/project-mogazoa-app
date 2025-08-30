@@ -58,10 +58,10 @@ export const Category: Story = {
         placeholder='카테고리 선택'
         size='L'
       >
-        <DropdownItem label='음악' />
-        <DropdownItem label='영화/드라마' />
-        <DropdownItem label='게임' />
-        <DropdownItem label='스포츠' />
+        <DropdownItem label='음악' value='music' />
+        <DropdownItem label='영화/드라마' value='movie' />
+        <DropdownItem label='게임' value='game' />
+        <DropdownItem label='스포츠' value='sports' />
       </Dropdown>
     );
   },
@@ -77,19 +77,19 @@ export const Category: Story = {
 export const Sort: Story = {
   render: (args) => {
     const [sortValue, setSortValue] = useState<string | null>(
-      (args.initialValue as string) || '최신순',
+      (args.initialValue as string) || 'recent',
     );
     return (
       <Dropdown {...args} initialValue={sortValue} onChange={setSortValue} size='S'>
-        <DropdownItem label='최신순' />
-        <DropdownItem label='별점 높은순' />
-        <DropdownItem label='별점 낮은순' />
-        <DropdownItem label='좋아요순' />
+        <DropdownItem label='최신순' value='recent' />
+        <DropdownItem label='별점 높은순' value='rating_desc' />
+        <DropdownItem label='별점 낮은순' value='rating_asc' />
+        <DropdownItem label='좋아요순' value='favoriteCount' />
       </Dropdown>
     );
   },
   args: {
-    initialValue: '최신순',
+    initialValue: 'recent',
     onChange: () => {},
     size: 'S',
   } as OptionalChildrenProps,
