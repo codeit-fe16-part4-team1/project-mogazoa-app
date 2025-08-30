@@ -241,7 +241,7 @@ jobs:
             | egrep -i "http/|server|cache-control" || true
 
           echo "[DEBUG][EC2] 📊 최종 시스템 리소스 현황:"
-          echo "[DEBUG][EC2] 💾 메모리: $(free -m | awk '/^Mem:/ {printf "%.1fG/%.1fG (%d%%)", $3/1024, $2/1024, ($3/$2)*100}')"
+          echo "[DEBUG][EC2] 💾 메모리: $(free -m | awk '/^Mem:/ {printf "%dM/%dM (%d%%)", $3, $2, ($3/$2)*100}')"
           echo "[DEBUG][EC2] 💿 디스크: $(df -BG / | awk 'NR==2 {gsub("G","",$2); gsub("G","",$3); gsub("%","",$5); printf "%dG/%dG (%d%%)", $3, $2, $5}')"
           echo "[DEBUG][EC2] 🏃 실행 중인 PM2 프로세스: $(pm2 list --no-colors | grep -c 'online')개 온라인"
 
