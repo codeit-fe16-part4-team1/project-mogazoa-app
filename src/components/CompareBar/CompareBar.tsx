@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import XbIcon from '@/assets/icons/XbIcon.svg';
+import IconClose from '@/assets/icons/IconClose.svg';
 import { getProductsAPI } from '@/api/products/getProductsAPI';
 import { ProductItem } from '@/types/api';
 
@@ -78,7 +78,7 @@ const CompareBar = ({ onSelectProduct, onRemoveProduct }: CompareBarProps) => {
         <div className='inline-flex w-full items-center justify-between gap-3 rounded-full bg-gray-900 px-5 py-[18px] text-white'>
           <span className='text-body1-bold'>{selectedProduct.name}</span>
           <button onClick={handleRemove} className='items-center justify-between'>
-            <XbIcon className='h-5 w-5' />
+            <IconClose className='h-5 w-5' />
           </button>
         </div>
       ) : (
