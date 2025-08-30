@@ -4,15 +4,19 @@ import { useState, useRef, useEffect } from 'react';
 import DropdownIcon from '@/assets/icons/DropdownIcon.svg';
 import SortItem from './SortItem';
 
-const sortOptions = ['최신순', '별점 높은순', '별점 낮은순', '좋아요순'];
-
 interface SortProps {
   size: 'S' | 'L' | 'mq';
   value: string;
   onChange: (option: string) => void;
+  sortOptions?: string[];
 }
 
-const Sort = ({ size = 'S', value, onChange }: SortProps) => {
+const Sort = ({
+  size = 'S',
+  value,
+  onChange,
+  sortOptions = ['최신순', '별점 높은순', '별점 낮은순', '좋아요순'],
+}: SortProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const sortRef = useRef<HTMLDivElement>(null);
 
