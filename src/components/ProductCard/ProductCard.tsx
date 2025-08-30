@@ -45,7 +45,7 @@ const ProductCard = ({ imgUrl, name, reviewCount, likeCount, rating }: ProductCa
           </div>
           <div className='ml-auto flex gap-1'>
             <span>⭐</span>
-            <span>{rating}</span>
+            <span>{rating.toFixed(1)}</span>
           </div>
         </div>
       </div>
