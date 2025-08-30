@@ -4,7 +4,7 @@ import { cn } from '@/lib/cn';
 
 // cva로 variant, size 관리
 const buttonVariants = cva(
-  'inline-flex items-center justify-center rounded-full transition-colors cursor pointer' +
+  'inline-flex items-center justify-center rounded-full transition-colors  transition-all duration-900 cursor pointer ' +
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ' +
     'disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed',
   {
@@ -21,8 +21,8 @@ const buttonVariants = cva(
       },
       size: {
         S: 'w-[335px] h-[50px] py-6 text-body1-medium',
-        M: 'w-[335px] h-[50px] py-6 text-body1-medium md:w-[440px] md:h-[55px] transition-all duration-900',
-        L: 'w-[335px] h-[50px] py-6 text-body1-medium md:w-[440px] md:h-[55px] lg:w-[640px] lg:h-[60px] lg:py-5 lg:text-sub-headline-medium transition-all duration-900',
+        M: 'w-[335px] h-[50px] py-6 text-body1-medium md:w-[440px] md:h-[55px]',
+        L: 'w-[335px] h-[50px] py-6 text-body1-medium md:w-[440px] md:h-[55px] lg:w-[640px] lg:h-[60px] lg:py-5 lg:text-sub-headline-medium',
       },
     },
 
