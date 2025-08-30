@@ -70,9 +70,10 @@ jobs:
 
           # 개발 의존성만 제거 (완전히 재설치하지 않고)
           echo "[DEBUG][GHA] ⌛ 개발 의존성 제거 진행 중..."
+          echo "[DEBUG][GHA] 🧩 prune 전 node_modules 크기: $(du -sh node_modules | cut -f1)"
           npm prune --omit=dev
-          echo "[DEBUG][GHA] ✅ 개발 의존성 제거 완료"
           echo "[DEBUG][GHA] 📦 prune 후 node_modules 크기: $(du -sh node_modules | cut -f1)"
+          echo "[DEBUG][GHA] ✅ 개발 의존성 제거 완료"
 
           # 배포에 필요한 파일들만 선별해서 패키징
           mkdir -p deploy-package
@@ -240,11 +241,20 @@ jobs:
           curl -sI -H "Host: ${BRANCH}.preview.${DOMAIN}" http://127.0.0.1 \
             | egrep -i "http/|server|cache-control" || true
 
-          echo "[DEBUG][EC2] 📊 최종 시스템 리소스 현황:"
-          echo "[DEBUG][EC2] 💾 메모리: $(free -m | awk '/^Mem:/ {printf "%dM/%dM (%d%%)", $3, $2, ($3/$2)*100}')"
-          echo "[DEBUG][EC2] 💿 디스크: $(df -BG / | awk 'NR==2 {gsub("G","",$2); gsub("G","",$3); gsub("%","",$5); printf "%dG/%dG (%d%%)", $3, $2, $5}')"
-          echo "[DEBUG][EC2] 🏃 실행 중인 PM2 프로세스: $(pm2 list --no-colors | grep -c 'online')개 온라인"
+          RED="\033[1;31m"
+          GREEN="\033[1;32m"
+          BLUE="\033[1;34m"
+          CYAN="\033[1;36m"
+          RESET="\033[0m"
 
+          echo ""
+          echo -e "${BLUE}===================== 📊 EC2 리소스 현황 =====================${RESET}"
+          MEM_INFO=$(free -m | awk '/^Mem:/ {printf "%dM/%dM (%d%%)", $3, $2, ($3/$2)*100}')
+          DISK_INFO=$(df -BG / | awk 'NR==2 {gsub("G","",$2); gsub("G","",$3); gsub("%","",$5); printf "%dG/%dG (%d%%)", $3, $2, $5}')
+          printf "${CYAN}%-15s${RESET} | %s\n" "Memory" "$MEM_INFO"
+          printf "${CYAN}%-15s${RESET} | %s\n" "Disk" "$DISK_INFO"
+          echo -e "${BLUE}=============================================================${RESET}"
+          echo ""
 
           EOSSH
 
