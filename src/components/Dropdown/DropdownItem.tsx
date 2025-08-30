@@ -56,23 +56,24 @@ const dropdownItemVariants = cva('block cursor-pointer rounded-x1 text-body2 md:
 
 interface DropdownItemProps {
   label: string;
+  value: string;
 }
 
-const DropdownItem = ({ label }: DropdownItemProps) => {
+const DropdownItem = ({ label, value }: DropdownItemProps) => {
   const context = useContext(DropdownContext);
   if (!context) {
     throw new Error('DropdownItem must be used within a Dropdown');
   }
 
-  const { selectedItem, setSelectedItem, size } = context;
-  const isSelected = selectedItem === label;
+  const { selectedValue, size, setLabelFromValue } = context;
+  const isSelected = selectedValue === value;
 
   return (
     <Menu.Item as={Fragment}>
       {({ active }) => (
         <div
           className={cn(dropdownItemVariants({ size, isSelected, active }))}
-          onClick={() => setSelectedItem(label)}
+          onClick={() => setLabelFromValue(value, label)}
         >
           {label}
         </div>

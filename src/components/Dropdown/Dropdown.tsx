@@ -1,13 +1,17 @@
 import { Menu } from '@headlessui/react';
 import { cn } from '@/lib/cn';
 import DropdownIcon from '@/assets/icons/DropdownIcon.svg';
-import { createContext, useState } from 'react';
+import { createContext, useState, useEffect, Children, isValidElement, ReactElement } from 'react';
 
+interface DropdownItemProps {
+  label: string;
+  value: string;
+}
 interface DropdownContextProps {
-  setSelectedItem: (item: string) => void;
-  selectedItem: string | null;
+  selectedValue: string | null;
+  selectedLabel: string | null;
   size: 'S' | 'L';
-  onChange?: (value: string) => void;
+  setLabelFromValue: (value: string, label: string) => void;
 }
 export const DropdownContext = createContext<DropdownContextProps | null>(null);
 
@@ -26,15 +30,35 @@ const Dropdown = ({
   size = 'L',
   onChange,
 }: DropdownProps) => {
-  const [selectedItem, setSelectedItemState] = useState<string | null>(initialValue || null);
+  const [selectedValue, setSelectedValue] = useState<string | null>(initialValue || null);
+  const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
 
-  const setSelectedItem = (item: string) => {
-    setSelectedItemState(item);
-    onChange(item);
+  const options = Children.toArray(children)
+    .filter(isValidElement)
+    .map((child) => {
+      const { value, label } = (child as ReactElement<DropdownItemProps>).props;
+      return { value, label };
+    });
+
+  useEffect(() => {
+    if (initialValue) {
+      const initialOption = options.find((option) => option.value === initialValue);
+      if (initialOption) {
+        setSelectedLabel(initialOption.label);
+      }
+    } else {
+      setSelectedLabel(null);
+    }
+  }, [initialValue, options]);
+
+  const setLabelFromValue = (value: string, label: string) => {
+    setSelectedValue(value);
+    setSelectedLabel(label);
+    onChange(value);
   };
 
   return (
-    <DropdownContext.Provider value={{ setSelectedItem, selectedItem, size, onChange }}>
+    <DropdownContext.Provider value={{ selectedValue, selectedLabel, size, setLabelFromValue }}>
       <Menu as='div' className={cn('relative', size === 'S' && 'w-[115px] md:w-[140px]')}>
         {({ open }) => (
           <>
@@ -47,7 +71,7 @@ const Dropdown = ({
                   : 'text-body2-medium h-[50px] border-gray-400 text-gray-800',
               )}
             >
-              <span>{selectedItem || placeholder}</span>
+              <span>{selectedLabel || placeholder}</span>
               <DropdownIcon
                 className={cn(
                   'self-center transition-transform duration-200',

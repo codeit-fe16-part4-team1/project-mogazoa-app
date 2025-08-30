@@ -253,9 +253,9 @@ const HomeClient = () => {
               </div>
               <div className='z-10'>
                 <Dropdown initialValue={sort} onChange={setSort} size='S'>
-                  <DropdownItem label='최신순' />
-                  <DropdownItem label='최신순' />
-                  <DropdownItem label='최신순' />
+                  <DropdownItem label='최신순' value='recent' />
+                  <DropdownItem label='별점순' value='rating' />
+                  <DropdownItem label='리뷰순' value='reviewCount' />
                 </Dropdown>
               </div>
             </div>
