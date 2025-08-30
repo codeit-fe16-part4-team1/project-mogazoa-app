@@ -70,9 +70,9 @@ jobs:
 
           # 개발 의존성만 제거 (완전히 재설치하지 않고)
           echo "[DEBUG][GHA] ⌛ 개발 의존성 제거 진행 중..."
-          echo "[DEBUG][GHA] 🧩 prune 전 node_modules 크기: $(du -sh node_modules | cut -f1)"
+          BEFORE_SIZE=$(du -sh node_modules | cut -f1)
           npm prune --omit=dev
-          echo "[DEBUG][GHA] 📦 prune 후 node_modules 크기: $(du -sh node_modules | cut -f1)"
+          AFTER_SIZE=$(du -sh node_modules | cut -f1)
           echo "[DEBUG][GHA] ✅ 개발 의존성 제거 완료"
 
           # 배포에 필요한 파일들만 선별해서 패키징
@@ -90,7 +90,7 @@ jobs:
           # 최적화된 프로덕션 의존성
           cp -r node_modules deploy-package/
 
-          echo "[DEBUG][GHA] 📦 deploy-package 크기: $(du -sh deploy-package | cut -f1)"
+          PACKAGE_SIZE=$(du -sh deploy-package | cut -f1)
 
           # 압축
           cd deploy-package
@@ -99,8 +99,23 @@ jobs:
           cd ..
           rm -rf deploy-package
 
+          FINAL_SIZE=$(du -sh app-built.tar.gz | cut -f1)
+
+          RED="\033[1;31m"
+          GREEN="\033[1;32m"
+          BLUE="\033[1;34m"
+          CYAN="\033[1;36m"
+          RESET="\033[0m"
+
+          echo ""
+          echo -e "${BLUE}====================== 📦 패키징 정보 ======================${RESET}"
+          printf "${CYAN}%-25s${RESET} | %s\n" "전체 node_modules 크기" "$BEFORE_SIZE"
+          printf "${CYAN}%-25s${RESET} | %s\n" "Production 용 node_modules 크기" "$AFTER_SIZE"
+          printf "${CYAN}%-25s${RESET} | %s\n" "배포용 빌드 파일 크기" "$PACKAGE_SIZE"
+          printf "${CYAN}%-25s${RESET} | %s\n" "최종 압축 파일 크기" "$FINAL_SIZE"
+          echo -e "${BLUE}=============================================================${RESET}"
+          echo ""
           echo "[DEBUG][GHA] ✅ 배포용 파일 패키징 완료"
-          echo "[DEBUG][GHA] 📦 최종 패키지 크기: $(du -sh app-built.tar.gz | cut -f1)"
 
       # 7) EC2에 배포
       - name: Deploy to EC2
