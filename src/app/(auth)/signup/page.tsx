@@ -8,11 +8,12 @@ import { useRouter } from 'next/navigation';
 import { AxiosError } from 'axios';
 import { Button } from '@/components/Button/Button';
 import FormTitle from '../components/FormTitle';
-import FormFieldLayout from '../components/FormFieldLayout';
+import FormFieldContainer from '../components/FormFieldContainer';
 import AuthSection from '../components/AuthSection';
 import Divider from '../components/Divider';
 import KakaoButton from '../components/KakaoButton';
 import { cn } from '@/lib/cn';
+import { redirectKakaoAuth } from '@/lib/redirectKakaoAuth';
 
 const signupSchema = z
   .object({
@@ -57,8 +58,8 @@ const SignupPage = () => {
     mode: 'onChange',
   });
 
-  const handleKakaoSignupClick = () => {
-    router.push('/oauth/signup/kakao');
+  const handleKakaoSigninClick = () => {
+    redirectKakaoAuth.signin();
   };
 
   const onSubmit = async (data: SignupFormInputs) => {
@@ -88,7 +89,7 @@ const SignupPage = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <div>
             <FormTitle>회원가입</FormTitle>
-            <FormFieldLayout>
+            <FormFieldContainer>
               <FormField
                 label='이메일'
                 id='email'
@@ -133,7 +134,7 @@ const SignupPage = () => {
                 register={register('passwordConfirmation')}
                 error={errors.passwordConfirmation}
               />
-            </FormFieldLayout>
+            </FormFieldContainer>
             {/* 제출 버튼 */}
           </div>
           <Button
@@ -146,7 +147,7 @@ const SignupPage = () => {
         </form>
         <div className='mt-25 flex flex-col gap-6 md:mt-10'>
           <Divider text='SNS로 바로 시작하기' />
-          <KakaoButton onClick={handleKakaoSignupClick}>카카오 회원가입</KakaoButton>
+          <KakaoButton onClick={handleKakaoSigninClick} />
         </div>
       </div>
     </AuthSection>
