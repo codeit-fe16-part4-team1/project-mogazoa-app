@@ -2,49 +2,30 @@
 
 import { useState, useEffect } from 'react';
 import IconClose from '@/assets/icons/IconClose.svg';
-import { getProductsAPI } from '@/api/products/getProductsAPI';
 import { ProductItem } from '@/types/api';
 
 interface CompareBarProps {
+  products: ProductItem[];
   onSelectProduct: (product: ProductItem) => void;
   onRemoveProduct: (product: ProductItem) => void;
 }
 
-const CompareBar = ({ onSelectProduct, onRemoveProduct }: CompareBarProps) => {
+const CompareBar = ({ products, onSelectProduct, onRemoveProduct }: CompareBarProps) => {
   const [inputValue, setInputValue] = useState('');
-  const [allProducts, setAllProducts] = useState<ProductItem[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<ProductItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(null);
-
-  useEffect(() => {
-    const fetchAllProducts = async () => {
-      try {
-        setIsLoading(true);
-        const { list } = await getProductsAPI({ keyword: '' });
-        setAllProducts(list);
-      } catch (err) {
-        setError('상품 목록을 불러오는 데 실패했습니다.');
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchAllProducts();
-  }, []);
 
   useEffect(() => {
     if (inputValue.length > 0 && !selectedProduct) {
       const trimmedKeyword = inputValue.toLowerCase();
-      const newFilteredProducts = allProducts.filter((product) =>
+      const newFilteredProducts = products.filter((product) =>
         product.name.toLowerCase().includes(trimmedKeyword),
       );
       setFilteredProducts(newFilteredProducts);
     } else {
       setFilteredProducts([]);
     }
-  }, [inputValue, allProducts, selectedProduct]);
+  }, [inputValue, products, selectedProduct]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
@@ -63,14 +44,6 @@ const CompareBar = ({ onSelectProduct, onRemoveProduct }: CompareBarProps) => {
       setSelectedProduct(null);
     }
   };
-
-  if (isLoading) {
-    return <div>상품 목록 로딩 중...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
 
   return (
     <div className='relative mx-auto w-full lg:w-[350px]'>
