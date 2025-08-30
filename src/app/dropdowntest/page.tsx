@@ -9,7 +9,7 @@ const DropdownTestPage = () => {
   const [selectedSort, setSelectedSort] = useState<string | null>('최신순');
 
   return (
-    <div className='m-5 flex flex-col gap-50'>
+    <div className='m-5 flex flex-col gap-70'>
       <Dropdown
         initialValue={selectedCategory}
         onChange={setSelectedCategory}

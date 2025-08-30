@@ -35,10 +35,7 @@ const Dropdown = ({
 
   return (
     <DropdownContext.Provider value={{ setSelectedItem, selectedItem, size, onChange }}>
-      <Menu
-        as='div'
-        className={cn('relative', size === 'S' ? 'w-[115px] md:w-[140px]' : 'w-[550px]')}
-      >
+      <Menu as='div' className={cn('relative', size === 'S' && 'w-[115px] md:w-[140px]')}>
         {({ open }) => (
           <>
             <Menu.Button

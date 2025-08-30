@@ -24,12 +24,12 @@ const dropdownItemVariants = cva('block cursor-pointer rounded-x1 text-body2 md:
       isSelected: true,
       className: 'text-body2-medium md:text-body1-medium',
     },
-    {
-      size: 'L',
-      isSelected: false,
-      active: true,
-      className: 'bg-white text-gray-600',
-    },
+    // {
+    //   size: 'L',
+    //   isSelected: false,
+    //   active: true,
+    //   className: 'bg-white text-gray-600',
+    // },
     {
       size: 'L',
       isSelected: false,
@@ -41,12 +41,12 @@ const dropdownItemVariants = cva('block cursor-pointer rounded-x1 text-body2 md:
       isSelected: true,
       className: 'bg-primary-orange-200 text-primary-orange-600',
     },
-    {
-      size: 'S',
-      isSelected: false,
-      active: true,
-      className: 'bg-white text-gray-600',
-    },
+    // {
+    //   size: 'S',
+    //   isSelected: false,
+    //   active: true,
+    //   className: 'bg-white text-gray-600',
+    // },
     {
       size: 'S',
       isSelected: false,
