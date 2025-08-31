@@ -35,10 +35,13 @@ const OptionButton = ({ children, value, onClick }: ButtonProps) => {
   return (
     <button
       className={clsx(
-        'text-sub-headline-medium flex h-14 w-40 items-center justify-center',
+        'text-sub-headline-medium flex items-center justify-center',
+        'h-14 w-40',
+        'cursor-pointer',
         isSelected
           ? 'border-b-3 border-gray-900 text-gray-800'
           : 'border-b-1 border-gray-400 text-gray-400',
+        !isSelected && 'hover:bg-gray-200',
       )}
       onClick={onClick}
     >
