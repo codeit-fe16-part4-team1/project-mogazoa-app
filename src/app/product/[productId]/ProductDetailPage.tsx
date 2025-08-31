@@ -4,7 +4,7 @@ import { useState } from 'react';
 import ProductStatisticCard from './components/ProductStatisticCard';
 import ProductReviewList from './components/ProductReviewList';
 import Sort from '@/components/Sort/Sort';
-import ProductInfoHeader from './components/ProductInfoHeader';
+import ProductDetailHeader from './components/ProductDetailHeader';
 import { OrderOptions } from '@/types/api';
 import ProductEditButton from './components/ProductEditButton';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
@@ -84,9 +84,9 @@ const ProductDetailPage = ({ productId, order: initialOrder }: ProductDetailPage
         <div className={cn('px-5 pt-7 pb-10', pageContainerStyles)}>
           {/* 상품 통계 */}
           <div className='mb-12'>
-            <ProductInfoHeader className='mb-5 md:mb-7'>
+            <ProductDetailHeader className='mb-5 md:mb-7'>
               <span className='text-sub-headline-bold text-gray-900'>🌟상품 통계</span>
-            </ProductInfoHeader>
+            </ProductDetailHeader>
             <div className='flex-center flex-col gap-5 md:grid md:grid-cols-3'>
               <ProductStatisticCard
                 value={product.rating}
@@ -107,7 +107,7 @@ const ProductDetailPage = ({ productId, order: initialOrder }: ProductDetailPage
           </div>
           {/* 상품 리뷰 리스트 */}
           <div>
-            <ProductInfoHeader className='mb-5 md:mb-7'>
+            <ProductDetailHeader className='mb-5 md:mb-7'>
               <span className='text-sub-headline-bold text-gray-900'>✍️상품 리뷰</span>
               <Sort
                 size='mq'
@@ -116,7 +116,7 @@ const ProductDetailPage = ({ productId, order: initialOrder }: ProductDetailPage
                   setOrder(ORDER_MAP_REVERSE[selectedOption as keyof typeof ORDER_MAP_REVERSE])
                 }
               />
-            </ProductInfoHeader>
+            </ProductDetailHeader>
             <div className='relative mb-4 lg:mb-16'>
               {/* <ProductEditButton className='absolute right-[-4px] bottom-[-30px] lg:right-[-30px]' /> */}
               {reviewList.length > 0 ? (
