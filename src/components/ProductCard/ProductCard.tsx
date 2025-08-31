@@ -8,6 +8,7 @@ interface ProductCardProps {
   reviewCount: number;
   likeCount: number;
   rating: number;
+  isLandingPage?: boolean;
 }
 
 const PRODUCT_NAME_STYLES = [
@@ -18,18 +19,27 @@ const PRODUCT_NAME_STYLES = [
 ];
 const PRODUCT_STATS_STYLES = ['text-caption', 'text-gray-700', 'tracking-[0.4px]', 'md:text-body1'];
 
-const ProductCard = ({ imgUrl, name, reviewCount, likeCount, rating }: ProductCardProps) => {
+const ProductCard = ({
+  imgUrl,
+  name,
+  reviewCount,
+  likeCount,
+  rating,
+  isLandingPage = false,
+}: ProductCardProps) => {
   return (
     <div className='flex flex-col gap-3 md:gap-5'>
       <div className='relative aspect-square w-full md:aspect-[300/276]'>
         <Image
           src={imgUrl}
+          sizes='w-[33vw] lg: w-[50vw]'
           fill
           alt={name}
           className='rounded-xl border-1 border-gray-300'
           style={{
             objectFit: 'cover',
           }}
+          priority={isLandingPage}
         />
       </div>
       <div className='flex flex-col gap-2 md:gap-3 md:px-2'>
