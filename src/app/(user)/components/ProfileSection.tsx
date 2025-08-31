@@ -38,7 +38,14 @@ const ProfileSection = ({ profile }: Props) => {
             </p>
             <ProfileFollow profile={profile} />
           </div>
-          <ProfileEditButton />
+          <ProfileEditButton
+            className={clsx(
+              'absolute',
+              'px-3 py-2 md:px-5 md:py-3',
+              'top-0 right-0 bottom-auto',
+              'md:top-auto md:right-7 md:bottom-0',
+            )}
+          />
         </div>
         <p className={clsx('text-body1 inline-block w-full text-gray-900 md:hidden', 'mx-2 mt-6')}>
           {profile.description}
