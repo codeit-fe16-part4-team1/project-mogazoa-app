@@ -1,3 +1,5 @@
+import { OrderOptions } from '@/types/api';
+
 export const productKeys = {
   all: ['products'] as const,
   list: () => [...productKeys.all, 'list'] as const,
@@ -6,5 +8,6 @@ export const productKeys = {
 
 export const reviewKeys = {
   all: ['reviews'] as const,
-  list: (productId: number) => [...reviewKeys.all, 'by-product', productId] as const,
+  list: (productId: number, order: OrderOptions) =>
+    [...reviewKeys.all, 'by-product', productId, order] as const,
 };
