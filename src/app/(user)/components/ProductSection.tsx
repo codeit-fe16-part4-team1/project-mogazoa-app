@@ -7,18 +7,22 @@ import OptionList from '@/components/OptionButton/OptionList';
 const ProductSection = () => {
   const [productType, setProductType] = useState('created');
 
+  const OPTION_MAP = {
+    created: '리뷰 남긴 상품',
+    reviewed: '등록한 상품',
+    favorte: '찜한 상품',
+  } as const;
+
   return (
     <section className='px-4 pt-6 pb-11 md:px-15 md:pt-9 md:pb-18'>
-      <div>{productType}</div>
-      <OptionList>
-        <OptionList.button onClick={() => setProductType('created')}>
-          리뷰 남기 상품
-        </OptionList.button>
-        <OptionList.button onClick={() => setProductType('reviewed')}>
-          등록한 상품
-        </OptionList.button>
-        <OptionList.button onClick={() => setProductType('favorite')}>찜한 상품</OptionList.button>
+      <OptionList className='mb-8' selectedValue={productType}>
+        {Object.entries(OPTION_MAP).map(([value, label]) => (
+          <OptionList.button key={value} value={value} onClick={() => setProductType(value)}>
+            {label}
+          </OptionList.button>
+        ))}
       </OptionList>
+
       <div className='mx-auto grid max-w-235 grid-cols-2 gap-x-3 gap-y-8 md:gap-x-5 md:gap-y-12 lg:grid-cols-3'>
         {mockProductsList.list.map((product) => (
           <ProductCard
