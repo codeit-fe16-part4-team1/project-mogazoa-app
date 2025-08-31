@@ -42,7 +42,7 @@ interface RatingProps extends HTMLAttributes<HTMLDivElement> {
    *
    * @param {number} newRating - 사용자가 선택한 새로운 별점 값 (1부터 5까지의 정수)
    */
-  onRatingChange: (newRating: number) => void;
+  onRatingChange?: (newRating: number) => void;
 }
 interface RatingProps extends HTMLAttributes<HTMLDivElement> {
   className?: string;
@@ -50,7 +50,7 @@ interface RatingProps extends HTMLAttributes<HTMLDivElement> {
   rating: number;
   size?: RatingStarSize;
   readonly?: boolean;
-  onRatingChange: (newRating: number) => void;
+  onRatingChange?: (newRating: number) => void;
 }
 
 /**
@@ -74,7 +74,7 @@ const Rating = ({
   const baseStyle = 'inline-flex';
 
   const handleStarClick = (starIndex: number) => {
-    onRatingChange(starIndex);
+    if (!readonly && onRatingChange) onRatingChange(starIndex);
   };
 
   const handleMouseEnter = (starIndex: number) => {
