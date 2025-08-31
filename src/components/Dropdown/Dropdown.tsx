@@ -85,7 +85,7 @@ const Dropdown = ({
               <Menu.Items
                 as='div'
                 className={cn(
-                  'rounded-x2 absolute mt-3 w-full gap-[5px] border bg-white',
+                  'rounded-x2 absolute z-[999] mt-3 w-full gap-[5px] border bg-white',
                   size === 'S'
                     ? 'border-gray-300 px-[6px] py-2 md:p-2'
                     : 'border-gray-400 p-[10px]',
