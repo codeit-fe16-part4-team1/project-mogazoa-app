@@ -1,6 +1,7 @@
 import { HydrationBoundary, QueryClient, dehydrate } from '@tanstack/react-query';
 import { getProductsAPI } from '@/api/products/getProductsAPI';
 import HomeClient from './HomeClient';
+import { getCategories } from '@/api/category/getCategories';
 
 const Home = async () => {
   const queryClient = new QueryClient();
@@ -13,6 +14,10 @@ const Home = async () => {
     queryClient.prefetchQuery({
       queryKey: ['products', 'rating'],
       queryFn: () => getProductsAPI({ order: 'rating' }),
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ['categories'],
+      queryFn: () => getCategories(),
     }),
   ]);
 

@@ -11,6 +11,8 @@ import { useSearchParams } from 'next/navigation';
 import { josa } from 'es-hangul';
 import Dropdown from '@/components/Dropdown/Dropdown';
 import DropdownItem from '@/components/Dropdown/DropdownItem';
+import Category from '@/components/Category/Category';
+import { useCategoryMap } from '@/hooks/useCategoryMap';
 
 const TITLE_STYLES = 'font-cafe24-supermagic text-h4-bold tracking-[0.4px]';
 const SUBTITLE_STYLES = `${TITLE_STYLES} text-gray-900 mb-5 md:mb-7`;
@@ -18,11 +20,7 @@ const PRODUCT_IMAGE_LOADING_STYLES = 'mb-3 aspect-square rounded-xl bg-gray-200'
 const GRID_STYLES =
   'grid grid-cols-2 gap-3 gap-y-8 md:grid-cols-2 md:gap-5 md:gap-y-12 lg:grid-cols-3';
 
-const SORT_MAP = {
-  최신순: 'recent',
-  별점순: 'rating',
-  리뷰순: 'reviewCount',
-} as const;
+type SORT = 'recent' | 'rating' | 'reviewCount';
 
 const HomeClient = () => {
   // 초기 랜딩 페이지 데이터 조회
@@ -50,29 +48,37 @@ const HomeClient = () => {
   // 필터링 데이터 조회
   const searchParams = useSearchParams();
   const searchKeyword = searchParams.get('query') || '';
-  const category = searchParams.get('category') || '';
+  const categoryParam = searchParams.get('category');
+  const category = categoryParam ? parseInt(categoryParam, 10) : undefined;
   const hasKeyword = searchKeyword.trim().length > 0;
-  const hasCategory = category.trim().length > 0;
+  const hasCategory = category !== undefined;
   const isFiltered = hasKeyword || hasCategory;
-  const [sort, setSort] = useState('최신순');
+  const [sort, setSort] = useState<SORT>('recent');
+  const { getCategoryName } = useCategoryMap();
   const observerRef = useRef<HTMLDivElement>(null);
 
+  const handleSortChange = (value: string) => {
+    setSort(value as SORT);
+  };
+
   useEffect(() => {
-    setSort('최신순');
+    setSort('recent');
   }, [isFiltered]);
 
   const filteredTitle = useMemo(() => {
+    const categoryName = getCategoryName(category || 0) || '';
+    const onlyJosa = josa(searchKeyword, '으로/로').replace(searchKeyword, '');
+
     if (hasCategory && hasKeyword) {
-      return `${category}의 ‘${searchKeyword}’로 검색한 상품`;
+      return `${categoryName}의 '${searchKeyword}'${onlyJosa} 검색한 상품`;
     } else if (hasCategory) {
-      return `${category}의 모든 상품`;
+      return `${categoryName}의 모든 상품`;
     } else if (hasKeyword) {
-      const onlyJosa = josa(searchKeyword, '으로/로').replace(searchKeyword, '');
       return `'${searchKeyword}'${onlyJosa} 검색한 상품`;
     } else {
       return '';
     }
-  }, [category, searchKeyword]);
+  }, [category, searchKeyword, getCategoryName]);
 
   const {
     data: searchResults,
@@ -82,12 +88,13 @@ const HomeClient = () => {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ['products', 'search', searchKeyword, sort],
+    queryKey: ['products', 'search', searchKeyword, category, sort],
     queryFn: ({ pageParam }) =>
       getProductsAPI({
         cursor: pageParam,
         keyword: searchKeyword,
-        order: SORT_MAP[sort as keyof typeof SORT_MAP],
+        category: category,
+        order: sort,
       }),
     initialPageParam: undefined as number | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor || undefined,
@@ -163,7 +170,8 @@ const HomeClient = () => {
       >
         {/* 카테고리 */}
         <div className='category'>
-          <h4 className={SUBTITLE_STYLES}>카테고리</h4>
+          {!isFiltered && <h4 className={SUBTITLE_STYLES}>카테고리</h4>}
+          <Category type={hasCategory ? 'tab' : 'button'} />
         </div>
 
         {/* 리뷰어 랭킹 */}
@@ -198,6 +206,7 @@ const HomeClient = () => {
                   reviewCount={item.reviewCount}
                   likeCount={item.favoriteCount}
                   rating={item.rating}
+                  isLandingPage={true}
                 />
               ))
             )}
@@ -261,6 +270,7 @@ const HomeClient = () => {
                     reviewCount={item.reviewCount}
                     likeCount={item.favoriteCount}
                     rating={item.rating}
+                    isLandingPage={true}
                   />
                 ))
               )}
@@ -278,12 +288,12 @@ const HomeClient = () => {
         {/* 필터링된 상품 */}
         {isFiltered && (
           <div className='filtered-products'>
-            <div className='filtered-title mb-5 flex items-center justify-between md:mb-7'>
+            <div className='filtered-title mt-8 mb-5 flex items-center justify-between md:mb-7'>
               <div className='text-body1-bold md:text-sub-headline-bold text-gray-900'>
                 {filteredTitle}
               </div>
               <div className='z-10'>
-                <Dropdown initialValue={sort} onChange={setSort} size='S'>
+                <Dropdown initialValue={sort} onChange={handleSortChange} size='S'>
                   <DropdownItem label='최신순' value='recent' />
                   <DropdownItem label='별점순' value='rating' />
                   <DropdownItem label='리뷰순' value='reviewCount' />
