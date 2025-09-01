@@ -28,12 +28,11 @@ const CompareCard = ({
   return (
     <div className='flex w-[290px] flex-col items-center justify-center gap-[34px] lg:w-[405px]'>
       {/* 상품 이미지 컴포넌트 */}
-      <div className='w-full'>
-        <CompareImage
-          productName={selectedProduct?.name || label}
-          imageUrl={selectedProduct?.image || ''}
-        />
-      </div>
+      <CompareImage
+        productName={selectedProduct?.name || label}
+        imageUrl={selectedProduct?.image || ''}
+        placeholder={label}
+      />
 
       <div className='w-full'>
         <CompareBar

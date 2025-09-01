@@ -1,54 +1,56 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import CompareBar from '@/components/CompareBar/CompareBar';
 import { getProductsAPI } from '@/api/products/getProductsAPI';
 import { ProductItem } from '@/types/api';
+import CompareBar from '@/components/CompareBar/CompareBar';
 import CompareImage from '@/components/CompareImage/CompareImage';
 import CompareDetail from '@/components/CompareDetail/CompareDetail';
+import CompareCard from '@/components/CompareCard/CompareCard';
+import CompareDetailDefault from '@/components/CompareDetail/CompareDetailDefault';
+import { useQuery } from '@tanstack/react-query';
+
+const fetchAllProducts = async () => {
+  let allItems: ProductItem[] = [];
+  let cursor: number | null = null;
+  let hasMore = true;
+  while (hasMore) {
+    const { list, nextCursor } = await getProductsAPI({ order: 'recent', cursor });
+    allItems = [...allItems, ...list];
+    if (nextCursor === null) {
+      hasMore = false;
+    }
+    cursor = nextCursor;
+  }
+  return allItems;
+};
 
 const CompareTestPage = () => {
-  const [allProducts, setAllProducts] = useState<ProductItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: allProducts,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ['allProducts'],
+    queryFn: fetchAllProducts,
+  });
+
   const [selectedProductA, setSelectedProductA] = useState<ProductItem | null>(null);
   const [selectedProductB, setSelectedProductB] = useState<ProductItem | null>(null);
+  const [isComparing, setIsComparing] = useState(false);
 
   useEffect(() => {
-    const fetchAllProducts = async () => {
-      try {
-        setIsLoading(true);
-        let allItems: ProductItem[] = [];
-        let cursor: number | null = null;
-        let hasMore = true;
+    if (allProducts) {
+      console.log('불러온 전체 상품 리스트:', allProducts);
+      console.log('상품 총 개수:', allProducts.length);
+    }
+  }, [allProducts]);
 
-        // nextCursor가 없을 때까지 API를 반복해서 호출
-        while (hasMore) {
-          // getProductsAPI 호출 시 cursor 값을 파라미터로 전달
-          const { list, nextCursor } = await getProductsAPI({ cursor: cursor || undefined });
-          allItems = [...allItems, ...list];
-          if (nextCursor === null) {
-            hasMore = false;
-          }
-          cursor = nextCursor;
-        }
-
-        setAllProducts(allItems);
-      } catch (err) {
-        setError('상품 목록을 불러오는 데 실패했습니다.');
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchAllProducts();
-  }, []);
-
-  if (isLoading) {
+  if (isLoading || !allProducts) {
     return <div>로딩 중...</div>;
   }
   if (error) {
-    return <div>{error}</div>;
+    return <div>{error.message}</div>;
   }
 
   const handleProductSelect = (product: ProductItem, position: 'A' | 'B') => {
@@ -57,62 +59,163 @@ const CompareTestPage = () => {
     } else {
       setSelectedProductB(product);
     }
+    setIsComparing(false);
   };
 
-  const handleProductRemove = (product: ProductItem, position: 'A' | 'B') => {
+  const handleProductRemove = (position: 'A' | 'B') => {
     if (position === 'A') {
       setSelectedProductA(null);
     } else {
       setSelectedProductB(null);
     }
+    setIsComparing(false);
   };
+
+  const handleCompareClick = () => {
+    setIsComparing(true);
+  };
+
+  const handleResetClick = () => {
+    setSelectedProductA(null);
+    setSelectedProductB(null);
+    setIsComparing(false);
+  };
+
+  // isComparing이 true일 때만 비교 로직을 실행하도록 수정
+  const isRatingAWinner =
+    isComparing && selectedProductA && selectedProductB
+      ? selectedProductA.rating > selectedProductB.rating
+      : undefined;
+  const isReviewAWinner =
+    isComparing && selectedProductA && selectedProductB
+      ? selectedProductA.reviewCount > selectedProductB.reviewCount
+      : undefined;
+  const isFavoriteAWinner =
+    isComparing && selectedProductA && selectedProductB
+      ? selectedProductA.favoriteCount > selectedProductB.favoriteCount
+      : undefined;
+
+  const isRatingBWinner =
+    isComparing && selectedProductA && selectedProductB
+      ? selectedProductB.rating > selectedProductA.rating
+      : undefined;
+  const isReviewBWinner =
+    isComparing && selectedProductA && selectedProductB
+      ? selectedProductB.reviewCount > selectedProductA.reviewCount
+      : undefined;
+  const isFavoriteBWinner =
+    isComparing && selectedProductA && selectedProductB
+      ? selectedProductB.favoriteCount > selectedProductA.favoriteCount
+      : undefined;
+
+  const bothProductsSelected = selectedProductA !== null && selectedProductB !== null;
 
   return (
     <div className='flex min-h-screen flex-col items-center bg-gray-100 p-8'>
-      <h1 className='text-h1-bold mb-4'>CompareBar Test</h1>
-      <div className='flex gap-8'>
-        <div className='flex w-[340px] flex-col items-center justify-center gap-20'>
+      <h1 className='text-h1-bold mb-4'>Compare Test Page</h1>
+
+      {/* PC 레이아웃 (md 이상) */}
+      <div className='hidden flex-col gap-8 md:flex md:flex-row'>
+        <CompareCard
+          products={allProducts}
+          selectedProduct={selectedProductA}
+          label='A'
+          onSelectProduct={(p) => handleProductSelect(p, 'A')}
+          onRemoveProduct={() => handleProductRemove('A')}
+          isComparing={isComparing}
+          isRatingWinner={isRatingAWinner}
+          isReviewCountWinner={isReviewAWinner}
+          isFavoriteCountWinner={isFavoriteAWinner}
+        />
+        <CompareCard
+          products={allProducts}
+          selectedProduct={selectedProductB}
+          label='B'
+          onSelectProduct={(p) => handleProductSelect(p, 'B')}
+          onRemoveProduct={() => handleProductRemove('B')}
+          isComparing={isComparing}
+          isRatingWinner={isRatingBWinner}
+          isReviewCountWinner={isReviewBWinner}
+          isFavoriteCountWinner={isFavoriteBWinner}
+        />
+      </div>
+
+      {/* 모바일 레이아웃 (md 미만) */}
+      <div className='md:hidden'>
+        {/* 이미지 영역 */}
+        <div className='mb-4 flex gap-4'>
           <CompareImage
-            placeholder='A'
-            productName={selectedProductA?.name || '상품 A'}
+            productName={selectedProductA?.name || 'A'}
             imageUrl={selectedProductA?.image || ''}
           />
-          <CompareBar
-            products={allProducts}
-            onSelectProduct={(p) => handleProductSelect(p, 'A')}
-            onRemoveProduct={(p) => handleProductRemove(p, 'A')}
-          />
-          <CompareDetail
-            rating={selectedProductA?.rating || 0}
-            reviewCount={selectedProductA?.reviewCount || 0}
-            favoriteCount={selectedProductA?.favoriteCount || 0}
-            isRatingWinner={false} // 우승 로직은 여기에 구현해야 합니다.
-            isReviewCountWinner={true}
-            isFavoriteCountWinner={true}
+          <div className='text-body1-bold flex items-center justify-center'>VS</div>
+          <CompareImage
+            productName={selectedProductB?.name || 'B'}
+            imageUrl={selectedProductB?.image || ''}
           />
         </div>
 
-        <div className='flex w-[340px] flex-col items-center justify-center gap-20'>
-          <CompareImage
-            placeholder='B'
-            productName={selectedProductB?.name || '상품 B'}
-            imageUrl={selectedProductB?.image || ''}
-          />
-          <CompareBar
-            products={allProducts}
-            onSelectProduct={(p) => handleProductSelect(p, 'B')}
-            onRemoveProduct={(p) => handleProductRemove(p, 'B')}
-          />
-          <CompareDetail
-            rating={selectedProductB?.rating || 0}
-            reviewCount={selectedProductB?.reviewCount || 0}
-            favoriteCount={selectedProductB?.favoriteCount || 0}
-            isRatingWinner={true} // 우승 로직은 여기에 구현해야 합니다.
-            isReviewCountWinner={false}
-            isFavoriteCountWinner={false}
-          />
-        </div>
+        {/* 입력창 또는 상세정보 */}
+        {isComparing ? (
+          <>
+            {selectedProductA ? (
+              <CompareDetail
+                rating={selectedProductA.rating}
+                reviewCount={selectedProductA.reviewCount}
+                favoriteCount={selectedProductA.favoriteCount}
+                isRatingWinner={isRatingAWinner}
+                isReviewCountWinner={isReviewAWinner}
+                isFavoriteCountWinner={isFavoriteAWinner}
+              />
+            ) : (
+              <CompareDetailDefault placeholder='A' />
+            )}
+            {selectedProductB ? (
+              <CompareDetail
+                rating={selectedProductB.rating}
+                reviewCount={selectedProductB.reviewCount}
+                favoriteCount={selectedProductB.favoriteCount}
+                isRatingWinner={isRatingBWinner}
+                isReviewCountWinner={isReviewBWinner}
+                isFavoriteCountWinner={isFavoriteBWinner}
+              />
+            ) : (
+              <CompareDetailDefault placeholder='B' />
+            )}
+          </>
+        ) : (
+          <div className='flex flex-col gap-4'>
+            <CompareBar
+              products={allProducts}
+              onSelectProduct={(p) => handleProductSelect(p, 'A')}
+              onRemoveProduct={() => handleProductRemove('A')}
+            />
+            <CompareBar
+              products={allProducts}
+              onSelectProduct={(p) => handleProductSelect(p, 'B')}
+              onRemoveProduct={() => handleProductRemove('B')}
+            />
+          </div>
+        )}
       </div>
+
+      {/* 비교하기/다시 비교하기 버튼 */}
+      {isComparing ? (
+        <button
+          onClick={handleResetClick}
+          className='bg-primary-orange-600 mt-8 rounded-full px-6 py-3 text-lg font-bold text-white'
+        >
+          다시 비교하기
+        </button>
+      ) : (
+        <button
+          onClick={handleCompareClick}
+          disabled={!bothProductsSelected}
+          className={`mt-8 rounded-full px-6 py-3 text-lg font-bold text-white transition-colors duration-200 ${bothProductsSelected ? 'bg-primary-orange-600' : 'cursor-not-allowed bg-gray-400'}`}
+        >
+          상품 비교하기
+        </button>
+      )}
     </div>
   );
 };
