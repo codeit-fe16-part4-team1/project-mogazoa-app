@@ -21,7 +21,6 @@ const CompareCard = ({
   label,
   onSelectProduct,
   onRemoveProduct,
-  // isComparing,
   isRatingWinner,
   isReviewCountWinner,
   isFavoriteCountWinner,
