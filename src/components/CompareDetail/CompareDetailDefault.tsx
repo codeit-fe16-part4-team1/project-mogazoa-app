@@ -1,5 +1,6 @@
 'use client';
-import CompareHuman from '@/assets/icons/CompareHuman.svg';
+
+import CompareHuman from '@/assets/icons/compareHuman.svg';
 
 interface CompareDetailDefaultProps {
   placeholder: string;
