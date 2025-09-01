@@ -1,10 +1,12 @@
 import { baseAPI } from '@/lib/baseAPI';
 import { ProductsList } from '@/types/api';
 
+export type ProductType = keyof typeof TYPE_MAP;
+
 export interface GetUserProductsPayload {
   userId: number;
   cursor?: number;
-  type: keyof typeof TYPE_MAP;
+  type: ProductType;
 }
 
 const TYPE_MAP = {

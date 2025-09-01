@@ -1,10 +1,14 @@
+import { getMyProfileAPI } from '@/api/user/getMyProfileAPI';
+import ProductSection from '../components/ProductSection';
 import ProfileSection from '../components/ProfileSection';
-import { mockProfile } from '../mock/profile';
 
 const MyPage = async () => {
+  const profile = await getMyProfileAPI();
+
   return (
     <div className='bg-gray-100'>
-      <ProfileSection profile={mockProfile} />
+      <ProfileSection profile={profile} isMyProfile={true} />
+      <ProductSection id={profile.id} />
     </div>
   );
 };
