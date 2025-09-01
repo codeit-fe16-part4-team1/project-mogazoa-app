@@ -6,6 +6,9 @@ import { HTMLAttributes } from 'react';
 import { formatDate } from '@/utils/formatDate';
 import { cn } from '@/lib/cn';
 import clsx from 'clsx';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { removeReview } from '@/api/review/removeReview';
+import { reviewKeys } from '@/constant/queryKeys';
 
 interface ProductReviewCardProps extends HTMLAttributes<HTMLDivElement> {
   productId: number;
@@ -20,6 +23,14 @@ const ProductReviewCard = ({
   review,
   ...props
 }: ProductReviewCardProps) => {
+  const queryClient = useQueryClient();
+  const { mutate: reviewRemoveMutate } = useMutation({
+    mutationFn: removeReview,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: reviewKeys.list(productId, order) });
+    },
+  });
+
   const reviewInfoTextStyle = 'text-gray-600 text-caption md:text-body2';
   const editTextStyle = 'cursor-pointer underline underline-offset-2';
 
@@ -40,7 +51,12 @@ const ProductReviewCard = ({
         <button className={clsx(reviewInfoTextStyle, editTextStyle)} onClick={() => {}}>
           수정
         </button>
-        <button className={clsx(reviewInfoTextStyle, editTextStyle)} onClick={() => {}}>
+        <button
+          className={clsx(reviewInfoTextStyle, editTextStyle)}
+          onClick={() => {
+            reviewRemoveMutate(review.id);
+          }}
+        >
           삭제
         </button>
         <span className={clsx(reviewInfoTextStyle, 'text-gray-700')}>
