@@ -18,7 +18,7 @@ const STATISTIC_MAP = {
     title: '리뷰',
     classifier: '개',
     suffixPlus: '많아요',
-    suffixMinus: '적아요',
+    suffixMinus: '적어요',
   },
 };
 
@@ -51,7 +51,7 @@ const ProductStatisticCard = ({
       {/* 통계 */}
       <div className='w-full basis-2/5 border-r border-r-gray-300 text-center md:border-r-0 md:border-b md:border-b-gray-300 md:pb-4'>
         <span className='text-h4-bold md:text-h2-bold mb-2 block text-gray-900'>
-          {statistic === 'rating' ? value.toFixed(1) : value}
+          {statistic === 'rating' ? +value.toFixed(1) : +value}
         </span>
         <span className='text-body1-medium block text-gray-700'>
           {STATISTIC_MAP[statistic].title}
@@ -62,7 +62,7 @@ const ProductStatisticCard = ({
         같은 카테고리의 제품들보다
         <br />
         <span className='text-gray-900'>
-          {valueDiff.toFixed(1)}
+          {Math.abs(+valueDiff.toFixed(1))}
           {STATISTIC_MAP[statistic].classifier}
         </span>{' '}
         더{' '}
