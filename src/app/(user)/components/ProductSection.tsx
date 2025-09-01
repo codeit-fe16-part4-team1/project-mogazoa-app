@@ -2,30 +2,46 @@
 import { useState } from 'react';
 import OptionList from '@/components/OptionList/OptionList';
 import ProductCard from '@/components/ProductCard/ProductCard';
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
 import { getUserProductsAPI, ProductType } from '@/api/user/getUserProductsAPI';
 import clsx from 'clsx';
+import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
+import { productKeys } from '@/constant/queryKeys';
 
 interface Props {
-  id: number;
+  profileId: number;
 }
 
-const ProductSection = ({ id }: Props) => {
-  const [productType, setProductType] = useState<ProductType>('created');
+const ProductSection = ({ profileId }: Props) => {
+  const [productType, setProductType] = useState<ProductType>('reviewed');
 
-  const { data: products } = useQuery({
-    queryKey: ['products', productType, id],
-    queryFn: () => getUserProductsAPI({ userId: id, type: productType }),
+  const {
+    data: products,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: productKeys.userProductList(profileId, productType),
+    queryFn: ({ pageParam }) =>
+      getUserProductsAPI({
+        userId: profileId,
+        type: productType,
+        ...(pageParam && { cursor: pageParam }),
+      }),
     placeholderData: keepPreviousData,
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    // select: (data) => data.pages.flatMap((page) => page.list),
   });
 
+  const fetchObserverRef = useIntersectionObserver(fetchNextPage);
+
   const OPTION_MAP: Record<ProductType, string> = {
-    created: '리뷰 남긴 상품',
-    reviewed: '등록한 상품',
+    reviewed: '리뷰 남긴 상품',
+    created: '등록한 상품',
     favorite: '찜한 상품',
   };
 
-  if (!products) return;
+  const allProducts = products?.pages.flatMap((page) => page.list) || [];
 
   return (
     <section className='px-4 pt-6 pb-11 md:px-15 md:pt-9 md:pb-18'>
@@ -51,16 +67,18 @@ const ProductSection = ({ id }: Props) => {
         </OptionList>
       </div>
       <div className='mx-auto grid max-w-235 grid-cols-2 gap-x-3 gap-y-8 md:gap-x-5 md:gap-y-12 lg:grid-cols-3'>
-        {products.list.map((product) => (
-          <ProductCard
-            key={product.id}
-            imgUrl={product.image}
-            name={product.name}
-            reviewCount={product.reviewCount}
-            likeCount={product.favoriteCount}
-            rating={product.rating}
-          />
+        {allProducts.map((product) => (
+          <div key={product.id}>
+            <ProductCard
+              imgUrl={product.image}
+              name={product.name}
+              reviewCount={product.reviewCount}
+              likeCount={product.favoriteCount}
+              rating={product.rating}
+            />
+          </div>
         ))}
+        <div ref={fetchObserverRef}>{isFetchingNextPage ? '로딩 중...' : ''}</div>
       </div>
     </section>
   );
