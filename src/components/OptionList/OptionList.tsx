@@ -35,8 +35,8 @@ interface ButtonProps extends HTMLAttributes<HTMLButtonElement> {
 const OptionButton = ({
   children,
   className,
-  activeStyle,
-  inactiveStyle,
+  activeStyle = 'border-b-3 border-gray-900 text-gray-800',
+  inactiveStyle = 'border-b-1 border-gray-400 text-gray-400 hover:bg-gray-200',
   value,
   onClick,
   ...rest
@@ -46,7 +46,7 @@ const OptionButton = ({
   return (
     <button
       data-state={isSelected ? 'active' : 'inactive'}
-      className={clsx(className, activeStyle, inactiveStyle)}
+      className={clsx(className, isSelected ? activeStyle : inactiveStyle)}
       onClick={onClick}
       {...rest}
     >
