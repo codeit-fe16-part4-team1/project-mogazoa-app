@@ -10,9 +10,10 @@ import { Button } from '@/components/Button/Button';
 import KakaoButton from '../components/KakaoButton';
 import Divider from '../components/Divider';
 import FormTitle from '../components/FormTitle';
-import FormFieldLayout from '../components/FormFieldLayout';
+import FormFieldContainer from '../components/FormFieldContainer';
 import AuthSection from '../components/AuthSection';
 import { cn } from '@/lib/cn';
+import { redirectKakaoAuth } from '@/lib/redirectKakaoAuth';
 
 const signinSchema = z.object({
   email: z
@@ -34,6 +35,7 @@ const SigninPage = () => {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isValid, isSubmitting },
   } = useForm<SigninFormInputs>({
     resolver: zodResolver(signinSchema),
@@ -46,8 +48,14 @@ const SigninPage = () => {
       router.replace('/');
     } catch (e) {
       if (e instanceof AxiosError) {
-        console.error(Object.keys(e.response?.data.details)[0]);
-        console.error(e.response?.data.message);
+        const errorKey = Object.keys(e.response?.data.details)[0];
+        const errorMessage = e.response?.data.message;
+        if (errorKey === 'email' || errorKey === 'password') {
+          setError(errorKey, {
+            type: 'manual',
+            message: errorMessage,
+          });
+        }
       } else {
         console.error(e);
       }
@@ -55,10 +63,7 @@ const SigninPage = () => {
   };
 
   const handleKakaoSigninClick = () => {
-    const redirectUri = `${window.location.origin}/oauth/signin/kakao/callback`;
-    Kakao.Auth.authorize({
-      redirectUri,
-    });
+    redirectKakaoAuth.signin();
   };
 
   const FORM_MARGIN_STYLES = 'mt-28 md:mt-42 lg:my-10';
@@ -80,7 +85,7 @@ const SigninPage = () => {
             </p>
           </FormTitle>
           {/* 이메일 입력 */}
-          <FormFieldLayout>
+          <FormFieldContainer>
             <FormField
               label='이메일'
               id='email'
@@ -100,7 +105,7 @@ const SigninPage = () => {
               register={register('password')}
               error={errors.password}
             />
-          </FormFieldLayout>
+          </FormFieldContainer>
           <Button
             className='mt-10 w-full md:mt-20 md:h-16'
             type='submit'
@@ -111,7 +116,7 @@ const SigninPage = () => {
         </form>
         <div className='mt-25 flex flex-col gap-6 md:mt-10'>
           <Divider text='SNS로 바로 시작하기' />
-          <KakaoButton onClick={handleKakaoSigninClick}>카카오 로그인</KakaoButton>
+          <KakaoButton onClick={handleKakaoSigninClick} />
         </div>
       </div>
     </AuthSection>
