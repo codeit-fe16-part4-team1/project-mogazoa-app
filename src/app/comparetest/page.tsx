@@ -21,7 +21,7 @@ const CompareTestPage = () => {
         // nextCursor가 없을 때까지 API를 반복해서 호출
         while (hasMore) {
           // getProductsAPI 호출 시 cursor 값을 파라미터로 전달
-          const { list, nextCursor } = await getProductsAPI({ order: 'recent', cursor: cursor });
+          const { list, nextCursor } = await getProductsAPI({ cursor: cursor || undefined });
           allItems = [...allItems, ...list];
           if (nextCursor === null) {
             hasMore = false;
