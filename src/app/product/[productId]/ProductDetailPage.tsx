@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import ProductStatisticCard from './components/ProductStatisticCard';
 import ProductReviewList from './components/ProductReviewList';
-import Sort from '@/components/Sort/Sort';
 import ProductDetailHeader from './components/ProductDetailHeader';
 import { OrderOptions } from '@/types/api';
 import ProductEditButton from './components/ProductEditButton';
@@ -16,24 +15,8 @@ import { cn } from '@/lib/cn';
 import { useProductData } from './hooks/useProductData';
 import { useProductReviewListData } from './hooks/useProductReviewListData';
 import ProductNoReview from './components/ProductNoReview';
-
-// 추후 리팩토링 필요
-// state는 영어값으로 저장하는데
-// Sort컴포넌트에서는 한글값의 value를 받고있음
-// Sort컴포넌트에서 매핑정보를 가지고 있는게 맞음
-const ORDER_MAP = {
-  recent: '최신순',
-  ratingDesc: '별점 높은순',
-  ratingAsc: '별점 낮은순',
-  likeCount: '좋아요순',
-} as const;
-
-const ORDER_MAP_REVERSE = {
-  최신순: 'recent',
-  '별점 높은순': 'ratingDesc',
-  '별점 낮은순': 'ratingAsc',
-  좋아요순: 'likeCount',
-} as const;
+import Dropdown from '@/components/Dropdown/Dropdown';
+import DropdownItem from '@/components/Dropdown/DropdownItem';
 
 interface ProductDetailPageProps {
   productId: number;
@@ -41,7 +24,7 @@ interface ProductDetailPageProps {
 }
 
 const ProductDetailPage = ({ productId, order: initialOrder }: ProductDetailPageProps) => {
-  const [order, setOrder] = useState(initialOrder);
+  const [order, setOrder] = useState<OrderOptions>(initialOrder);
   const { data: product } = useProductData(productId);
   const {
     data: reviewList,
@@ -109,13 +92,16 @@ const ProductDetailPage = ({ productId, order: initialOrder }: ProductDetailPage
           <div>
             <ProductDetailHeader className='mb-5 md:mb-7'>
               <span className='text-sub-headline-bold text-gray-900'>✍️상품 리뷰</span>
-              <Sort
-                size='mq'
-                value={ORDER_MAP[order]}
-                onChange={(selectedOption) =>
-                  setOrder(ORDER_MAP_REVERSE[selectedOption as keyof typeof ORDER_MAP_REVERSE])
-                }
-              />
+              <Dropdown
+                initialValue={order}
+                size='S'
+                onChange={(selectedOption) => setOrder(selectedOption as OrderOptions)}
+              >
+                <DropdownItem label='최신순' value='recent' />
+                <DropdownItem label='별점 높은순' value='ratingDesc' />
+                <DropdownItem label='별점 낮은순' value='ratingAsc' />
+                <DropdownItem label='좋아요순' value='likeCount' />
+              </Dropdown>
             </ProductDetailHeader>
             <div className='relative mb-4 lg:mb-16'>
               {/* <ProductEditButton className='absolute right-[-4px] bottom-[-30px] lg:right-[-30px]' /> */}
