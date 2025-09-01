@@ -37,7 +37,7 @@ const CompareBar = ({ products, onSelectProduct, onRemoveProduct }: CompareBarPr
     return () => {
       debounceFilter.cancel();
     };
-  }, [inputValue, selectedProduct, debounceFilter]);
+  }, [inputValue, selectedProduct, debounceFilter, products]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
