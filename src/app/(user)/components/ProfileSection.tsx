@@ -1,24 +1,18 @@
-'use client';
 import { Button } from '@/components/Button/Button';
-import { Profile } from '@/types/api';
 // import useAuthStore from '@/store/useAuthStore';
 import ProfileEditButton from './ProfileEditButton';
 import ProfileStats from './ProfileStats';
 import ProfileImage from './ProfileImage';
 import clsx from 'clsx';
 import ProfileFollow from './ProfileFollow';
+import { Profile } from '@/types/api';
 
 interface Props {
   profile: Profile;
+  isMyProfile: boolean;
 }
 
-const ProfileSection = ({ profile }: Props) => {
-  // const { user } = useAuthStore();
-
-  // if (!user) return;
-
-  // const isMyProfile = profile.id === user.id;
-
+const ProfileSection = async ({ profile, isMyProfile }: Props) => {
   const BUTTON_STYLES = 'mx-auto block w-full md:h-15 lg:w-160';
 
   return (
@@ -52,7 +46,7 @@ const ProfileSection = ({ profile }: Props) => {
         </p>
       </article>
       <ProfileStats profile={profile} />
-      {/* {isMyProfile && (
+      {isMyProfile && (
         <Button intent='tertiary' size='S' className={BUTTON_STYLES}>
           로그아웃
         </Button>
@@ -61,10 +55,7 @@ const ProfileSection = ({ profile }: Props) => {
         <Button size='S' className={BUTTON_STYLES}>
           팔로우
         </Button>
-      )} */}
-      <Button intent='tertiary' size='S' className={BUTTON_STYLES}>
-        로그아웃
-      </Button>
+      )}
     </section>
   );
 };
