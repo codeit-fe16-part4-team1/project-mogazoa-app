@@ -236,6 +236,18 @@ body {
   .layout-center {
     @apply flex flex-col items-center justify-center;
   }
+  .z-modal {
+    @apply z-[999];
+  }
+  .z-header {
+    @apply z-[99];
+  }
+  .z-header-float {
+    @apply z-[100];
+  }
+  .z-dropdown {
+    @apply z-[9];
+  }
 }
 
 /* ============================== */
