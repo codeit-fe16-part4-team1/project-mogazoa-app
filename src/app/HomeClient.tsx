@@ -20,7 +20,7 @@ const PRODUCT_IMAGE_LOADING_STYLES = 'mb-3 aspect-square rounded-xl bg-gray-200'
 const GRID_STYLES =
   'grid grid-cols-2 gap-3 gap-y-8 md:grid-cols-2 md:gap-5 md:gap-y-12 lg:grid-cols-3';
 
-type SORT = 'recent' | 'rating' | 'reviewCount';
+type ORDER_BY = 'recent' | 'rating' | 'reviewCount';
 
 const HomeClient = () => {
   // 초기 랜딩 페이지 데이터 조회
@@ -53,16 +53,16 @@ const HomeClient = () => {
   const hasKeyword = searchKeyword.trim().length > 0;
   const hasCategory = category !== undefined;
   const isFiltered = hasKeyword || hasCategory;
-  const [sort, setSort] = useState<SORT>('recent');
+  const [orderBy, setOrderBy] = useState<ORDER_BY>('recent');
   const { getCategoryName } = useCategoryMap();
   const observerRef = useRef<HTMLDivElement>(null);
 
-  const handleSortChange = (value: string) => {
-    setSort(value as SORT);
+  const handleOrderChange = (value: string) => {
+    setOrderBy(value as ORDER_BY);
   };
 
   useEffect(() => {
-    setSort('recent');
+    setOrderBy('recent');
   }, [isFiltered]);
 
   const filteredTitle = useMemo(() => {
@@ -88,13 +88,13 @@ const HomeClient = () => {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ['products', 'search', searchKeyword, category, sort],
+    queryKey: ['products', 'search', searchKeyword, category, orderBy],
     queryFn: ({ pageParam }) =>
       getProductsAPI({
         cursor: pageParam,
         keyword: searchKeyword,
         category: category,
-        order: sort,
+        order: orderBy,
       }),
     initialPageParam: undefined as number | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor || undefined,
@@ -293,7 +293,7 @@ const HomeClient = () => {
                 {filteredTitle}
               </div>
               <div className='z-10'>
-                <Dropdown initialValue={sort} onChange={handleSortChange} size='S'>
+                <Dropdown initialValue={orderBy} onChange={handleOrderChange} size='S'>
                   <DropdownItem label='최신순' value='recent' />
                   <DropdownItem label='별점순' value='rating' />
                   <DropdownItem label='리뷰순' value='reviewCount' />
