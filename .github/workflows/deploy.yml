@@ -196,23 +196,20 @@ jobs:
             exit 1
           fi
 
-          # 리소스 현황
-          echo "[DEBUG][EC2] 📊 현재 리소스 현황:"
-          echo "Memory: $(free -h | awk '/^Mem:/ {print $3"/"$2}')"
-          echo "Disk: $(df -h / | awk 'NR==2 {print $3"/"$2" ("$5")"}')"
+          RED="\033[1;31m"
+          GREEN="\033[1;32m"
+          BLUE="\033[1;34m"
+          CYAN="\033[1;36m"
+          RESET="\033[0m"
 
+          echo ""
+          echo -e "${BLUE}===================== 📊 EC2 리소스 현황 =====================${RESET}"
+          MEM_INFO=$(free -m | awk '/^Mem:/ {printf "%dM/%dM (%d%%)", $3, $2, ($3/$2)*100}')
+          DISK_INFO=$(df -BG / | awk 'NR==2 {gsub("G","",$2); gsub("G","",$3); gsub("%","",$5); printf "%dG/%dG (%d%%)", $3, $2, $5}')
+          printf "${CYAN}%-15s${RESET} | %s\n" "Memory" "$MEM_INFO"
+          printf "${CYAN}%-15s${RESET} | %s\n" "Disk" "$DISK_INFO"
+          echo -e "${BLUE}=============================================================${RESET}"
+          echo ""
           EOSSH
 
           echo "[DEBUG][GHA] ✅ 프로덕션 배포 완료"
-
-      # 7) 배포 결과 요약
-      - name: Deployment Summary
-        run: |
-          echo ""
-          echo "🚀 ===== Production Info ====="
-          echo "✅ Branch: main"
-          echo "✅ Server: ${{ secrets.EC2_HOST }}"
-          echo "✅ 디렉토리: ${{ secrets.EC2_APP_DIR }}"
-          echo "✅ 포트: 3000"
-          echo "✅ 시간: $(date '+%Y-%m-%d %H:%M:%S')"
-          echo "================================"
