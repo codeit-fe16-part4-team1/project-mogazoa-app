@@ -1,9 +1,8 @@
 import ThumbsUpLikes from '@/components/Likes/ThumbsUpLikes';
 import Rating from '@/components/Rating/Rating';
-import { TextArea } from '@/components/TextArea/TextArea';
 import { OrderOptions, Review } from '@/types/api';
 import Image from 'next/image';
-import { HTMLAttributes, useState } from 'react';
+import { HTMLAttributes } from 'react';
 import { formatDate } from '@/utils/formatDate';
 import { cn } from '@/lib/cn';
 import clsx from 'clsx';
@@ -21,7 +20,6 @@ const ProductReviewCard = ({
   review,
   ...props
 }: ProductReviewCardProps) => {
-  const [isEdit, setIsEdit] = useState(false);
   const reviewInfoTextStyle = 'text-gray-600 text-caption md:text-body2';
   const editTextStyle = 'cursor-pointer underline underline-offset-2';
 
@@ -39,23 +37,18 @@ const ProductReviewCard = ({
         {/*  */}
         <Rating rating={review.rating} readonly size='sm' />
         <span className={clsx(reviewInfoTextStyle, 'grow-1')}>{review.user.nickname}</span>
-        <button
-          className={clsx(reviewInfoTextStyle, editTextStyle)}
-          onClick={() => setIsEdit((prev) => !prev)}
-        >
+        <button className={clsx(reviewInfoTextStyle, editTextStyle)} onClick={() => {}}>
           수정
         </button>
-        <button className={clsx(reviewInfoTextStyle, editTextStyle)}>삭제</button>
+        <button className={clsx(reviewInfoTextStyle, editTextStyle)} onClick={() => {}}>
+          삭제
+        </button>
         <span className={clsx(reviewInfoTextStyle, 'text-gray-700')}>
           {formatDate(review.updatedAt)}
         </span>
       </div>
       {/* 본문 */}
-      {isEdit ? (
-        <TextArea placeholder={review.content} maxLength={1000} />
-      ) : (
-        <p className='text-body1 whitespace-pre-wrap text-gray-900'>{review.content}</p>
-      )}
+      <p className='text-body1 whitespace-pre-wrap text-gray-900'>{review.content}</p>
       {/* 첨부 이미지 */}
       <div className='flex items-center justify-start gap-3'>
         {review.reviewImages &&
