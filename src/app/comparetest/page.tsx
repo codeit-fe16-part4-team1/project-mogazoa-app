@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import CompareBar from '@/components/CompareBar/CompareBar';
 import { getProductsAPI } from '@/api/products/getProductsAPI';
 import { ProductItem } from '@/types/api';
+import CompareImage from '@/components/CompareImage/CompareImage';
 
 const CompareTestPage = () => {
   const [allProducts, setAllProducts] = useState<ProductItem[]>([]);
@@ -45,7 +46,8 @@ const CompareTestPage = () => {
     <div className='flex min-h-screen flex-col items-center p-8'>
       <h1 className='text-h1-bold mb-4'>CompareBar Test</h1>
       <div className='flex gap-8'>
-        <div className='flex w-[340px] items-center justify-center'>
+        <div className='flex w-[340px] flex-col items-center justify-center gap-5'>
+          <CompareImage placeholder='A' />
           <CompareBar
             products={allProducts}
             onSelectProduct={handleProductSelect}
@@ -53,7 +55,8 @@ const CompareTestPage = () => {
           />
         </div>
 
-        <div className='flex w-[340px] items-center justify-center'>
+        <div className='flex w-[340px] flex-col items-center justify-center gap-5'>
+          <CompareImage placeholder='B' />
           <CompareBar
             products={allProducts}
             onSelectProduct={handleProductSelect}

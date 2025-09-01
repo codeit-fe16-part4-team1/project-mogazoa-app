@@ -88,6 +88,8 @@ const config: Config = {
       borderRadius: {
         x1: '8px',
         x2: '12px',
+        x3: '16px',
+        x4: '20px',
         full: '9999px',
       },
     },
