@@ -18,8 +18,22 @@ const CompareTestPage = () => {
     const fetchAllProducts = async () => {
       try {
         setIsLoading(true);
-        const { list } = await getProductsAPI({ keyword: '' });
-        setAllProducts(list);
+        let allItems: ProductItem[] = [];
+        let cursor: number | null = null;
+        let hasMore = true;
+
+        // nextCursor가 없을 때까지 API를 반복해서 호출
+        while (hasMore) {
+          // getProductsAPI 호출 시 cursor 값을 파라미터로 전달
+          const { list, nextCursor } = await getProductsAPI({ cursor: cursor || undefined });
+          allItems = [...allItems, ...list];
+          if (nextCursor === null) {
+            hasMore = false;
+          }
+          cursor = nextCursor;
+        }
+
+        setAllProducts(allItems);
       } catch (err) {
         setError('상품 목록을 불러오는 데 실패했습니다.');
         console.error(err);
