@@ -15,7 +15,10 @@ const fetchAllProducts = async () => {
   let cursor: number | null = null;
   let hasMore = true;
   while (hasMore) {
-    const { list, nextCursor } = await getProductsAPI({ order: 'recent', cursor });
+    const { list, nextCursor } = await getProductsAPI({
+      order: 'recent',
+      cursor: cursor === null ? undefined : cursor,
+    });
     allItems = [...allItems, ...list];
     if (nextCursor === null) {
       hasMore = false;
