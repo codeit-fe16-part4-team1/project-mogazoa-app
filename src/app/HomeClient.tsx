@@ -9,7 +9,8 @@ import { ProductItem } from '@/types/api';
 import { useIsDesktop } from '@/hooks/useIsDesktop';
 import { useSearchParams } from 'next/navigation';
 import { josa } from 'es-hangul';
-import Sort from '@/components/Sort/Sort';
+import Dropdown from '@/components/Dropdown/Dropdown';
+import DropdownItem from '@/components/Dropdown/DropdownItem';
 
 const TITLE_STYLES = 'font-cafe24-supermagic text-h4-bold tracking-[0.4px]';
 const SUBTITLE_STYLES = `${TITLE_STYLES} text-gray-900 mb-5 md:mb-7`;
@@ -251,12 +252,11 @@ const HomeClient = () => {
                 {filteredTitle}
               </div>
               <div className='z-10'>
-                <Sort
-                  size='S'
-                  value={sort}
-                  onChange={setSort}
-                  sortOptions={Object.keys(SORT_MAP) as string[]}
-                />
+                <Dropdown initialValue={sort} onChange={setSort} size='S'>
+                  <DropdownItem label='최신순' value='recent' />
+                  <DropdownItem label='별점순' value='rating' />
+                  <DropdownItem label='리뷰순' value='reviewCount' />
+                </Dropdown>
               </div>
             </div>
             <div className={GRID_STYLES}>
