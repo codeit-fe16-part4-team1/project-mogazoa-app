@@ -90,7 +90,6 @@ const config: Config = {
         x2: '12px',
         x4: '16px',
         x5: '20px',
-        full: '9999px',
       },
     },
   },
