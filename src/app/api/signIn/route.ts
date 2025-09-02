@@ -13,7 +13,7 @@ export const POST = async (req: NextRequest) => {
 
     const res = NextResponse.json(user, { status: 200 });
     res.cookies.set('accessToken', accessToken, DEFAULT_COOKIE_OPTIONS);
-    res.cookies.set('loginType', 'default', DEFAULT_COOKIE_OPTIONS);
+    res.cookies.set('userId', String(user.id), DEFAULT_COOKIE_OPTIONS);
     return res;
   } catch (err) {
     if (axios.isAxiosError(err) && err.response) {

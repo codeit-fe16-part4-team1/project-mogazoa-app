@@ -5,7 +5,7 @@ interface UserUnFollowPayload {
   userId: number;
 }
 
-export const userUnFollowAPI = async (payload: UserUnFollowPayload): Promise<Profile> => {
+export const userUnfollowAPI = async (payload: UserUnFollowPayload): Promise<Profile> => {
   const { userId } = payload;
   const res = await baseAPI.delete(`/follow`, {
     data: { userId },
