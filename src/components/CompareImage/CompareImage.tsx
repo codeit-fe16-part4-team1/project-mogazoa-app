@@ -13,8 +13,7 @@ const CompareImage = ({ imageUrl, productName, placeholder }: CompareImageProps)
         <Image
           src={imageUrl}
           alt={productName || '상품이미지'}
-          fill={true}
-          className='object-cover'
+          className='absolute inset-0 h-full w-full object-cover'
         />
       ) : (
         <div className='absolute inset-0 flex items-center justify-center'>
