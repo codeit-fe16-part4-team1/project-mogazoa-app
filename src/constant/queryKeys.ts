@@ -1,8 +1,10 @@
+import { ProductType } from '@/api/user/getUserProductsAPI';
+
 export const productKeys = {
   all: ['products'] as const,
   list: () => [...productKeys.all, 'list'] as const,
   detail: (productId: number) => [...productKeys.all, productId] as const,
-  userProductList: (userId: number, type: string) =>
+  userProductList: (userId: number, type: ProductType) =>
     [...productKeys.all, 'user', userId, type] as const,
 };
 
