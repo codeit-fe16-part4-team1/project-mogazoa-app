@@ -21,7 +21,7 @@ const UserPage = async ({ params }: PageProps) => {
   return (
     <div>
       <ProfileSection profile={profile} isMyProfile={false} />
-      <ProductSection id={profile.id} />
+      <ProductSection profileId={Number(userId)} />
     </div>
   );
 };
