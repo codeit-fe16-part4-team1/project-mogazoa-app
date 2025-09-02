@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import OptionList from '@/components/OptionList/OptionList';
 import ProductCard from '@/components/ProductCard/ProductCard';
-import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
+import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
 import { getUserProductsAPI, ProductType } from '@/api/user/getUserProductsAPI';
 import clsx from 'clsx';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
@@ -19,7 +19,7 @@ const ProductSection = ({ profileId }: Props) => {
     data: products,
     fetchNextPage,
     isFetchingNextPage,
-  } = useInfiniteQuery({
+  } = useSuspenseInfiniteQuery({
     queryKey: productKeys.userProductList(profileId, productType),
     queryFn: ({ pageParam }) =>
       getUserProductsAPI({
@@ -27,7 +27,6 @@ const ProductSection = ({ profileId }: Props) => {
         type: productType,
         ...(pageParam && { cursor: pageParam }),
       }),
-    placeholderData: keepPreviousData,
     initialPageParam: 0,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
     // select: (data) => data.pages.flatMap((page) => page.list),
@@ -68,15 +67,14 @@ const ProductSection = ({ profileId }: Props) => {
       </div>
       <div className='mx-auto grid max-w-235 grid-cols-2 gap-x-3 gap-y-8 md:gap-x-5 md:gap-y-12 lg:grid-cols-3'>
         {allProducts.map((product) => (
-          <div key={product.id}>
-            <ProductCard
-              imgUrl={product.image}
-              name={product.name}
-              reviewCount={product.reviewCount}
-              likeCount={product.favoriteCount}
-              rating={product.rating}
-            />
-          </div>
+          <ProductCard
+            key={product.id}
+            imgUrl={product.image}
+            name={product.name}
+            reviewCount={product.reviewCount}
+            likeCount={product.favoriteCount}
+            rating={product.rating}
+          />
         ))}
         <div ref={fetchObserverRef}>{isFetchingNextPage ? '로딩 중...' : ''}</div>
       </div>
