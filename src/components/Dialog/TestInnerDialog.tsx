@@ -23,11 +23,11 @@ const TestInnerDialog = ({ id }: TestInnerDialogProps) => {
           기본 동작인 백그라운드 클릭 시 닫힘이 방지되어있습니다.
         </DialogDescription>
         <p>Props 전달 테스트: {id}</p>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button className='w-full'>이전</Button>
+        <DialogFooter className='flex-between w-full'>
+          <DialogClose asChild className='w-full'>
+            <Button size='S'>이전</Button>
           </DialogClose>
-          <Button className='w-full' onClick={() => closeAll()}>
+          <Button className='w-full' size='S' onClick={() => closeAll()}>
             전체 닫기
           </Button>
         </DialogFooter>
