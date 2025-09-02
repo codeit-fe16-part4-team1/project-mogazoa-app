@@ -1,9 +1,9 @@
 'use client';
 import clsx from 'clsx';
 import ProductCard from '@/components/ProductCard/ProductCard';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import PaginationButton from '@/components/PaginationButton/PaginationButton';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { getProductsAPI } from '@/api/products/getProductsAPI';
 import { ProductItem } from '@/types/api';
 import { useIsDesktop } from '@/hooks/useIsDesktop';
@@ -55,6 +55,7 @@ const HomeClient = () => {
   const hasCategory = category.trim().length > 0;
   const isFiltered = hasKeyword || hasCategory;
   const [sort, setSort] = useState('최신순');
+  const observerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setSort('최신순');
@@ -77,15 +78,45 @@ const HomeClient = () => {
     data: searchResults,
     isLoading: searchResultsLoading,
     error: searchResultsError,
-  } = useQuery({
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
     queryKey: ['products', 'search', searchKeyword, sort],
-    queryFn: () =>
+    queryFn: ({ pageParam }) =>
       getProductsAPI({
+        cursor: pageParam,
         keyword: searchKeyword,
         order: SORT_MAP[sort as keyof typeof SORT_MAP],
       }),
+    initialPageParam: undefined as number | undefined,
+    getNextPageParam: (lastPage) => lastPage.nextCursor || undefined,
     enabled: isFiltered,
   });
+
+  // 스크롤 감지하여 무한 스크롤 구현
+  const handleObserver = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      const target = entries[0];
+      if (target.isIntersecting && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    },
+    [hasNextPage, isFetchingNextPage, fetchNextPage],
+  );
+
+  useEffect(() => {
+    const element = observerRef.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(handleObserver, {
+      threshold: 0.1,
+    });
+
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, [handleObserver]);
 
   // 페이지네이션 설정
   const [currentPage, setCurrentPage] = useState(0);
@@ -271,16 +302,26 @@ const HomeClient = () => {
                   <p className='text-gray-500'>상품을 불러오는데 실패했습니다.</p>
                 </div>
               ) : (
-                searchResults?.list?.map((item: ProductItem) => (
-                  <ProductCard
-                    key={item.id}
-                    imgUrl={item.image}
-                    name={item.name}
-                    reviewCount={item.reviewCount}
-                    likeCount={item.favoriteCount}
-                    rating={item.rating}
-                  />
-                ))
+                <>
+                  {searchResults?.pages?.flatMap((page) =>
+                    page.list.map((item: ProductItem) => (
+                      <ProductCard
+                        key={item.id}
+                        imgUrl={item.image}
+                        name={item.name}
+                        reviewCount={item.reviewCount}
+                        likeCount={item.favoriteCount}
+                        rating={item.rating}
+                      />
+                    )),
+                  )}
+                  <div ref={observerRef} className='col-span-full h-4' />
+                  {isFetchingNextPage && (
+                    <div className='col-span-full flex justify-center py-4'>
+                      <div className='text-gray-500'>로딩 중...</div>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
