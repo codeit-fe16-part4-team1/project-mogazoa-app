@@ -10,7 +10,7 @@ import { Profile } from '@/types/api';
 import { useState } from 'react';
 import { userFollowAPI } from '@/api/follow/userFollowAPI';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { userUnfollowAPI } from '@/api/follow/userUnFollowAPI';
+import { userUnfollowAPI } from '@/api/follow/userUnfollowAPI';
 
 interface Props {
   profile: Profile;
