@@ -22,23 +22,6 @@ const ProfileSection = ({ profile, isMyProfile }: Props) => {
 
   const [isFollowing, setIsFollowing] = useState(profile.isFollowing);
 
-  // interface MutationParams {
-  //   userId: number;
-  // }
-
-  // const { mutate, isPending } = useOptimisticMutation<Profile, Profile, MutationParams>({
-  //   mutationFn: profile.isFollowing
-  //     ? ({ userId }) => userUnFollowAPI({ userId })
-  //     : ({ userId }) => userFollowAPI({ userId }),
-
-  //   queryKey: ['profile', profile.id],
-
-  //   updater: (oldData) => ({
-  //     ...oldData,
-  //     isFollowing: !oldData.isFollowing,
-  //   }),
-  // });
-
   const { mutate } = useMutation({
     mutationFn: async (isFollowing: boolean) => {
       if (isFollowing) {
@@ -49,7 +32,7 @@ const ProfileSection = ({ profile, isMyProfile }: Props) => {
     },
     onMutate: (originalValue) => {
       setIsFollowing(!originalValue);
-      return { originalValue }; // context로 원래 값 반환
+      return { originalValue };
     },
     onError: (_error, _variables, context) => {
       if (context?.originalValue !== undefined) {
