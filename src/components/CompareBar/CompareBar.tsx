@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import IconClose from '@/assets/icons/IconClose.svg';
 import { ProductItem } from '@/types/api';
+import debounce from 'lodash.debounce';
 
 interface CompareBarProps {
   products: ProductItem[];
@@ -15,17 +16,28 @@ const CompareBar = ({ products, onSelectProduct, onRemoveProduct }: CompareBarPr
   const [filteredProducts, setFilteredProducts] = useState<ProductItem[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(null);
 
+  const debounceFilter = useMemo(
+    () =>
+      debounce((keyword: string) => {
+        const trimmedKeyword = keyword.toLowerCase();
+        const newFilteredProducts = products.filter((product) =>
+          product.name.toLowerCase().includes(trimmedKeyword),
+        );
+        setFilteredProducts(newFilteredProducts);
+      }, 0),
+    [products],
+  );
+
   useEffect(() => {
     if (inputValue.length > 0 && !selectedProduct) {
-      const trimmedKeyword = inputValue.toLowerCase();
-      const newFilteredProducts = products.filter((product) =>
-        product.name.toLowerCase().includes(trimmedKeyword),
-      );
-      setFilteredProducts(newFilteredProducts);
+      debounceFilter(inputValue);
     } else {
       setFilteredProducts([]);
     }
-  }, [inputValue, products, selectedProduct]);
+    return () => {
+      debounceFilter.cancel();
+    };
+  }, [inputValue, selectedProduct, debounceFilter]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
