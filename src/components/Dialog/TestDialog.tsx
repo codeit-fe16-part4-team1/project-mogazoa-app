@@ -52,9 +52,10 @@ const TestDialog = () => {
       </p>
 
       {/* Footer */}
-      <DialogFooter>
+      <DialogFooter className='flex-between w-full'>
         <Button
           className='w-full'
+          size='S'
           onClick={() =>
             open({
               dialogName: 'test-inner-dialog',
@@ -65,8 +66,8 @@ const TestDialog = () => {
         >
           내부 다이얼로그 열기
         </Button>
-        <DialogClose asChild>
-          <Button className='w-full'>닫기</Button>
+        <DialogClose asChild className='w-full'>
+          <Button size='S'>닫기</Button>
         </DialogClose>
       </DialogFooter>
     </DialogContent>
