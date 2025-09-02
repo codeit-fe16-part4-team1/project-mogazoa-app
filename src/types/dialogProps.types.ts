@@ -8,3 +8,9 @@ export interface TestInnerDialogProps {
 export interface TestTest {
   test: string;
 }
+
+export interface ProfileEditDialogProps {
+  imageUrl: string;
+  nickname: string;
+  description: string;
+}
