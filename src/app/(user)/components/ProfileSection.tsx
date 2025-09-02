@@ -1,3 +1,4 @@
+'use client';
 import { Button } from '@/components/Button/Button';
 // import useAuthStore from '@/store/useAuthStore';
 import ProfileEditButton from './ProfileEditButton';
@@ -6,13 +7,64 @@ import ProfileImage from './ProfileImage';
 import clsx from 'clsx';
 import ProfileFollow from './ProfileFollow';
 import { Profile } from '@/types/api';
+import { useState } from 'react';
+import { userFollowAPI } from '@/api/follow/userFollowAPI';
+import { userUnFollowAPI } from '@/api/follow/userUnFollowAPI';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface Props {
   profile: Profile;
   isMyProfile: boolean;
 }
 
-const ProfileSection = async ({ profile, isMyProfile }: Props) => {
+const ProfileSection = ({ profile, isMyProfile }: Props) => {
+  const queryClient = useQueryClient();
+
+  const [isFollowing, setIsFollowing] = useState(profile.isFollowing);
+
+  // interface MutationParams {
+  //   userId: number;
+  // }
+
+  // const { mutate, isPending } = useOptimisticMutation<Profile, Profile, MutationParams>({
+  //   mutationFn: profile.isFollowing
+  //     ? ({ userId }) => userUnFollowAPI({ userId })
+  //     : ({ userId }) => userFollowAPI({ userId }),
+
+  //   queryKey: ['profile', profile.id],
+
+  //   updater: (oldData) => ({
+  //     ...oldData,
+  //     isFollowing: !oldData.isFollowing,
+  //   }),
+  // });
+
+  const { mutate } = useMutation({
+    mutationFn: async (isFollowing: boolean) => {
+      if (isFollowing) {
+        await userUnFollowAPI({ userId: profile.id });
+      } else {
+        await userFollowAPI({ userId: profile.id });
+      }
+    },
+    onMutate: (originalValue) => {
+      setIsFollowing(!originalValue);
+      return { originalValue }; // context로 원래 값 반환
+    },
+    onError: (_error, _variables, context) => {
+      if (context?.originalValue !== undefined) {
+        setIsFollowing(context.originalValue);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile', profile.id] });
+    },
+  });
+
+  const handleFollowToggle = () => {
+    mutate(isFollowing);
+  };
+
   const BUTTON_STYLES = 'mx-auto block w-full md:h-15 lg:w-160';
 
   return (
@@ -52,8 +104,13 @@ const ProfileSection = async ({ profile, isMyProfile }: Props) => {
         </Button>
       )}
       {!isMyProfile && (
-        <Button size='S' className={BUTTON_STYLES}>
-          팔로우
+        <Button
+          size='S'
+          intent={isFollowing ? 'secondary' : 'primary'}
+          className={BUTTON_STYLES}
+          onClick={handleFollowToggle}
+        >
+          {isFollowing ? '팔로우 취소' : '팔로우'}
         </Button>
       )}
     </section>
