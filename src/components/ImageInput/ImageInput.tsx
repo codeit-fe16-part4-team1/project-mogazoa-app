@@ -34,16 +34,15 @@ export const getInitialImageList = (imageUrlArray: string[]) => {
 // Image 업로드 후 경로 반환
 // File이 null일 경우 key값(url)을 그대로 반환
 export const getUploadedImageUrlArray = async (imageList: ImageList): Promise<string[]> => {
-  const urlList: string[] = [];
-  Object.entries(imageList).forEach(async ([url, file]) => {
+  const promises = Object.entries(imageList).map(async ([url, file]) => {
     if (!file) {
-      urlList.push(url);
-      return;
+      return url;
     }
     const res = await getUploadedImageUrlAPI({ file });
-    urlList.push(res.url);
+    return res.url;
   });
-  return urlList;
+
+  return await Promise.all(promises);
 };
 
 // ImageInput Type
