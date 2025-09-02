@@ -10,7 +10,7 @@ const MyPage = async () => {
   return (
     <div className='bg-gray-100'>
       <ProfileSection profile={profile} isMyProfile={true} />
-      <ProductSection id={profile.id} />
+      <ProductSection profileId={profile.id} />
     </div>
   );
 };
