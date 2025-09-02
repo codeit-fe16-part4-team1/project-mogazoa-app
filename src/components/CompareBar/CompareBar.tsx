@@ -37,7 +37,7 @@ const CompareBar = ({ products, onSelectProduct, onRemoveProduct }: CompareBarPr
     return () => {
       debounceFilter.cancel();
     };
-  }, [inputValue, selectedProduct, debounceFilter]);
+  }, [inputValue, selectedProduct, debounceFilter, products]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
@@ -76,7 +76,7 @@ const CompareBar = ({ products, onSelectProduct, onRemoveProduct }: CompareBarPr
             className='border-primary-orange-600 text-body1-medium focus:border-primary-orange-600 w-full rounded-full border-2 border-dashed bg-white px-5 py-[18px] text-gray-600 focus:border-2 focus:border-solid focus:outline-none'
           />
           {inputValue.length > 0 && (
-            <ul className='rounded-x2 absolute mt-4 w-full gap-[5px] border border-gray-400 bg-white p-2.5'>
+            <ul className='rounded-x2 z-dropdown absolute mt-4 w-full gap-[5px] border border-gray-400 bg-white p-2.5'>
               {filteredProducts.length > 0 ? (
                 filteredProducts.map((product) => (
                   <li
