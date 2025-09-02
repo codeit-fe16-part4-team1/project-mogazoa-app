@@ -38,35 +38,37 @@ const ProductDetailPage = ({ productId, order: initialOrder }: ProductDetailPage
   const pageContainerStyles = 'lg:mx-auto lg:w-full lg:max-w-[980px]';
 
   return (
-    // 페이지 상단 컨테이너
-    <div className='bg-white'>
-      {/* 상품 이미지와 상품 설명 컨테이너 - 데스크톱에서 가로로 변경 가운데 정렬 및 max-width설정 */}
-      <div
-        className={cn(
-          'lg:flex lg:items-center lg:justify-between lg:gap-11 lg:py-12',
-          pageContainerStyles,
-        )}
-      >
-        {/* 상품 이미지 컨테이너 */}
-        <ProductImage className='my-5 md:my-0 lg:flex-1 lg:self-end' imageUrl={product.image} />
-        {/* 상품 설명 컨테이너 */}
-        <div className='relative w-full px-5 py-8 md:px-16 md:py-12 lg:basis-51/100 lg:self-end lg:p-0'>
-          <ProductEditButton className='absolute top-[-48px] right-5 md:top-[-32px] md:right-13 lg:top-[-32px] lg:right-0' />
-          <ProductInfo
-            categoryName={product.category.name}
-            productName={product.name}
-            description={product.description}
-          />
-          <ProductShareBtns productId={product.id} isHeartFavorite={product.isFavorite} />
-          <ProductBtns />
-        </div>
-      </div>
+    <main className='bg-white'>
+      {/*  페이지 상단 컨테이너 */}
+      <section>
+        {/* 상품 이미지와 상품 설명 컨테이너 - 데스크톱에서 가로로 변경 가운데 정렬 및 max-width설정 */}
+        <article
+          className={cn(
+            'lg:flex lg:items-center lg:justify-between lg:gap-11 lg:py-12',
+            pageContainerStyles,
+          )}
+        >
+          {/* 상품 이미지 컨테이너 */}
+          <ProductImage className='my-5 md:my-0 lg:flex-1 lg:self-end' imageUrl={product.image} />
+          {/* 상품 설명 컨테이너 */}
+          <section className='relative w-full px-5 py-8 md:px-16 md:py-12 lg:basis-51/100 lg:self-end lg:p-0'>
+            <ProductEditButton className='absolute top-[-48px] right-5 md:top-[-32px] md:right-13 lg:top-[-32px] lg:right-0' />
+            <ProductInfo
+              categoryName={product.category.name}
+              productName={product.name}
+              description={product.description}
+            />
+            <ProductShareBtns productId={product.id} isHeartFavorite={product.isFavorite} />
+            <ProductBtns />
+          </section>
+        </article>
+      </section>
       {/* 페이지 하단 컨테이너 */}
-      <div className='bg-gray-100'>
+      <section className='bg-gray-100'>
         {/* 상품 통계 및 리뷰 리스트 컨테이너 - 데스크톱에서 가운데 정렬 및 max-width 설정 */}
-        <div className={cn('px-5 pt-7 pb-10', pageContainerStyles)}>
+        <article className={cn('px-5 pt-7 pb-10', pageContainerStyles)}>
           {/* 상품 통계 */}
-          <div className='mb-12'>
+          <section className='mb-12'>
             <ProductDetailHeader className='mb-5 md:mb-7'>
               <span className='text-sub-headline-bold text-gray-900'>🌟상품 통계</span>
             </ProductDetailHeader>
@@ -87,9 +89,9 @@ const ProductDetailPage = ({ productId, order: initialOrder }: ProductDetailPage
                 statistic='reviewCount'
               />
             </div>
-          </div>
+          </section>
           {/* 상품 리뷰 리스트 */}
-          <div>
+          <section>
             <ProductDetailHeader className='mb-5 md:mb-7'>
               <span className='text-sub-headline-bold text-gray-900'>✍️상품 리뷰</span>
               <Dropdown
@@ -115,10 +117,10 @@ const ProductDetailPage = ({ productId, order: initialOrder }: ProductDetailPage
                 <ProductNoReview className='h-[320px] w-full' />
               )}
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
+          </section>
+        </article>
+      </section>
+    </main>
   );
 };
 

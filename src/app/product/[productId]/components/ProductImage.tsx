@@ -9,7 +9,7 @@ interface ProductImageProps extends HTMLAttributes<HTMLDivElement> {
 const ProductImage = ({ className, imageUrl, ...props }: ProductImageProps) => {
   return (
     imageUrl && (
-      <div
+      <figure
         className={cn(
           'relative aspect-[375/320] w-full md:my-10 md:aspect-video lg:my-0 lg:aspect-[16/15]',
           className,
@@ -32,7 +32,7 @@ const ProductImage = ({ className, imageUrl, ...props }: ProductImageProps) => {
           priority
           sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw' // 제대로 공부할 필요
         />
-      </div>
+      </figure>
     )
   );
 };

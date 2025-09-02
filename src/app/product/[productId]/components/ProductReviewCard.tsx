@@ -69,7 +69,7 @@ const ProductReviewCard = ({
       <div className='flex items-center justify-start gap-3'>
         {review.reviewImages &&
           review.reviewImages.map((image) => (
-            <div key={image.id} className='relative aspect-square size-16 md:size-25'>
+            <figure key={image.id} className='relative aspect-square size-16 md:size-25'>
               <Image
                 className='rounded-3xl'
                 src={image.source}
@@ -78,7 +78,7 @@ const ProductReviewCard = ({
                 objectFit='cover'
                 sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw' // 제대로 공부할 필요
               />
-            </div>
+            </figure>
           ))}
       </div>
       {/* 엄지척 좋아요 */}
