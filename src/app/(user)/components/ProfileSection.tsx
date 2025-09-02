@@ -9,8 +9,8 @@ import ProfileFollow from './ProfileFollow';
 import { Profile } from '@/types/api';
 import { useState } from 'react';
 import { userFollowAPI } from '@/api/follow/userFollowAPI';
-import { userUnFollowAPI } from '@/api/follow/userUnFollowAPI';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { userUnfollowAPI } from '@/api/follow/userUnFollowAPI';
 
 interface Props {
   profile: Profile;
@@ -42,7 +42,7 @@ const ProfileSection = ({ profile, isMyProfile }: Props) => {
   const { mutate } = useMutation({
     mutationFn: async (isFollowing: boolean) => {
       if (isFollowing) {
-        await userUnFollowAPI({ userId: profile.id });
+        await userUnfollowAPI({ userId: profile.id });
       } else {
         await userFollowAPI({ userId: profile.id });
       }
