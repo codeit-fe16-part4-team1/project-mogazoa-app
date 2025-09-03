@@ -2,7 +2,7 @@ import { IDialogComponents } from '@/types/dialog.types';
 import TestDialog from '../TestDialog';
 import TestInnerDialog from '../TestInnerDialog';
 import { ProfileEditDialogProps, TestInnerDialogProps } from '@/types/dialogProps.types';
-import ProfileEditDialog from '@/app/(user)/components/ProfileEditDialog';
+import ProfileEditDialog from '@/app/(user)/components/ProfileSection/ProfileEditDialog';
 
 /**
  * 모든 다이얼로그 컴포넌트를 매핑하는 객체.
