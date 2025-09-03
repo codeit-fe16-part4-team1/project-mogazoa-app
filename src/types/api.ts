@@ -85,7 +85,7 @@ export interface ProductDetail {
   categoryMetric: CategoryMetric;
 }
 
-interface ReviewImage {
+export interface ReviewImage {
   source: string;
   id: number;
 }
