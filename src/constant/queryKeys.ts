@@ -14,3 +14,8 @@ export const reviewKeys = {
   list: (productId: number, order: OrderOptions) =>
     [...reviewKeys.all, 'by-product', productId, order] as const,
 };
+
+export const profileKeys = {
+  all: ['profile'] as const,
+  detail: (profileId: number) => [...profileKeys.all, profileId],
+};
