@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { useRef } from 'react';
-import IconAddImage from '@/assets/icons/icon_imageinput_add.svg';
+import IconAdd from '@/assets/icons/icon_imageinput_add.svg';
 
 type ImageList = Record<string, File | null>;
 
@@ -38,7 +38,7 @@ const ProfileImageInput = ({ value: imageList = {}, onChange }: ImageInputProps)
       >
         <Image src={Object.keys(imageList)[0]} alt='프로필 이미지' className='object-cover' fill />
         <div className='absolute inset-0 bg-black opacity-40' />
-        <IconAddImage className='absolute top-1/2 left-1/2 aspect-square w-8 translate-x-[-50%] translate-y-[-50%] text-white' />
+        <IconAdd className='absolute top-1/2 left-1/2 aspect-square w-8 translate-x-[-50%] translate-y-[-50%] text-white' />
       </button>
       <input
         ref={fileInputRef}

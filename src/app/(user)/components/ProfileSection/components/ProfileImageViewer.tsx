@@ -5,7 +5,7 @@ interface Props {
   imageUrl: string;
 }
 
-const ProfileImage = ({ imageUrl }: Props) => {
+const ProfileImageViewer = ({ imageUrl }: Props) => {
   return (
     <div className='relative aspect-square w-17 rounded-full md:w-40'>
       {imageUrl && (
@@ -15,4 +15,4 @@ const ProfileImage = ({ imageUrl }: Props) => {
   );
 };
 
-export default ProfileImage;
+export default ProfileImageViewer;
