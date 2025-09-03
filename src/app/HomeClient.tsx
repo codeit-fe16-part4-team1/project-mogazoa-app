@@ -1,6 +1,6 @@
 'use client';
 import clsx from 'clsx';
-import ProductCard from '@/components/ProductCard/ProductCard';
+import ProductCard from '@/app/components/ProductCard/ProductCard';
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import PaginationButton from '@/components/PaginationButton/PaginationButton';
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
@@ -11,9 +11,9 @@ import { useSearchParams } from 'next/navigation';
 import { josa } from 'es-hangul';
 import Dropdown from '@/components/Dropdown/Dropdown';
 import DropdownItem from '@/components/Dropdown/DropdownItem';
-import Category from '@/components/Category/Category';
+import Category from '@/app/components/Category/Category';
 import { useCategoryMap } from '@/hooks/useCategoryMap';
-import UsersRanking from '@/app/(home)/components/UsersRanking/UsersRanking';
+import UsersRanking from '@/app/components/UsersRanking/UsersRanking';
 
 const TITLE_STYLES = 'font-cafe24-supermagic text-h4-bold tracking-[-0.4px]';
 const SUBTITLE_STYLES = `${TITLE_STYLES} text-gray-900 mb-5 md:mb-7`;

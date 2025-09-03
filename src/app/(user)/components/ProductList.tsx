@@ -1,5 +1,5 @@
 import { getUserProductsAPI, ProductType } from '@/api/user/getUserProductsAPI';
-import ProductCard from '@/components/ProductCard/ProductCard';
+import ProductCard from '@/app/components/ProductCard/ProductCard';
 import { productKeys } from '@/constant/queryKeys';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { useSuspenseInfiniteQuery } from '@tanstack/react-query';

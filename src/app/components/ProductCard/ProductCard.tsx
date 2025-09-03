@@ -14,10 +14,15 @@ interface ProductCardProps {
 const PRODUCT_NAME_STYLES = [
   'text-gray-900',
   'text-body2-medium',
-  'tracking-[0.4px]',
+  'tracking-[-0.4px]',
   'md:text-sub-headline-medium',
 ];
-const PRODUCT_STATS_STYLES = ['text-caption', 'text-gray-700', 'tracking-[0.4px]', 'md:text-body1'];
+const PRODUCT_STATS_STYLES = [
+  'text-caption',
+  'text-gray-700',
+  'tracking-[-0.4px]',
+  'md:text-body1',
+];
 
 const ProductCard = ({
   imgUrl,
