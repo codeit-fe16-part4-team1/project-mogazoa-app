@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { getProductsAPI } from '@/api/products/getProductsAPI';
 import { ProductItem } from '@/types/api';
 import CompareBar from '@/components/CompareBar/CompareBar';
@@ -40,13 +40,6 @@ const ComparePage = () => {
   const [selectedProductA, setSelectedProductA] = useState<ProductItem | null>(null);
   const [selectedProductB, setSelectedProductB] = useState<ProductItem | null>(null);
   const [isComparing, setIsComparing] = useState(false);
-
-  useEffect(() => {
-    if (allProducts) {
-      console.log('불러온 전체 상품 리스트:', allProducts);
-      console.log('상품 총 개수:', allProducts.length);
-    }
-  }, [allProducts]);
 
   if (isLoading || !allProducts) {
     return <div>로딩 중...</div>;
@@ -162,6 +155,7 @@ const ComparePage = () => {
               <CompareImage
                 productName={selectedProductA?.name || 'A'}
                 imageUrl={selectedProductA?.image || ''}
+                placeholder='A'
               />
               <div className='font-cafe24-supermagic text-h3-bold flex items-center justify-center text-gray-900'>
                 VS
@@ -169,37 +163,45 @@ const ComparePage = () => {
               <CompareImage
                 productName={selectedProductB?.name || 'B'}
                 imageUrl={selectedProductB?.image || ''}
+                placeholder='B'
               />
             </div>
 
             {/* 입력창 또는 상세정보 */}
             {isComparing ? (
-              <>
-                {selectedProductA ? (
-                  <CompareDetail
-                    rating={selectedProductA.rating}
-                    reviewCount={selectedProductA.reviewCount}
-                    favoriteCount={selectedProductA.favoriteCount}
-                    isRatingWinner={isRatingAWinner}
-                    isReviewCountWinner={isReviewAWinner}
-                    isFavoriteCountWinner={isFavoriteAWinner}
-                  />
-                ) : (
-                  <CompareDetailDefault placeholder='A' />
-                )}
-                {selectedProductB ? (
-                  <CompareDetail
-                    rating={selectedProductB.rating}
-                    reviewCount={selectedProductB.reviewCount}
-                    favoriteCount={selectedProductB.favoriteCount}
-                    isRatingWinner={isRatingBWinner}
-                    isReviewCountWinner={isReviewBWinner}
-                    isFavoriteCountWinner={isFavoriteBWinner}
-                  />
-                ) : (
-                  <CompareDetailDefault placeholder='B' />
-                )}
-              </>
+              <div className='rounded-x5 flex h-60 w-[341px] items-center justify-center bg-white'>
+                <div className='flex h-50 items-center justify-center gap-5'>
+                  {selectedProductA ? (
+                    <CompareDetail
+                      rating={selectedProductA.rating}
+                      reviewCount={selectedProductA.reviewCount}
+                      favoriteCount={selectedProductA.favoriteCount}
+                      isRatingWinner={isRatingAWinner}
+                      isReviewCountWinner={isReviewAWinner}
+                      isFavoriteCountWinner={isFavoriteAWinner}
+                    />
+                  ) : (
+                    <CompareDetailDefault placeholder='A' />
+                  )}
+                  <div className='flex w-15 flex-col items-center gap-13 text-gray-600'>
+                    <div className='text-[12px]'>⭐️별점</div>
+                    <div className='text-[12px]'>📝 리뷰 개수</div>
+                    <div className='text-[12px]'>🫶🏻 찜 개수</div>
+                  </div>
+                  {selectedProductB ? (
+                    <CompareDetail
+                      rating={selectedProductB.rating}
+                      reviewCount={selectedProductB.reviewCount}
+                      favoriteCount={selectedProductB.favoriteCount}
+                      isRatingWinner={isRatingBWinner}
+                      isReviewCountWinner={isReviewBWinner}
+                      isFavoriteCountWinner={isFavoriteBWinner}
+                    />
+                  ) : (
+                    <CompareDetailDefault placeholder='B' />
+                  )}
+                </div>
+              </div>
             ) : (
               <div className='flex w-85 flex-col gap-6'>
                 <div className='flex flex-col gap-2'>
@@ -234,13 +236,6 @@ const ComparePage = () => {
             다시 비교하기
           </button>
         ) : (
-          // <button
-          //   onClick={handleCompareClick}
-          //   disabled={!bothProductsSelected}
-          //   className={`text-body1-bold h-[50px] w-85 rounded-full transition-colors duration-200 md:h-[55px] ${bothProductsSelected ? 'bg-primary-orange-600 text-white' : 'cursor-not-allowed bg-gray-200 text-gray-500'}`}
-          // >
-          //   비교할 상품 2개를 입력해주세요
-          // </button>
           <button
             onClick={handleCompareClick}
             disabled={!bothProductsSelected}

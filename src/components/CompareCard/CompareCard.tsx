@@ -2,6 +2,7 @@ import { ProductItem } from '@/types/api';
 import CompareImage from '../CompareImage/CompareImage';
 import CompareBar from '../CompareBar/CompareBar';
 import CompareDetail from '../CompareDetail/CompareDetail';
+import CompareDetailDefault from '../CompareDetail/CompareDetailDefault';
 
 interface CompareCardProps {
   products: ProductItem[];
@@ -44,14 +45,18 @@ const CompareCard = ({
       </div>
 
       <div className='w-full'>
-        <CompareDetail
-          rating={selectedProduct?.rating || 0}
-          reviewCount={selectedProduct?.reviewCount || 0}
-          favoriteCount={selectedProduct?.favoriteCount || 0}
-          isRatingWinner={isRatingWinner}
-          isReviewCountWinner={isReviewCountWinner}
-          isFavoriteCountWinner={isFavoriteCountWinner}
-        />
+        {selectedProduct ? (
+          <CompareDetail
+            rating={selectedProduct?.rating || 0}
+            reviewCount={selectedProduct?.reviewCount || 0}
+            favoriteCount={selectedProduct?.favoriteCount || 0}
+            isRatingWinner={isRatingWinner}
+            isReviewCountWinner={isReviewCountWinner}
+            isFavoriteCountWinner={isFavoriteCountWinner}
+          />
+        ) : (
+          <CompareDetailDefault placeholder={label} />
+        )}
       </div>
     </div>
   );
