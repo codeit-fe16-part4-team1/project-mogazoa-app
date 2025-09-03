@@ -9,19 +9,19 @@ import {
 } from '@/api/user/getUserFollowsAPI';
 import { getUserProductsAPI, GetUserProductsPayload } from '@/api/user/getUserProductsAPI';
 import { getUserProfileAPI } from '@/api/user/getUserProfileAPI';
-import { getUserRankingAPI, GetUserRankingResponse } from '@/api/user/getUserRankingAPI';
+import { getUsersRankingAPI } from '@/api/user/getUsersRankingAPI';
 import {
   updateMyProfileAPI,
   UpdateMyProfilePayload,
   UpdateMyProfileResponse,
 } from '@/api/user/updateMyProfileAPI';
-import { Profile, ProductsList } from '@/types/api';
+import { Profile, ProductsList, UserRanking } from '@/types/api';
 
 type ApiResponse =
   | GetUserFollowResponse
   | Profile
   | ProductsList
-  | GetUserRankingResponse[]
+  | UserRanking[]
   | UpdateMyProfileResponse
   | null;
 
@@ -289,7 +289,7 @@ export default function UserApiTestPage() {
         </div>,
       )}
 
-      {renderApiSection('Get User Ranking', 'getUserRanking', () => getUserRankingAPI())}
+      {renderApiSection('Get User Ranking', 'getUserRanking', () => getUsersRankingAPI())}
 
       {renderApiSection(
         'Update My Profile',

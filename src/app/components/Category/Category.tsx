@@ -3,8 +3,8 @@ import OptionList from '@/components/OptionList/OptionList';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCategoryMap } from '@/hooks/useCategoryMap';
 import { useHorizontalScroll } from '@/hooks/useHorizontalScroll';
-import CategoryButton from '@/components/Category/CategoryButton';
-import PaginationButton from '../PaginationButton/PaginationButton';
+import CategoryButton from '@/app/components/Category/CategoryButton';
+import PaginationButton from '../../../components/PaginationButton/PaginationButton';
 import ScrollContainer from 'react-indiana-drag-scroll';
 
 const BUTTON_CLASSES = {
@@ -19,7 +19,7 @@ const CategoryItemSet = ({ name, type }: { name: string; type: 'button' | 'tab' 
   const iconClasses = clsx('h-6 w-6 md:h-7 md:w-7', type === 'button' ? 'text-gray-700' : '');
 
   const textClasses = clsx(
-    'md:text-caption text-[11px] tracking-[0.4px]',
+    'md:text-caption text-[11px] tracking-[-0.4px]',
     type === 'button' ? 'text-gray-800' : '',
   );
 
