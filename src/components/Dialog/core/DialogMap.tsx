@@ -1,7 +1,8 @@
 import { IDialogComponents } from '@/types/dialog.types';
 import TestDialog from '../TestDialog';
 import TestInnerDialog from '../TestInnerDialog';
-import { TestInnerDialogProps } from '@/types/dialogProps.types';
+import { ReviewFormDialogProps, TestInnerDialogProps } from '@/types/dialogProps.types';
+import ReviewFormDialog from '../ReviewFormDialog';
 
 /**
  * 모든 다이얼로그 컴포넌트를 매핑하는 객체.
@@ -23,4 +24,5 @@ import { TestInnerDialogProps } from '@/types/dialogProps.types';
 export const DIALOG_COMPONENTS: IDialogComponents<any> = {
   'test-dialog': () => <TestDialog />,
   'test-inner-dialog': (props: TestInnerDialogProps) => <TestInnerDialog {...props} />,
+  'review-form-dialog': (props: ReviewFormDialogProps) => <ReviewFormDialog {...props} />,
 } as const;
