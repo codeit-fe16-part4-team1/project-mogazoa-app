@@ -1,4 +1,4 @@
-import { cn } from '@/lib/cn';
+import clsx from 'clsx';
 import { forwardRef, TextareaHTMLAttributes, useState } from 'react';
 import { FieldError, UseFormRegisterReturn } from 'react-hook-form';
 
@@ -56,13 +56,13 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         true: 'text-state-error',
       },
       border: {
-        undefined: 'border-gray-600',
+        undefined: 'border-gray-300',
         false: 'border-primary-orange-500',
         true: 'border-state-error',
       },
     };
 
-    const TEXTAREA_STYLES = cn(
+    const TEXTAREA_STYLES = clsx(
       'w-full',
       'text-body2 md:text-body1 resize-none outline-0',
       'focus-within:placeholder:text-transparent',
@@ -73,9 +73,10 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       ERROR_STATE_STYLES.border[`${errorState}`],
     );
 
-    const LENGTH_INFO_STYLES = cn(
+    const LENGTH_INFO_STYLES = clsx(
       'absolute bottom-3 md:bottom-5 right-3 md:right-5',
       'text-body2 text-right',
+      'text-gray-700',
     );
 
     return (
@@ -83,7 +84,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         <textarea
           ref={ref}
           id={id}
-          className={cn(TEXTAREA_STYLES, className)}
+          className={clsx(TEXTAREA_STYLES, className)}
           placeholder={placeholder}
           {...TextAreaRegister}
           {...rest}
