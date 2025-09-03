@@ -2,7 +2,6 @@ import { getMyProfileAPI } from '@/api/user/getMyProfileAPI';
 import ProductSection from '../components/ProductSection';
 import { getMyProfileId } from '@/lib/getMyProfileId';
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
-import { Suspense } from 'react';
 import ProfileSection from '../components/ProfileSection';
 import { profileKeys } from '@/constant/queryKeys';
 
@@ -18,9 +17,7 @@ const MyPage = async () => {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense fallback='로딩중...'>
-        <ProfileSection profileId={myProfileId} isMyProfile={true} />
-      </Suspense>
+      <ProfileSection profileId={myProfileId} isMyProfile={true} />
       <ProductSection profileId={myProfileId} />
     </HydrationBoundary>
   );
