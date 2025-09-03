@@ -13,8 +13,9 @@ import Dropdown from '@/components/Dropdown/Dropdown';
 import DropdownItem from '@/components/Dropdown/DropdownItem';
 import Category from '@/components/Category/Category';
 import { useCategoryMap } from '@/hooks/useCategoryMap';
+import UsersRanking from '@/app/(home)/components/UsersRanking/UsersRanking';
 
-const TITLE_STYLES = 'font-cafe24-supermagic text-h4-bold tracking-[0.4px]';
+const TITLE_STYLES = 'font-cafe24-supermagic text-h4-bold tracking-[-0.4px]';
 const SUBTITLE_STYLES = `${TITLE_STYLES} text-gray-900 mb-5 md:mb-7`;
 const PRODUCT_IMAGE_LOADING_STYLES = 'mb-3 aspect-square rounded-xl bg-gray-200';
 const GRID_STYLES =
@@ -178,6 +179,7 @@ const HomeClient = () => {
         {!isFiltered && (
           <div className={clsx('mt-14 md:mt-16 lg:mt-14', 'reviewers-ranking')}>
             <h4 className={SUBTITLE_STYLES}>리뷰어 랭킹</h4>
+            <UsersRanking />
           </div>
         )}
 
@@ -292,7 +294,7 @@ const HomeClient = () => {
               <div className='text-body1-bold md:text-sub-headline-bold text-gray-900'>
                 {filteredTitle}
               </div>
-              <div className='z-10'>
+              <div className='z-dropdown'>
                 <Dropdown initialValue={orderBy} onChange={handleOrderChange} size='S'>
                   <DropdownItem label='최신순' value='recent' />
                   <DropdownItem label='별점순' value='rating' />

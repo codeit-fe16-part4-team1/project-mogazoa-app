@@ -110,3 +110,8 @@ export interface ReviewList {
 }
 
 export type OrderOptions = 'recent' | 'ratingDesc' | 'ratingAsc' | 'likeCount';
+
+export interface UserRanking extends Omit<User, 'email'> {
+  reviewCount: number;
+  followersCount: number;
+}
