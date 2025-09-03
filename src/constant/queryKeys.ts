@@ -1,3 +1,4 @@
+import { OrderOptions } from '@/types/api';
 import { ProductType } from '@/api/user/getUserProductsAPI';
 
 export const productKeys = {
@@ -10,7 +11,8 @@ export const productKeys = {
 
 export const reviewKeys = {
   all: ['reviews'] as const,
-  list: (productId: number) => [...reviewKeys.all, 'by-product', productId] as const,
+  list: (productId: number, order: OrderOptions) =>
+    [...reviewKeys.all, 'by-product', productId, order] as const,
 };
 
 export const profileKeys = {

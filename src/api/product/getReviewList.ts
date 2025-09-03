@@ -1,11 +1,15 @@
 import { baseAPI } from '@/lib/baseAPI';
-import { OrderOptions, ReviewList } from '@/types/api';
+import { OrderOptions, ReviewListResponse } from '@/types/api';
 
-export const getReviewList = async (
-  productId: number,
-  order?: OrderOptions,
-  cursor?: number,
-): Promise<ReviewList> => {
+export const getReviewList = async ({
+  productId,
+  order,
+  cursor,
+}: {
+  productId: number;
+  order?: OrderOptions;
+  cursor?: number;
+}): Promise<ReviewListResponse> => {
   const res = await baseAPI.get(`/products/${productId}/reviews`, {
     params: {
       order,
