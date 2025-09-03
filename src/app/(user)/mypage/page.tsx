@@ -4,23 +4,24 @@ import { getMyProfileId } from '@/lib/getMyProfileId';
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 import { Suspense } from 'react';
 import ProfileSection from '../components/ProfileSection';
+import { profileKeys } from '@/constant/queryKeys';
 
 const MyPage = async () => {
   const queryClient = new QueryClient();
-  const myProfileId = await getMyProfileId();
+  const myProfileId = Number(await getMyProfileId());
   console.log(`[DEBUG] My Profile Id: ${myProfileId}`);
 
   await queryClient.prefetchQuery({
-    queryKey: ['profile', Number(myProfileId)],
+    queryKey: profileKeys.detail(myProfileId),
     queryFn: () => getMyProfileAPI(),
   });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <Suspense fallback='로딩중...'>
-        <ProfileSection profileId={Number(myProfileId)} isMyProfile={true} />
+        <ProfileSection profileId={myProfileId} isMyProfile={true} />
       </Suspense>
-      <ProductSection profileId={Number(myProfileId)} />
+      <ProductSection profileId={myProfileId} />
     </HydrationBoundary>
   );
 };

@@ -4,6 +4,7 @@ import { getUserProfileAPI } from '@/api/user/getUserProfileAPI';
 import ProfileCard from './ProfileSection/ProfileCard';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import ProfileButtonArea from './ProfileSection/ProfileButtonArea';
+import { profileKeys } from '@/constant/queryKeys';
 
 interface Props {
   profileId: number;
@@ -12,7 +13,7 @@ interface Props {
 
 const ProfileSection = ({ profileId, isMyProfile }: Props) => {
   const { data: profile } = useSuspenseQuery({
-    queryKey: ['profile', profileId],
+    queryKey: profileKeys.detail(profileId),
     queryFn: () => getUserProfileAPI({ userId: profileId }),
   });
 

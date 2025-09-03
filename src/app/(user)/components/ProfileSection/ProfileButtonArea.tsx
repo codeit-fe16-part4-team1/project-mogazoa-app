@@ -1,6 +1,7 @@
 import { userFollowAPI } from '@/api/follow/userFollowAPI';
 import { userUnfollowAPI } from '@/api/follow/userUnfollowAPI';
 import { Button } from '@/components/Button/Button';
+import { profileKeys } from '@/constant/queryKeys';
 import { getMyProfileId } from '@/lib/getMyProfileId';
 import useAuthStore from '@/store/useAuthStore';
 import { Profile } from '@/types/api';
@@ -27,9 +28,9 @@ const ProfileButtonArea = ({ profile, isMyProfile }: Props) => {
       }
     },
     onMutate: async (originalValue) => {
-      const previousProfile = queryClient.getQueryData(['profile', profile.id]);
-      // setIsFollowing(!originalValue);
-      queryClient.setQueryData(['profile', profile.id], (old) => {
+      const previousProfile = queryClient.getQueryData(profileKeys.detail(profile.id));
+
+      queryClient.setQueryData(profileKeys.detail(profile.id), (old) => {
         if (!old) {
           return {
             ...profile,
@@ -48,14 +49,14 @@ const ProfileButtonArea = ({ profile, isMyProfile }: Props) => {
     onError: (_error, _variables, context) => {
       if (context?.previousProfile !== undefined) {
         // setIsFollowing(context.originalValue);
-        queryClient.setQueryData(['profile', profile.id], context.previousProfile);
+        queryClient.setQueryData(profileKeys.detail(profile.id), context.previousProfile);
       }
     },
     onSettled: async () => {
-      queryClient.invalidateQueries({ queryKey: ['profile', profile.id] });
-      const myProfileId = await getMyProfileId();
+      queryClient.invalidateQueries({ queryKey: profileKeys.detail(profile.id) });
+      const myProfileId = Number(await getMyProfileId());
       if (!myProfileId) return;
-      queryClient.invalidateQueries({ queryKey: ['profile', myProfileId] });
+      queryClient.invalidateQueries({ queryKey: profileKeys.detail(myProfileId) });
     },
   });
 

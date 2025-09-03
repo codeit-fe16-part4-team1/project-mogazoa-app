@@ -1,5 +1,6 @@
 import { updateMyProfileAPI } from '@/api/user/updateMyProfileAPI';
 import { getUploadedImageUrlArray, ImageList } from '@/components/ImageInput/ImageInput';
+import { profileKeys } from '@/constant/queryKeys';
 import useDialog from '@/hooks/useDialog';
 import { Profile } from '@/types/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -51,7 +52,7 @@ const ProfileEditButton = ({ className, profile }: Props) => {
     },
     onMutate: async (newProfileData) => {
       // 현재 프로필 데이터 백업
-      const previousProfile = queryClient.getQueryData(['profile', profile.id]);
+      const previousProfile = queryClient.getQueryData(profileKeys.detail(profile.id));
 
       // image가 있으면 첫 번째 key(URL) 사용, 없으면 기존 이미지
       const optimisticImageUrl =
@@ -60,7 +61,7 @@ const ProfileEditButton = ({ className, profile }: Props) => {
           : profile.image;
 
       // 낙관적 업데이트 - 쿼리 캐시 직접 수정
-      queryClient.setQueryData(['profile', profile.id], (old) => {
+      queryClient.setQueryData(profileKeys.detail(profile.id), (old) => {
         if (!old) {
           return { ...profile, ...newProfileData, image: optimisticImageUrl };
         }
@@ -70,15 +71,15 @@ const ProfileEditButton = ({ className, profile }: Props) => {
       return { previousProfile };
     },
     onSuccess: (actualData) => {
-      queryClient.setQueryData(['profile', profile.id], actualData);
+      queryClient.setQueryData(profileKeys.detail(profile.id), actualData);
     },
     onError: (_error, _variables, context) => {
       // 에러 시 이전 데이터로 롤백
       if (context?.previousProfile) {
-        queryClient.setQueryData(['profile', profile.id], context.previousProfile);
+        queryClient.setQueryData(profileKeys.detail(profile.id), context.previousProfile);
       }
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ['profile', profile.id] }),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: profileKeys.detail(profile.id) }),
   });
 
   const onSubmitSuccess = (updatedData: ProfileEditMutationData) => {
