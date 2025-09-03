@@ -206,6 +206,7 @@ const ComparePage = () => {
                   <div className='text-body2-bold text-gray-900'>상품 A</div>
                   <CompareBar
                     products={allProducts}
+                    selectedProduct={selectedProductA}
                     onSelectProduct={(p) => handleProductSelect(p, 'A')}
                     onRemoveProduct={() => handleProductRemove('A')}
                   />
@@ -214,6 +215,7 @@ const ComparePage = () => {
                   <div className='text-body2-bold text-gray-900'>상품 B</div>
                   <CompareBar
                     products={allProducts}
+                    selectedProduct={selectedProductB}
                     onSelectProduct={(p) => handleProductSelect(p, 'B')}
                     onRemoveProduct={() => handleProductRemove('B')}
                   />

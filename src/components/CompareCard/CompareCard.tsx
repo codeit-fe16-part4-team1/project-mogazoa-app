@@ -37,6 +37,7 @@ const CompareCard = ({
       <div className='w-full'>
         <CompareBar
           products={products}
+          selectedProduct={selectedProduct}
           onSelectProduct={onSelectProduct}
           onRemoveProduct={onRemoveProduct}
         />
