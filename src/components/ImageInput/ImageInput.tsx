@@ -20,7 +20,7 @@ export const ImageInputSchema = (maxImageCount: number) => {
     );
 };
 
-type ImageList = Record<string, File | null>;
+export type ImageList = Record<string, File | null>;
 
 // 이미지 url 배열을 Record<string, File | null> Type으로 변환
 export const getInitialImageList = (imageUrlArray: string[]) => {

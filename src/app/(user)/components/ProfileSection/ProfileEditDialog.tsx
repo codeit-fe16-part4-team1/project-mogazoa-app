@@ -2,11 +2,7 @@
 
 import { Button } from '@/components/Button/Button';
 import { DialogContent } from '@/components/Dialog/core/DialogComponents';
-import {
-  getInitialImageList,
-  getUploadedImageUrlArray,
-  ImageInputSchema,
-} from '@/components/ImageInput/ImageInput';
+import { getInitialImageList, ImageInputSchema } from '@/components/ImageInput/ImageInput';
 import Input from '@/components/Input/Input';
 import { TextArea } from '@/components/TextArea/TextArea';
 import useDialog from '@/hooks/useDialog';
@@ -56,11 +52,10 @@ const ProfileEditDialog = ({
 
   const onSubmit = async (data: ProfileEditFormInputs) => {
     close();
-    const ImageList = await getUploadedImageUrlArray(getValues('image'));
     onSubmitSuccess({
       description: data.description,
       nickname: data.nickname,
-      image: ImageList[0],
+      image: getValues('image'),
     });
   };
 

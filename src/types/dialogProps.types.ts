@@ -1,4 +1,4 @@
-import { UpdateMyProfilePayload } from '@/api/user/updateMyProfileAPI';
+import { ProfileEditMutationData } from '@/app/(user)/components/ProfileSection/components/ProfileEditButton';
 
 /**
  * 모든 DialogProps를 정의하는 파일
@@ -15,5 +15,5 @@ export interface ProfileEditDialogProps {
   imageUrl: string;
   nickname: string;
   description: string;
-  onSubmitSuccess: (updatedData: UpdateMyProfilePayload) => void;
+  onSubmitSuccess: (updatedData: ProfileEditMutationData) => void;
 }

@@ -1,9 +1,16 @@
-import { updateMyProfileAPI, UpdateMyProfilePayload } from '@/api/user/updateMyProfileAPI';
+import { updateMyProfileAPI } from '@/api/user/updateMyProfileAPI';
+import { getUploadedImageUrlArray, ImageList } from '@/components/ImageInput/ImageInput';
 import useDialog from '@/hooks/useDialog';
 import { Profile } from '@/types/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { HTMLAttributes } from 'react';
+
+export interface ProfileEditMutationData {
+  image: ImageList;
+  description: string;
+  nickname: string;
+}
 
 interface Props extends HTMLAttributes<HTMLButtonElement> {
   className?: string;
@@ -28,22 +35,42 @@ const ProfileEditButton = ({ className, profile }: Props) => {
   };
 
   const { mutate } = useMutation({
-    mutationFn: async ({ image, nickname, description }: UpdateMyProfilePayload) => {
-      await updateMyProfileAPI({ image, nickname, description });
+    mutationFn: async ({ image, nickname, description }: ProfileEditMutationData) => {
+      let uploadedImageUrl = Object.keys(image)[0];
+      if (image) {
+        const imageList = await getUploadedImageUrlArray(image);
+        uploadedImageUrl = imageList[0];
+        await updateMyProfileAPI({ image: uploadedImageUrl, nickname, description });
+      }
+      return {
+        ...profile,
+        image: uploadedImageUrl,
+        nickname,
+        description,
+      };
     },
     onMutate: async (newProfileData) => {
       // 현재 프로필 데이터 백업
       const previousProfile = queryClient.getQueryData(['profile', profile.id]);
 
+      // image가 있으면 첫 번째 key(URL) 사용, 없으면 기존 이미지
+      const optimisticImageUrl =
+        newProfileData.image && Object.keys(newProfileData.image).length > 0
+          ? Object.keys(newProfileData.image)[0] // 새 이미지 또는 기존 이미지 URL
+          : profile.image;
+
       // 낙관적 업데이트 - 쿼리 캐시 직접 수정
       queryClient.setQueryData(['profile', profile.id], (old) => {
         if (!old) {
-          return { ...profile, ...newProfileData };
+          return { ...profile, ...newProfileData, image: optimisticImageUrl };
         }
-        return { ...old, ...newProfileData };
+        return { ...old, ...newProfileData, image: optimisticImageUrl };
       });
 
       return { previousProfile };
+    },
+    onSuccess: (actualData) => {
+      queryClient.setQueryData(['profile', profile.id], actualData);
     },
     onError: (_error, _variables, context) => {
       // 에러 시 이전 데이터로 롤백
@@ -54,7 +81,7 @@ const ProfileEditButton = ({ className, profile }: Props) => {
     onSettled: () => queryClient.invalidateQueries({ queryKey: ['profile', profile.id] }),
   });
 
-  const onSubmitSuccess = (updatedData: UpdateMyProfilePayload) => {
+  const onSubmitSuccess = (updatedData: ProfileEditMutationData) => {
     mutate(updatedData);
   };
 
