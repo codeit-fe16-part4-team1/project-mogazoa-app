@@ -1,8 +1,10 @@
-import { cn } from '@/lib/cn';
+import clsx from 'clsx';
 import { forwardRef, TextareaHTMLAttributes, useState } from 'react';
 import { FieldError, UseFormRegisterReturn } from 'react-hook-form';
 
 interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+  id?: string;
+  className?: string;
   placeholder?: string;
   register?: UseFormRegisterReturn;
   error?: FieldError;
@@ -11,7 +13,7 @@ interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
 }
 
 export const TextArea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ placeholder, register, error, maxLength, watchValue, ...rest }, ref) => {
+  ({ id, className, placeholder, register, error, maxLength, watchValue, ...rest }, ref) => {
     //watchValue가 없을때만 변경
     const [currentLength, setCurrentLength] = useState(0);
     const [isDirty, setIsDirty] = useState(() => {
@@ -54,30 +56,35 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         true: 'text-state-error',
       },
       border: {
-        undefined: 'border-gray-600',
+        undefined: 'border-gray-300',
         false: 'border-primary-orange-500',
         true: 'border-state-error',
       },
     };
 
-    const TEXTAREA_CONTAINER_STYLES = cn(
-      'flex w-full flex-col gap-2 rounded-lg border-1 border-gray-300 p-3 md:p-5',
-      ERROR_STATE_STYLES.border[`${errorState}`],
-      ERROR_STATE_STYLES.text[`${errorState}`],
-    );
-
-    const TEXTAREA_STYLES = cn(
+    const TEXTAREA_STYLES = clsx(
+      'w-full',
       'text-body2 md:text-body1 resize-none outline-0',
       'focus-within:placeholder:text-transparent',
+      'placeholder:text-gray-600',
+      'rounded-lg border-1 border-gray-300 p-3 md:p-5 pb-8 md:pb-10',
+      'field-sizing-content',
+      'block',
+      ERROR_STATE_STYLES.border[`${errorState}`],
     );
 
-    const LENGTH_INFO_STYLES = cn('text-body2 text-right');
+    const LENGTH_INFO_STYLES = clsx(
+      'absolute bottom-3 md:bottom-5 right-3 md:right-5',
+      'text-body2 text-right',
+      'text-gray-700',
+    );
 
     return (
-      <div className={TEXTAREA_CONTAINER_STYLES}>
+      <div className='relative w-full'>
         <textarea
           ref={ref}
-          className={TEXTAREA_STYLES}
+          id={id}
+          className={clsx(TEXTAREA_STYLES, className)}
           placeholder={placeholder}
           {...TextAreaRegister}
           {...rest}
