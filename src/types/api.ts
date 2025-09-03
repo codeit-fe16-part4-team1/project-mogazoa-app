@@ -104,7 +104,7 @@ export interface Review {
   isLiked: boolean;
 }
 
-export interface ReviewList {
+export interface ReviewListResponse {
   nextCursor: number;
   list: Review[];
 }
