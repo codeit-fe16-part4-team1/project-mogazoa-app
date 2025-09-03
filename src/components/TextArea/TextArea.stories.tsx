@@ -44,6 +44,16 @@ export const Default: Story = {
   },
 };
 
+// Basic TextArea width ClassName story
+export const DefaultWithClassName: Story = {
+  args: {
+    placeholder: `with className: 'min-h-32'`,
+    minLength: 1,
+    maxLength: 10,
+    className: 'min-h-32 w-full',
+  },
+};
+
 // TextArea with form validation
 export const WithValidation: Story = {
   render: (args) => {
