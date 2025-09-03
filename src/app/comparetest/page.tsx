@@ -9,6 +9,7 @@ import CompareDetail from '@/components/CompareDetail/CompareDetail';
 import CompareCard from '@/components/CompareCard/CompareCard';
 import CompareDetailDefault from '@/components/CompareDetail/CompareDetailDefault';
 import { useQuery } from '@tanstack/react-query';
+import { Button } from '@/components/Button/Button';
 
 const fetchAllProducts = async () => {
   let allItems: ProductItem[] = [];
@@ -204,20 +205,13 @@ const CompareTestPage = () => {
 
       {/* 비교하기/다시 비교하기 버튼 */}
       {isComparing ? (
-        <button
-          onClick={handleResetClick}
-          className='bg-primary-orange-600 mt-8 rounded-full px-6 py-3 text-lg font-bold text-white'
-        >
+        <Button onClick={handleResetClick} size='L'>
           다시 비교하기
-        </button>
+        </Button>
       ) : (
-        <button
-          onClick={handleCompareClick}
-          disabled={!bothProductsSelected}
-          className={`mt-8 rounded-full px-6 py-3 text-lg font-bold text-white transition-colors duration-200 ${bothProductsSelected ? 'bg-primary-orange-600' : 'cursor-not-allowed bg-gray-400'}`}
-        >
+        <Button onClick={handleCompareClick} disabled={!bothProductsSelected} size='L'>
           상품 비교하기
-        </button>
+        </Button>
       )}
     </div>
   );
