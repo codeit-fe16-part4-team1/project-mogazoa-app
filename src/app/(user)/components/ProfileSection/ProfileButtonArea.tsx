@@ -2,9 +2,10 @@ import { userFollowAPI } from '@/api/follow/userFollowAPI';
 import { userUnfollowAPI } from '@/api/follow/userUnfollowAPI';
 import { Button } from '@/components/Button/Button';
 import { getMyProfileId } from '@/lib/getMyProfileId';
+import useAuthStore from '@/store/useAuthStore';
 import { Profile } from '@/types/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-// import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface Props {
   profile: Profile;
@@ -12,9 +13,10 @@ interface Props {
 }
 
 const ProfileButtonArea = ({ profile, isMyProfile }: Props) => {
-  // const [isFollowing, setIsFollowing] = useState(profile.isFollowing);
-
   const queryClient = useQueryClient();
+
+  const router = useRouter();
+  const { signout } = useAuthStore();
 
   const { mutate } = useMutation({
     mutationFn: async (isFollowing: boolean) => {
@@ -61,12 +63,17 @@ const ProfileButtonArea = ({ profile, isMyProfile }: Props) => {
     mutate(profile.isFollowing);
   };
 
+  const handleSignoutClick = async () => {
+    await signout();
+    router.push('/signin');
+  };
+
   const BUTTON_STYLES = 'mx-auto block w-full md:h-15 lg:w-160';
 
   return (
     <article>
       {isMyProfile && (
-        <Button intent='tertiary' size='S' className={BUTTON_STYLES}>
+        <Button intent='tertiary' size='S' className={BUTTON_STYLES} onClick={handleSignoutClick}>
           로그아웃
         </Button>
       )}
