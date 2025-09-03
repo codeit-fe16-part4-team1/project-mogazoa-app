@@ -18,19 +18,23 @@ const UsersRanking = () => {
   const usersRankingTop7 = usersRankingData?.slice(3, 7);
   return (
     <div className='flex flex-col items-center justify-center gap-8 md:gap-16 lg:flex-row lg:gap-0'>
-      <div className='top3-ranking flex gap-5 md:items-start md:gap-10 lg:pr-13'>
+      <article
+        className='top3-ranking flex gap-5 md:items-start md:gap-10 lg:pr-13'
+        aria-label='top3 reviewers'
+      >
         {usersRankingTop3?.map((user, index) => (
           <TopRanking key={user.id} user={user} index={index} />
         ))}
-      </div>
+      </article>
       <div className='hidden lg:block lg:h-full lg:border-r lg:border-l lg:border-gray-200' />
-      <div
+      <article
         className={cn(
           'grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-1',
           RANK7_SM_STYLES,
           RANK7_MD_STYLES,
           RANK7_LG_STYLES,
         )}
+        aria-label='top7 reviewers'
       >
         {usersRankingTop7?.map((user, index) => (
           <MidRanking
@@ -45,7 +49,7 @@ const UsersRanking = () => {
             index={index}
           />
         ))}
-      </div>
+      </article>
     </div>
   );
 };

@@ -170,21 +170,27 @@ const HomeClient = () => {
         )}
       >
         {/* 카테고리 */}
-        <div className='category'>
+        <section className='category' aria-label='category'>
           {!isFiltered && <h4 className={SUBTITLE_STYLES}>카테고리</h4>}
           <Category type={hasCategory ? 'tab' : 'button'} />
-        </div>
+        </section>
 
         {/* 리뷰어 랭킹 */}
         {!isFiltered && (
-          <div className={clsx('mt-14 md:mt-16 lg:mt-14', 'reviewers-ranking')}>
+          <section
+            className={clsx('mt-14 md:mt-16 lg:mt-14', 'reviewers-ranking')}
+            aria-label='reviewers ranking'
+          >
             <h4 className={SUBTITLE_STYLES}>리뷰어 랭킹</h4>
             <UsersRanking />
-          </div>
+          </section>
         )}
 
         {/* 지금 핫한 상품 */}
-        <div className={clsx('mt-14 lg:mt-15', 'hot-products', isFiltered ? 'hidden' : 'block')}>
+        <section
+          className={clsx('mt-14 lg:mt-15', 'hot-products', isFiltered ? 'hidden' : 'block')}
+          aria-label='best products'
+        >
           <h4 className={SUBTITLE_STYLES}>
             지금 핫한 상품 <span className='text-primary-orange-600'>Best</span>
           </h4>
@@ -213,12 +219,15 @@ const HomeClient = () => {
               ))
             )}
           </div>
-        </div>
+        </section>
 
         {!isFiltered && <hr className='my-10 border-1 border-gray-200 md:my-12 lg:my-16'></hr>}
 
         {/* 별점이 높은 상품 */}
-        <div className={clsx('high-score-products', isFiltered ? 'hidden' : 'block')}>
+        <section
+          className={clsx('high-score-products', isFiltered ? 'hidden' : 'block')}
+          aria-label='high score products'
+        >
           <div className='flex items-center gap-3'>
             <h4 className={`${SUBTITLE_STYLES} flex-1`}>별점이 높은 상품</h4>
             <div>
@@ -285,11 +294,11 @@ const HomeClient = () => {
               className='absolute top-1/2 z-10 hidden -translate-y-1/2 md:-right-5 md:block lg:-right-14'
             />
           </div>
-        </div>
+        </section>
 
         {/* 필터링된 상품 */}
         {isFiltered && (
-          <div className='filtered-products'>
+          <section className='filtered-products' aria-label='searched products'>
             <div className='filtered-title mt-8 mb-5 flex items-center justify-between md:mb-7'>
               <div className='text-body1-bold md:text-sub-headline-bold text-gray-900'>
                 {filteredTitle}
@@ -336,7 +345,7 @@ const HomeClient = () => {
                 </>
               )}
             </div>
-          </div>
+          </section>
         )}
       </div>
     </div>
