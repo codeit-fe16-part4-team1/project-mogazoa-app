@@ -97,6 +97,7 @@ const ProfileEditDialog = ({
         </label>
         <TextArea
           id='edit-description'
+          className='min-h-32 md:min-h-42'
           maxLength={300}
           placeholder='자기소개를 입력해주세요'
           register={register('description')}
