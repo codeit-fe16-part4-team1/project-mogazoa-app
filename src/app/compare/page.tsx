@@ -125,7 +125,7 @@ const ComparePage = () => {
             isReviewCountWinner={isReviewAWinner}
             isFavoriteCountWinner={isFavoriteAWinner}
           />
-          <div className='mt-20 mb-7 flex flex-col items-center justify-between'>
+          <div className='mt-20 mb-12 flex flex-col items-center justify-between'>
             <div className='font-cafe24-supermagic text-h1-bold text-gray-600'>VS</div>
 
             <div className='flex w-20 flex-col items-center gap-[63px]'>
