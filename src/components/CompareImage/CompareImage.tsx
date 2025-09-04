@@ -1,12 +1,23 @@
 import Image from 'next/image';
+import Badge from '../Badge/Badge';
 
 interface CompareImageProps {
   imageUrl?: string;
   productName?: string;
   placeholder?: string;
+  isComparing?: boolean;
+  isWinner?: boolean;
+  isTie?: boolean;
 }
 
-const CompareImage = ({ imageUrl, productName, placeholder }: CompareImageProps) => {
+const CompareImage = ({
+  imageUrl,
+  productName,
+  placeholder,
+  isComparing,
+  isWinner,
+  isTie,
+}: CompareImageProps) => {
   return (
     <div className='rounded-x4 md:rounded-x5 relative aspect-square w-25 overflow-hidden border border-gray-300 bg-gray-200 md:w-45'>
       {imageUrl ? (
@@ -23,6 +34,8 @@ const CompareImage = ({ imageUrl, productName, placeholder }: CompareImageProps)
           </span>
         </div>
       )}
+
+      {isComparing && <Badge isWinner={isWinner || false} isTie={isTie || false} />}
     </div>
   );
 };

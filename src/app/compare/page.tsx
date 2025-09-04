@@ -7,6 +7,7 @@ import CompareImage from '@/components/CompareImage/CompareImage';
 import CompareDetail from '@/components/CompareDetail/CompareDetail';
 import CompareCard from '@/components/CompareCard/CompareCard';
 import CompareDetailDefault from '@/components/CompareDetail/CompareDetailDefault';
+import Badge from '@/components/Badge/Badge';
 import { useQuery } from '@tanstack/react-query';
 
 const fetchAllProducts = async () => {
@@ -76,7 +77,6 @@ const ComparePage = () => {
     setIsComparing(false);
   };
 
-  // isComparing이 true일 때만 비교 로직을 실행하도록 수정
   const isRatingAWinner =
     isComparing && selectedProductA && selectedProductB
       ? selectedProductA.rating > selectedProductB.rating
@@ -105,12 +105,66 @@ const ComparePage = () => {
 
   const bothProductsSelected = selectedProductA !== null && selectedProductB !== null;
 
-  return (
-    <div className='flex min-h-screen flex-col items-center justify-center bg-gray-100'>
-      <div className='flex w-85 flex-col items-center gap-10 md:w-170 md:gap-16 lg:w-[889px]'>
+  let aWins = 0;
+  let bWins = 0;
+  let isTie = false;
+
+  if (isComparing && selectedProductA && selectedProductB) {
+    if (selectedProductA.rating > selectedProductB.rating) aWins++;
+    if (selectedProductB.rating > selectedProductA.rating) bWins++;
+    if (selectedProductA.reviewCount > selectedProductB.reviewCount) aWins++;
+    if (selectedProductB.reviewCount > selectedProductA.reviewCount) bWins++;
+    if (selectedProductA.favoriteCount > selectedProductB.favoriteCount) aWins++;
+    if (selectedProductB.favoriteCount > selectedProductA.favoriteCount) bWins++;
+
+    if (aWins === bWins) {
+      isTie = true;
+    }
+  }
+
+  const getHeaderText = () => {
+    if (!isComparing) {
+      return (
         <div className='font-cafe24-supermagic text-h2-bold md:text-[40px]'>
           둘 중 뭐가 더 나을까?
         </div>
+      );
+    }
+    if (aWins >= 2) {
+      return (
+        <div className='flex flex-col items-center gap-2 md:gap-3'>
+          <div className='font-cafe24-supermagic text-h2-bold md:text-[40px]'>
+            {`'${selectedProductA?.name}'`}
+          </div>
+          <div className='text-sub-headline-bold md:text-h3-bold text-gray-500'>
+            상품을 선택하는 게 좋아요!
+          </div>
+        </div>
+      );
+    }
+    if (bWins >= 2) {
+      return (
+        <div className='flex flex-col items-center gap-2 md:gap-3'>
+          <div className='font-cafe24-supermagic text-h2-bold md:text-[40px]'>
+            {`'${selectedProductB?.name}'`}
+          </div>
+          <div className='text-sub-headline-bold md:text-h3-bold text-gray-500'>
+            상품을 선택하는 게 좋아요!
+          </div>
+        </div>
+      );
+    }
+    return (
+      <div className='font-cafe24-supermagic text-h2-bold md:text-[40px]'>
+        둘 다 좋은 선택이에요!
+      </div>
+    );
+  };
+
+  return (
+    <div className='flex min-h-screen flex-col items-center justify-center bg-gray-100'>
+      <div className='flex w-85 flex-col items-center gap-10 md:w-170 md:gap-16 lg:w-[889px]'>
+        {getHeaderText()}
 
         {/* PC 레이아웃 (md 이상) */}
         <div className='hidden flex-col gap-8 md:flex md:flex-row md:gap-12'>
@@ -124,6 +178,8 @@ const ComparePage = () => {
             isRatingWinner={isRatingAWinner}
             isReviewCountWinner={isReviewAWinner}
             isFavoriteCountWinner={isFavoriteAWinner}
+            isWinner={aWins >= 2}
+            isTie={isTie}
           />
           <div className='mt-20 mb-12 flex flex-col items-center justify-between'>
             <div className='font-cafe24-supermagic text-h1-bold text-gray-600'>VS</div>
@@ -144,6 +200,8 @@ const ComparePage = () => {
             isRatingWinner={isRatingBWinner}
             isReviewCountWinner={isReviewBWinner}
             isFavoriteCountWinner={isFavoriteBWinner}
+            isWinner={bWins >= 2}
+            isTie={isTie}
           />
         </div>
 
@@ -152,19 +210,35 @@ const ComparePage = () => {
           <div className='flex flex-col items-center justify-center gap-10'>
             {/* 이미지 영역 */}
             <div className='flex gap-[22px]'>
-              <CompareImage
-                productName={selectedProductA?.name || 'A'}
-                imageUrl={selectedProductA?.image || ''}
-                placeholder='A'
-              />
+              <div className='relative flex w-25 flex-col gap-[11px]'>
+                <CompareImage
+                  productName={selectedProductA?.name || 'A'}
+                  imageUrl={selectedProductA?.image || ''}
+                  placeholder='A'
+                />
+                {isComparing && (aWins >= 2 || isTie) && (
+                  <Badge isWinner={aWins >= 2} isTie={isTie} />
+                )}
+                <div className='text-caption-bold text-center text-gray-800'>
+                  {selectedProductA?.name || ''}
+                </div>
+              </div>
               <div className='font-cafe24-supermagic text-h3-bold flex items-center justify-center text-gray-900'>
                 VS
               </div>
-              <CompareImage
-                productName={selectedProductB?.name || 'B'}
-                imageUrl={selectedProductB?.image || ''}
-                placeholder='B'
-              />
+              <div className='relative flex w-25 flex-col gap-[11px]'>
+                <CompareImage
+                  productName={selectedProductB?.name || 'B'}
+                  imageUrl={selectedProductB?.image || ''}
+                  placeholder='B'
+                />
+                {isComparing && (bWins >= 2 || isTie) && (
+                  <Badge isWinner={bWins >= 2} isTie={isTie} />
+                )}
+                <div className='text-caption-bold text-center text-gray-800'>
+                  {selectedProductB?.name || ''}
+                </div>
+              </div>
             </div>
 
             {/* 입력창 또는 상세정보 */}

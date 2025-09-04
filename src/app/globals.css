@@ -249,7 +249,7 @@ body {
     @apply z-[9];
   }
   .z-winner {
-    @apple z-[1];
+    @apply z-[1];
   }
 }
 

@@ -3,6 +3,7 @@ import CompareImage from '../CompareImage/CompareImage';
 import CompareBar from '../CompareBar/CompareBar';
 import CompareDetail from '../CompareDetail/CompareDetail';
 import CompareDetailDefault from '../CompareDetail/CompareDetailDefault';
+import Badge from '../Badge/Badge';
 
 interface CompareCardProps {
   products: ProductItem[];
@@ -14,6 +15,8 @@ interface CompareCardProps {
   isRatingWinner?: boolean;
   isReviewCountWinner?: boolean;
   isFavoriteCountWinner?: boolean;
+  isWinner?: boolean;
+  isTie?: boolean;
 }
 
 const CompareCard = ({
@@ -22,18 +25,25 @@ const CompareCard = ({
   label,
   onSelectProduct,
   onRemoveProduct,
+  isComparing,
   isRatingWinner,
   isReviewCountWinner,
   isFavoriteCountWinner,
+  isWinner,
+  isTie,
 }: CompareCardProps) => {
   return (
     <div className='flex w-[290px] flex-col items-center justify-center gap-[34px] lg:w-[405px]'>
-      {/* 상품 이미지 컴포넌트 */}
-      <CompareImage
-        productName={selectedProduct?.name || label}
-        imageUrl={selectedProduct?.image || ''}
-        placeholder={label}
-      />
+      <div className='relative flex flex-col items-center justify-center'>
+        {/* 뱃지 조건부 렌더링 */}
+        {isComparing && <Badge isWinner={isWinner || false} isTie={isTie || false} />}
+
+        <CompareImage
+          productName={selectedProduct?.name || label}
+          imageUrl={selectedProduct?.image || ''}
+          placeholder={label}
+        />
+      </div>
 
       <div className='w-full'>
         <CompareBar
