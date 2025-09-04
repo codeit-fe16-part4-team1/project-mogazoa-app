@@ -2,7 +2,7 @@ import { userFollowAPI } from '@/api/follow/userFollowAPI';
 import { userUnfollowAPI } from '@/api/follow/userUnfollowAPI';
 import { Button } from '@/components/Button/Button';
 import { profileKeys } from '@/constant/queryKeys';
-import { getMyProfileId } from '@/lib/getMyProfileId';
+import { getMyProfileId } from '@/lib/getUserInfo';
 import useAuthStore from '@/store/useAuthStore';
 import { Profile } from '@/types/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';

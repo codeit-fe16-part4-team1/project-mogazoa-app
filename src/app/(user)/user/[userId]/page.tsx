@@ -1,6 +1,6 @@
 import ProfileSection from '../../components/ProfileSection';
 import ProductSection from '../../components/ProductSection';
-import { getMyProfileId } from '@/lib/getMyProfileId';
+import { getMyProfileId } from '@/lib/getUserInfo';
 import { redirect } from 'next/navigation';
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 import { getUserProfileAPI } from '@/api/user/getUserProfileAPI';
