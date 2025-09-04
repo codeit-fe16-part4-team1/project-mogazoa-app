@@ -4,7 +4,7 @@ interface Props {
   profile: Profile;
 }
 
-const ProfileFollow = ({ profile }: Props) => {
+const ProfileFollowInfo = ({ profile }: Props) => {
   const ListMap = [
     { label: '팔로우', value: profile.followeesCount },
     { label: '팔로잉', value: profile.followersCount },
@@ -22,4 +22,4 @@ const ProfileFollow = ({ profile }: Props) => {
   );
 };
 
-export default ProfileFollow;
+export default ProfileFollowInfo;

@@ -35,6 +35,11 @@ const config: Config = {
         'heart-full': '#fda4af',
         'state-error': '#ff0000',
         kakao: '#FEE500',
+        'reviewer-ranking-first-badge-text': '#FFFCF2',
+        'reviewer-ranking-second-badge-bg': '#E6FAF3',
+        'reviewer-ranking-second-badge-text': '#05D58B',
+        'reviewer-ranking-third-badge-bg': '#E6E8FA',
+        'reviewer-ranking-third-badge-text': '#6B79FA',
       },
 
       fontFamily: {

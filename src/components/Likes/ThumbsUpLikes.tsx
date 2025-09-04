@@ -1,4 +1,4 @@
-import React, { HTMLAttributes } from 'react';
+import { HTMLAttributes } from 'react';
 import ThumbsUpIcon from '@/assets/icons/icon_thumbs_up.svg';
 import { cva, VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/cn';
@@ -6,14 +6,16 @@ import { useOptimisticMutation } from '@/hooks/useOptimisticMutation';
 import { removeLikeReview } from '@/api/review/removeLikeReview';
 import { addLikeReview } from '@/api/review/addLikeReview';
 import { reviewKeys } from '@/constant/queryKeys';
-import { Review, ReviewList } from '@/types/api';
+import { OrderOptions, Review, ReviewListResponse } from '@/types/api';
 
 interface ThumbsUpLikesProps
   extends HTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof thumbsUpButtonVariants> {
   productId: number;
   reviewId: number;
+  order: OrderOptions;
   likes: number;
+  liked: boolean;
 }
 
 const buttonLayoutStyle =
@@ -41,30 +43,44 @@ const thumbsUpIconVariants = cva('size-4 fill-white md:size-5', {
 
 type MutationParams = number;
 
+type ReviewListResponseWithInfiniteQuery = {
+  pages: ReviewListResponse[];
+  pageParams: unknown;
+};
+
 const ThumbsUpLikes = ({
   className,
   productId,
   reviewId,
+  order,
   likes,
   liked = false,
   ...props
 }: ThumbsUpLikesProps) => {
-  const { mutate } = useOptimisticMutation<Review, ReviewList, MutationParams>({
+  const { mutate } = useOptimisticMutation<
+    Review,
+    ReviewListResponseWithInfiniteQuery,
+    MutationParams
+  >({
     mutationFn: liked ? removeLikeReview : addLikeReview,
-    queryKey: reviewKeys.list(productId),
+    queryKey: reviewKeys.list(productId, order),
     updater: (oldData, mutationReviewId) => {
-      const updatedList = oldData.list.map((review) => {
-        if (review.id === mutationReviewId) {
-          return {
-            ...review,
-            isLiked: !review.isLiked,
-            likeCount: review.isLiked ? review.likeCount - 1 : review.likeCount + 1,
-          };
-        }
-        return review;
+      const updatedPages = oldData.pages.map((page) => {
+        return {
+          ...page,
+          list: page.list.map((review) => {
+            if (review.id === mutationReviewId) {
+              return {
+                ...review,
+                isLiked: !review.isLiked,
+                likeCount: review.isLiked ? review.likeCount - 1 : review.likeCount + 1,
+              };
+            }
+            return review;
+          }),
+        };
       });
-
-      return { ...oldData, list: updatedList };
+      return { ...oldData, pages: updatedPages };
     },
   });
 

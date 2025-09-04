@@ -104,9 +104,14 @@ export interface Review {
   isLiked: boolean;
 }
 
-export interface ReviewList {
+export interface ReviewListResponse {
   nextCursor: number;
   list: Review[];
 }
 
 export type OrderOptions = 'recent' | 'ratingDesc' | 'ratingAsc' | 'likeCount';
+
+export interface UserRanking extends Omit<User, 'email'> {
+  reviewCount: number;
+  followersCount: number;
+}
