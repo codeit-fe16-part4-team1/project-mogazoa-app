@@ -49,8 +49,8 @@ export default function RootLayout({
             <Header />
             {children}
           </Suspense>
+          <GlobalDialog />
         </Providers>
-        <GlobalDialog />
       </body>
     </html>
   );
