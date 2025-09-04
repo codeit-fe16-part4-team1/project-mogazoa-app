@@ -34,14 +34,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return {
       title: metaTitle,
       description: metaDescription,
-
       keywords: [nickname, '프로필', '리뷰', '상품평가', 'mogazoa'],
-
       openGraph: {
         title: metaTitle,
         description: metaDescription,
-        url: currentUrl,
+        siteName: 'mogazoa',
+        locale: 'ko_KR',
         type: 'profile',
+        url: currentUrl,
         images: userProfile.image
           ? [
               {
