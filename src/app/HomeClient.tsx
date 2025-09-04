@@ -14,6 +14,7 @@ import DropdownItem from '@/components/Dropdown/DropdownItem';
 import Category from '@/app/components/Category/Category';
 import { useCategoryMap } from '@/hooks/useCategoryMap';
 import UsersRanking from '@/app/components/UsersRanking/UsersRanking';
+import BestBadge from './components/ProductCard/BestBadge';
 
 const TITLE_STYLES = 'font-cafe24-supermagic text-h4-bold tracking-[-0.4px]';
 const SUBTITLE_STYLES = `${TITLE_STYLES} text-gray-900 mb-5 md:mb-7`;
@@ -206,16 +207,22 @@ const HomeClient = () => {
                 <p className='text-gray-500'>상품을 불러오는데 실패했습니다.</p>
               </div>
             ) : (
-              hotProducts.map((item: ProductItem) => (
-                <ProductCard
-                  key={item.id}
-                  imgUrl={item.image}
-                  name={item.name}
-                  reviewCount={item.reviewCount}
-                  likeCount={item.favoriteCount}
-                  rating={item.rating}
-                  isLandingPage={true}
-                />
+              hotProducts.map((item: ProductItem, index) => (
+                <div className='relative' key={item.id}>
+                  <ProductCard
+                    id={item.id}
+                    imgUrl={item.image}
+                    name={item.name}
+                    reviewCount={item.reviewCount}
+                    likeCount={item.favoriteCount}
+                    rating={item.rating}
+                    isLandingPage={true}
+                  />
+                  <BestBadge
+                    rank={index + 1}
+                    className='absolute top-1.5 left-1.5 md:top-2.5 md:left-2.5'
+                  />
+                </div>
               ))
             )}
           </div>
@@ -225,7 +232,7 @@ const HomeClient = () => {
 
         {/* 별점이 높은 상품 */}
         <section
-          className={clsx('high-score-products', isFiltered ? 'hidden' : 'block')}
+          className={clsx('high-score-products', isFiltered ? 'hidden' : 'block', 'relative')}
           aria-label='high score products'
         >
           <div className='flex items-center gap-3'>
@@ -253,7 +260,7 @@ const HomeClient = () => {
               />
             </div>
           </div>
-          <div className='relative'>
+          <div>
             <PaginationButton
               onClick={prevPage}
               disabled={currentPage === 0}
@@ -276,6 +283,7 @@ const HomeClient = () => {
                 paginatedRatingProducts.map((item: ProductItem) => (
                   <ProductCard
                     key={item.id}
+                    id={item.id}
                     imgUrl={item.image}
                     name={item.name}
                     reviewCount={item.reviewCount}
@@ -328,6 +336,7 @@ const HomeClient = () => {
                     page.list.map((item: ProductItem) => (
                       <ProductCard
                         key={item.id}
+                        id={item.id}
                         imgUrl={item.image}
                         name={item.name}
                         reviewCount={item.reviewCount}
