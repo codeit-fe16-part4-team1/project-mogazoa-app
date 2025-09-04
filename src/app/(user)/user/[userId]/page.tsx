@@ -24,20 +24,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const currentUrl = `https://${host}/user/${userId}`;
 
   try {
-    // 사용자 프로필 정보 가져오기
     const userProfile = await getUserProfileAPI({ userId: profileId });
 
-    const { nickname, description, followersCount, reviewCount } = userProfile;
+    const { nickname, followersCount, reviewCount } = userProfile;
+
+    const metaTitle = `${nickname}님의 프로필`;
+    const metaDescription = `${nickname}님의 프로필 • 팔로워 ${followersCount}명 • 리뷰 ${reviewCount}개 | mogazoa에서 다양한 상품 리뷰와 정보를 확인하세요.`;
 
     return {
-      title: `${nickname}`, // 'mogazoa | 사용자명' 형태로 출력됨
-      description: `${nickname}님의 프로필 • 팔로워 ${followersCount}명 • 리뷰 ${reviewCount}개 | mogazoa에서 다양한 상품 리뷰와 정보를 확인하세요.`,
+      title: metaTitle,
+      description: metaDescription,
 
       keywords: [nickname, '프로필', '리뷰', '상품평가', 'mogazoa'],
 
       openGraph: {
-        title: `${nickname}님의 프로필`,
-        description: description,
+        title: metaTitle,
+        description: metaDescription,
         url: currentUrl,
         type: 'profile',
         images: userProfile.image
