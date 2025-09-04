@@ -20,6 +20,6 @@ export interface ReviewFormDialogProps extends DialogContentProps {
   productName: string;
   productImageUrl: string;
   rating?: number;
-  content?: string;
+  reviewContent?: string;
   reviewImages?: ReviewImage[];
 }
