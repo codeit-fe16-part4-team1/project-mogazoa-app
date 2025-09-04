@@ -10,10 +10,14 @@ interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   error?: FieldError;
   watchValue?: string;
   maxLength: number;
+  isSubmitted: boolean;
 }
 
 export const TextArea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ id, className, placeholder, register, error, maxLength, watchValue, ...rest }, ref) => {
+  (
+    { id, className, placeholder, register, error, isSubmitted, maxLength, watchValue, ...rest },
+    ref,
+  ) => {
     //watchValue가 없을때만 변경
     const [currentLength, setCurrentLength] = useState(0);
     const [isDirty, setIsDirty] = useState(() => {
@@ -47,7 +51,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       },
     };
 
-    const errorState = isDirty ? !!error : 'undefined';
+    const errorState = isDirty || isSubmitted ? !!error : 'undefined';
 
     const ERROR_STATE_STYLES = {
       text: {
