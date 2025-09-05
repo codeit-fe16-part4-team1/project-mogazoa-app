@@ -1,6 +1,6 @@
 'use client';
 import clsx from 'clsx';
-import ProductCard from '@/components/ProductCard/ProductCard';
+import ProductCard from '@/app/components/ProductCard/ProductCard';
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import PaginationButton from '@/components/PaginationButton/PaginationButton';
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
@@ -11,10 +11,12 @@ import { useSearchParams } from 'next/navigation';
 import { josa } from 'es-hangul';
 import Dropdown from '@/components/Dropdown/Dropdown';
 import DropdownItem from '@/components/Dropdown/DropdownItem';
-import Category from '@/components/Category/Category';
+import Category from '@/app/components/Category/Category';
 import { useCategoryMap } from '@/hooks/useCategoryMap';
+import UsersRanking from '@/app/components/UsersRanking/UsersRanking';
+import BestBadge from './components/ProductCard/BestBadge';
 
-const TITLE_STYLES = 'font-cafe24-supermagic text-h4-bold tracking-[0.4px]';
+const TITLE_STYLES = 'font-cafe24-supermagic text-h4-bold tracking-[-0.4px]';
 const SUBTITLE_STYLES = `${TITLE_STYLES} text-gray-900 mb-5 md:mb-7`;
 const PRODUCT_IMAGE_LOADING_STYLES = 'mb-3 aspect-square rounded-xl bg-gray-200';
 const GRID_STYLES =
@@ -169,20 +171,27 @@ const HomeClient = () => {
         )}
       >
         {/* 카테고리 */}
-        <div className='category'>
+        <section className='category' aria-label='category'>
           {!isFiltered && <h4 className={SUBTITLE_STYLES}>카테고리</h4>}
           <Category type={hasCategory ? 'tab' : 'button'} />
-        </div>
+        </section>
 
         {/* 리뷰어 랭킹 */}
         {!isFiltered && (
-          <div className={clsx('mt-14 md:mt-16 lg:mt-14', 'reviewers-ranking')}>
+          <section
+            className={clsx('mt-14 md:mt-16 lg:mt-14', 'reviewers-ranking')}
+            aria-label='reviewers ranking'
+          >
             <h4 className={SUBTITLE_STYLES}>리뷰어 랭킹</h4>
-          </div>
+            <UsersRanking />
+          </section>
         )}
 
         {/* 지금 핫한 상품 */}
-        <div className={clsx('mt-14 lg:mt-15', 'hot-products', isFiltered ? 'hidden' : 'block')}>
+        <section
+          className={clsx('mt-14 lg:mt-15', 'hot-products', isFiltered ? 'hidden' : 'block')}
+          aria-label='best products'
+        >
           <h4 className={SUBTITLE_STYLES}>
             지금 핫한 상품 <span className='text-primary-orange-600'>Best</span>
           </h4>
@@ -198,25 +207,34 @@ const HomeClient = () => {
                 <p className='text-gray-500'>상품을 불러오는데 실패했습니다.</p>
               </div>
             ) : (
-              hotProducts.map((item: ProductItem) => (
-                <ProductCard
-                  key={item.id}
-                  imgUrl={item.image}
-                  name={item.name}
-                  reviewCount={item.reviewCount}
-                  likeCount={item.favoriteCount}
-                  rating={item.rating}
-                  isLandingPage={true}
-                />
+              hotProducts.map((item: ProductItem, index) => (
+                <div className='relative' key={item.id}>
+                  <ProductCard
+                    id={item.id}
+                    imgUrl={item.image}
+                    name={item.name}
+                    reviewCount={item.reviewCount}
+                    likeCount={item.favoriteCount}
+                    rating={item.rating}
+                    isLandingPage={true}
+                  />
+                  <BestBadge
+                    rank={index + 1}
+                    className='absolute top-1.5 left-1.5 md:top-2.5 md:left-2.5'
+                  />
+                </div>
               ))
             )}
           </div>
-        </div>
+        </section>
 
         {!isFiltered && <hr className='my-10 border-1 border-gray-200 md:my-12 lg:my-16'></hr>}
 
         {/* 별점이 높은 상품 */}
-        <div className={clsx('high-score-products', isFiltered ? 'hidden' : 'block')}>
+        <section
+          className={clsx('high-score-products', isFiltered ? 'hidden' : 'block', 'relative')}
+          aria-label='high score products'
+        >
           <div className='flex items-center gap-3'>
             <h4 className={`${SUBTITLE_STYLES} flex-1`}>별점이 높은 상품</h4>
             <div>
@@ -242,7 +260,7 @@ const HomeClient = () => {
               />
             </div>
           </div>
-          <div className='relative'>
+          <div>
             <PaginationButton
               onClick={prevPage}
               disabled={currentPage === 0}
@@ -265,6 +283,7 @@ const HomeClient = () => {
                 paginatedRatingProducts.map((item: ProductItem) => (
                   <ProductCard
                     key={item.id}
+                    id={item.id}
                     imgUrl={item.image}
                     name={item.name}
                     reviewCount={item.reviewCount}
@@ -283,16 +302,16 @@ const HomeClient = () => {
               className='absolute top-1/2 z-10 hidden -translate-y-1/2 md:-right-5 md:block lg:-right-14'
             />
           </div>
-        </div>
+        </section>
 
         {/* 필터링된 상품 */}
         {isFiltered && (
-          <div className='filtered-products'>
+          <section className='filtered-products' aria-label='searched products'>
             <div className='filtered-title mt-8 mb-5 flex items-center justify-between md:mb-7'>
               <div className='text-body1-bold md:text-sub-headline-bold text-gray-900'>
                 {filteredTitle}
               </div>
-              <div className='z-10'>
+              <div className='z-dropdown'>
                 <Dropdown initialValue={orderBy} onChange={handleOrderChange} size='S'>
                   <DropdownItem label='최신순' value='recent' />
                   <DropdownItem label='별점순' value='rating' />
@@ -317,6 +336,7 @@ const HomeClient = () => {
                     page.list.map((item: ProductItem) => (
                       <ProductCard
                         key={item.id}
+                        id={item.id}
                         imgUrl={item.image}
                         name={item.name}
                         reviewCount={item.reviewCount}
@@ -334,7 +354,7 @@ const HomeClient = () => {
                 </>
               )}
             </div>
-          </div>
+          </section>
         )}
       </div>
     </div>

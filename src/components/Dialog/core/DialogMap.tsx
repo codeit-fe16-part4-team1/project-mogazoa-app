@@ -1,8 +1,13 @@
 import { IDialogComponents } from '@/types/dialog.types';
 import TestDialog from '../TestDialog';
 import TestInnerDialog from '../TestInnerDialog';
-import { ReviewFormDialogProps, TestInnerDialogProps } from '@/types/dialogProps.types';
+import {
+  ReviewFormDialogProps,
+  ProfileEditDialogProps,
+  TestInnerDialogProps,
+} from '@/types/dialogProps.types';
 import ReviewFormDialog from '../ReviewFormDialog';
+import ProfileEditDialog from '@/app/(user)/components/ProfileSection/ProfileEditDialog';
 
 /**
  * 모든 다이얼로그 컴포넌트를 매핑하는 객체.
@@ -25,4 +30,5 @@ export const DIALOG_COMPONENTS: IDialogComponents<any> = {
   'test-dialog': () => <TestDialog />,
   'test-inner-dialog': (props: TestInnerDialogProps) => <TestInnerDialog {...props} />,
   'review-form-dialog': (props: ReviewFormDialogProps) => <ReviewFormDialog {...props} />,
+  'profile-edit-dialog': (props: ProfileEditDialogProps) => <ProfileEditDialog {...props} />,
 } as const;
