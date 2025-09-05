@@ -1,17 +1,11 @@
 // next.config.ts
 import type { NextConfig } from 'next';
 import type { Configuration as WebpackConfig } from 'webpack';
+import { IMAGE_PATTERNS } from './config/imageConfig';
 
 const nextConfig: NextConfig = {
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'sprint-fe-project.s3.ap-northeast-2.amazonaws.com',
-        port: '',
-        pathname: '/**',
-      },
-    ],
+    remotePatterns: IMAGE_PATTERNS,
   },
   webpack(config: WebpackConfig) {
     config.module?.rules?.push({

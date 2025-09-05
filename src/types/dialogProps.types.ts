@@ -1,5 +1,7 @@
 import { DialogContentProps } from '@radix-ui/react-dialog';
 import { ReviewImage } from './api';
+import { Follows } from '@/api/user/getUserFollowsAPI';
+import { ProfileEditMutationData } from '@/app/(user)/components/ProfileSection/components/ProfileEditButton';
 
 /**
  * 모든 DialogProps를 정의하는 파일
@@ -22,4 +24,17 @@ export interface ReviewFormDialogProps extends DialogContentProps {
   rating?: number;
   content?: string;
   reviewImages?: ReviewImage[];
+}
+
+export interface ProfileEditDialogProps {
+  imageUrl: string;
+  nickname: string;
+  description: string;
+  onSubmitSuccess: (updatedData: ProfileEditMutationData) => void;
+}
+
+export interface ProfileFollowDialogProps {
+  profileId: number;
+  followsCount: number;
+  type: Follows;
 }
