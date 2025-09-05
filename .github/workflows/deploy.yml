@@ -67,6 +67,9 @@ jobs:
           cp package-lock.json deploy-package/ 2>/dev/null || true
           cp next.config.* deploy-package/ 2>/dev/null || true
 
+          # 추가: config 폴더 복사
+          cp -r config deploy-package/ 2>/dev/null || true
+
           # 최적화된 프로덕션 의존성
           cp -r node_modules deploy-package/
 

@@ -1,5 +1,6 @@
 import { DialogContentProps } from '@radix-ui/react-dialog';
 import { OrderOptions, ReviewImage } from './api';
+import { Follows } from '@/api/user/getUserFollowsAPI';
 
 import { ProfileEditMutationData } from '@/app/(user)/components/ProfileSection/components/ProfileEditButton';
 
@@ -32,4 +33,10 @@ export interface ProfileEditDialogProps {
   nickname: string;
   description: string;
   onSubmitSuccess: (updatedData: ProfileEditMutationData) => void;
+}
+
+export interface ProfileFollowDialogProps {
+  profileId: number;
+  followsCount: number;
+  type: Follows;
 }

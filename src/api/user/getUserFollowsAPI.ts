@@ -1,6 +1,8 @@
 import { baseAPI } from '@/lib/baseAPI';
 
-type Follows = 'followers' | 'followees';
+export type Follows = 'followers' | 'followees';
+
+export type FollowListKey = 'follower' | 'followee';
 
 export interface GetUserFollowPayload {
   userId: number;
@@ -21,7 +23,7 @@ export interface FollowUser {
 export type FollowUserItem = {
   id: number;
 } & {
-  [K in Follows]: FollowUser;
+  [K in FollowListKey]: FollowUser;
 };
 
 export interface GetUserFollowResponse {
