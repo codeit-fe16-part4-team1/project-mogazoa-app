@@ -162,8 +162,8 @@ const ComparePage = () => {
   };
 
   return (
-    <div className='flex min-h-screen flex-col items-center justify-center bg-gray-100'>
-      <div className='flex w-85 flex-col items-center gap-10 md:w-170 md:gap-16 lg:w-[889px]'>
+    <div className='flex min-h-screen flex-col items-center bg-gray-100'>
+      <div className='mt-20 flex w-85 flex-col items-center gap-10 md:w-170 md:gap-16 lg:w-[889px]'>
         {getHeaderText()}
 
         {/* PC 레이아웃 (md 이상) */}
