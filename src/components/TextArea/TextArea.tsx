@@ -9,8 +9,8 @@ interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   register?: UseFormRegisterReturn;
   error?: FieldError;
   watchValue?: string;
+  isSubmitted?: boolean;
   maxLength: number;
-  isSubmitted: boolean;
 }
 
 export const TextArea = forwardRef<HTMLTextAreaElement, TextareaProps>(
