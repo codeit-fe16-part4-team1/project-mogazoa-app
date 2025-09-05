@@ -59,7 +59,13 @@ const ProductDetailPage = ({ productId, order: initialOrder }: ProductDetailPage
               description={product.description}
             />
             <ProductShareBtns productId={product.id} isHeartFavorite={product.isFavorite} />
-            <ProductBtns />
+            <ProductBtns
+              order={order}
+              productId={productId}
+              categoryName={product.category.name}
+              productName={product.name}
+              productImageUrl={product.image}
+            />
           </section>
         </article>
       </section>
@@ -109,7 +115,14 @@ const ProductDetailPage = ({ productId, order: initialOrder }: ProductDetailPage
               {/* <ProductEditButton className='absolute right-[-4px] bottom-[-30px] lg:right-[-30px]' /> */}
               {reviewList.length > 0 ? (
                 <>
-                  <ProductReviewList reviewList={reviewList} productId={productId} order={order} />
+                  <ProductReviewList
+                    reviewList={reviewList}
+                    productId={productId}
+                    order={order}
+                    categoryName={product.category.name}
+                    productName={product.name}
+                    productImageUrl={product.image}
+                  />
                   {/* Intersection Observer  */}
                   <div className='h-10 w-full' ref={observerRef} />
                 </>

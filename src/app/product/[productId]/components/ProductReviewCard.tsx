@@ -8,11 +8,15 @@ import { cn } from '@/lib/cn';
 import clsx from 'clsx';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { removeReview } from '@/api/review/removeReview';
-import { reviewKeys } from '@/constant/queryKeys';
+import { productKeys, reviewKeys } from '@/constant/queryKeys';
+import useDialog from '@/hooks/useDialog';
 
 interface ProductReviewCardProps extends HTMLAttributes<HTMLDivElement> {
   productId: number;
   order: OrderOptions;
+  categoryName: string;
+  productName: string;
+  productImageUrl: string;
   review: Review;
 }
 
@@ -20,6 +24,9 @@ const ProductReviewCard = ({
   className,
   productId,
   order,
+  categoryName,
+  productName,
+  productImageUrl,
   review,
   ...props
 }: ProductReviewCardProps) => {
@@ -28,8 +35,11 @@ const ProductReviewCard = ({
     mutationFn: removeReview,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: reviewKeys.list(productId, order) });
+      queryClient.invalidateQueries({ queryKey: productKeys.detail(productId) });
     },
   });
+
+  const { open } = useDialog();
 
   const reviewInfoTextStyle = 'text-gray-600 text-caption md:text-body2';
   const editTextStyle = 'cursor-pointer underline underline-offset-2';
@@ -48,7 +58,27 @@ const ProductReviewCard = ({
         {/*  */}
         <Rating rating={review.rating} readonly size='sm' />
         <span className={clsx(reviewInfoTextStyle, 'grow-1')}>{review.user.nickname}</span>
-        <button className={clsx(reviewInfoTextStyle, editTextStyle)} onClick={() => {}}>
+        <button
+          className={clsx(reviewInfoTextStyle, editTextStyle)}
+          onClick={() =>
+            open({
+              dialogName: 'review-form-dialog',
+              dialogProps: {
+                mode: 'edit',
+                order,
+                productId,
+                categoryName,
+                productName,
+                productImageUrl,
+                reviewId: review.id,
+                rating: review.rating,
+                reviewContent: review.content,
+                reviewImages: review.reviewImages,
+              },
+              isBlockBackgroundClose: true,
+            })
+          }
+        >
           수정
         </button>
         <button
@@ -71,11 +101,10 @@ const ProductReviewCard = ({
           review.reviewImages.map((image) => (
             <figure key={image.id} className='relative aspect-square size-16 md:size-25'>
               <Image
-                className='rounded-3xl'
+                className='rounded-3xl object-cover'
                 src={image.source}
                 alt={`리뷰 이미지 ${image.id}`}
                 fill
-                objectFit='cover'
                 sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw' // 제대로 공부할 필요
               />
             </figure>
