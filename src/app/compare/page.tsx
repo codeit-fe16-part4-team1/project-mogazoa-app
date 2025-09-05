@@ -43,7 +43,7 @@ const ComparePage = () => {
   const [isComparing, setIsComparing] = useState(false);
 
   if (isLoading || !allProducts) {
-    return <div>로딩 중...</div>;
+    return null;
   }
   if (error) {
     return <div>{error.message}</div>;
