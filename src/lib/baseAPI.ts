@@ -24,8 +24,8 @@ baseAPI.interceptors.response.use(
       const isServer = typeof window === 'undefined';
       if (!isServer) {
         alert('로그인이 필요한 서비스입니다.');
-        redirect('/signin');
       }
+      redirect('/signin');
     }
     return Promise.reject(error);
   },
