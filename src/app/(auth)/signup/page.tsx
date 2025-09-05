@@ -60,7 +60,7 @@ const SignupPage = () => {
   });
 
   const handleKakaoSigninClick = () => {
-    redirectKakaoAuth.signin();
+    redirectKakaoAuth();
   };
 
   const onSubmit = async (data: SignupFormInputs) => {
