@@ -1,6 +1,6 @@
 import ProfileSection from '../../components/ProfileSection';
 import ProductSection from '../../components/ProductSection';
-import { getMyProfileId } from '@/lib/getMyProfileId';
+import { getUserInfo } from '@/lib/getUserInfo';
 import { redirect } from 'next/navigation';
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 import { getUserProfileAPI } from '@/api/user/getUserProfileAPI';
@@ -17,7 +17,7 @@ const UserPage = async ({ params }: PageProps) => {
 
   const { userId } = await params;
   const profileId = Number(userId);
-  const myProfileId = Number(await getMyProfileId());
+  const { userId: myProfileId } = await getUserInfo();
 
   if (profileId === myProfileId) redirect('/mypage');
 
