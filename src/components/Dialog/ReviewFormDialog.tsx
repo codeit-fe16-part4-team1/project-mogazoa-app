@@ -21,10 +21,11 @@ import ImageInput, {
 } from '../ImageInput/ImageInput';
 import { TextAreaSchema } from '@/lib/validations';
 import ScrollContainer from 'react-indiana-drag-scroll';
-// import { useMutation, useQueryClient } from '@tanstack/react-query';
-// import { createReview } from '@/api/review/createReview';
-// import { updateReview, UpdateReviewPayload } from './../../api/review/updateReview';
-// import { reviewKeys } from '@/constant/queryKeys';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { createReview } from '@/api/review/createReview';
+import { updateReview, UpdateReviewPayload } from './../../api/review/updateReview';
+import { productKeys, reviewKeys } from '@/constant/queryKeys';
+import useDialog from '@/hooks/useDialog';
 
 const INITIAL_RATING = 3;
 const MAX_IMAGE_COUNT = 3;
@@ -40,7 +41,7 @@ type ReviewFormData = z.infer<typeof reviewFormSchema>;
 
 const ReviewFormDialog = ({
   mode,
-  //order,
+  order,
   productId,
   reviewId,
   categoryName,
@@ -51,6 +52,9 @@ const ReviewFormDialog = ({
   reviewImages = [],
 }: ReviewFormDialogProps) => {
   if (mode === 'edit' && !reviewId) throw new Error('ReviewFormDialog Props Error');
+
+  const { closeAll } = useDialog();
+  const queryClient = useQueryClient();
 
   const {
     control,
@@ -69,51 +73,53 @@ const ReviewFormDialog = ({
     },
   });
 
-  // const queryClient = useQueryClient();
+  const { mutate: createMutate } = useMutation({
+    mutationFn: createReview,
+    onSuccess: () => {
+      closeAll();
+      queryClient.invalidateQueries({ queryKey: reviewKeys.list(productId, order) });
+      queryClient.invalidateQueries({ queryKey: productKeys.detail(productId) });
+    },
+    onError: (error) => {
+      alert('리뷰 등록에 실패했습니다: ' + error.message);
+    },
+  });
 
-  // const { mutate: createMutate } = useMutation({
-  //   mutationFn: createReview,
-  //   onSuccess: () => queryClient.invalidateQueries({ queryKey: reviewKeys.list(productId, order) }),
-  //   onError: (error) => {
-  //     alert('리뷰 등록에 실패했습니다: ' + error.message);
-  //   },
-  // });
-
-  // const { mutate: updateMutate } = useMutation({
-  //   mutationFn: (args: UpdateReviewPayload & { reviewId: number }) => {
-  //     const { reviewId, ...payload } = args;
-  //     return updateReview(reviewId, payload);
-  //   },
-  //   onSuccess: () => queryClient.invalidateQueries({ queryKey: reviewKeys.list(productId, order) }),
-  //   onError: (error) => {
-  //     alert('리뷰 수정에 실패했습니다: ' + error.message);
-  //   },
-  // });
+  const { mutate: updateMutate } = useMutation({
+    mutationFn: (args: UpdateReviewPayload & { reviewId: number }) => {
+      const { reviewId, ...payload } = args;
+      return updateReview(reviewId, payload);
+    },
+    onSuccess: () => {
+      closeAll();
+      queryClient.invalidateQueries({ queryKey: reviewKeys.list(productId, order) });
+      queryClient.invalidateQueries({ queryKey: productKeys.detail(productId) });
+    },
+    onError: (error) => {
+      alert('리뷰 수정에 실패했습니다: ' + error.message);
+    },
+  });
 
   const onSubmit = async (data: ReviewFormData) => {
-    const formImages = getValues('reviewImages');
-    console.log(getValues('reviewImages'));
-    const temp = await getUploadedImageUrlArray(formImages);
-    console.log(temp);
-    console.log(temp[0]);
-    console.log(temp[1]);
-    const uploadImageUrlList = temp.map((url) => {
-      return { source: url };
-    });
+    const imageUrls = await getUploadedImageUrlArray(getValues('reviewImages'));
 
-    const submitData = {
-      productId,
-      images: uploadImageUrlList,
-      content: data.reviewContent,
-      rating: data.rating,
-    };
-
-    //   if (submitData.images)
-    //     if (mode === 'create') createMutate(submitData);
-    //     else if (reviewId !== undefined) updateMutate({ reviewId, ...submitData });
-    // };
-
-    console.log(submitData.images);
+    if (mode === 'create') {
+      const submitData = {
+        productId,
+        images: imageUrls,
+        content: data.reviewContent,
+        rating: data.rating,
+      };
+      createMutate(submitData);
+    } else if (reviewId) {
+      const submitData = {
+        reviewId,
+        images: imageUrls.map((url) => ({ source: url })),
+        content: data.reviewContent,
+        rating: data.rating,
+      };
+      updateMutate(submitData);
+    }
   };
 
   const onInvalid = (errors: FieldErrors<ReviewFormData>) => {
