@@ -1,5 +1,5 @@
 import { DialogContentProps } from '@radix-ui/react-dialog';
-import { ReviewImage } from './api';
+import { OrderOptions, ReviewImage } from './api';
 
 import { ProfileEditMutationData } from '@/app/(user)/components/ProfileSection/components/ProfileEditButton';
 
@@ -16,6 +16,7 @@ export interface TestTest {
 
 export interface ReviewFormDialogProps extends DialogContentProps {
   mode: 'create' | 'edit';
+  order: OrderOptions;
   productId: number;
   reviewId?: number;
   categoryName: string;

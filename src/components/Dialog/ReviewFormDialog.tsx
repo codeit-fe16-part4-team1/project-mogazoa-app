@@ -14,23 +14,33 @@ import { TextArea } from '../TextArea/TextArea';
 import z from 'zod';
 import { Controller, FieldErrors, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import ImageInput, { getInitialImageList, ImageInputSchema } from '../ImageInput/ImageInput';
+import ImageInput, {
+  getInitialImageList,
+  getUploadedImageUrlArray,
+  ImageInputSchema,
+} from '../ImageInput/ImageInput';
 import { TextAreaSchema } from '@/lib/validations';
 import ScrollContainer from 'react-indiana-drag-scroll';
+// import { useMutation, useQueryClient } from '@tanstack/react-query';
+// import { createReview } from '@/api/review/createReview';
+// import { updateReview, UpdateReviewPayload } from './../../api/review/updateReview';
+// import { reviewKeys } from '@/constant/queryKeys';
 
 const INITIAL_RATING = 3;
 const MAX_IMAGE_COUNT = 3;
+const MAX_CONTENT_LENGTH = 300;
 
 const reviewFormSchema = z.object({
   rating: z.number(),
-  reviewContent: TextAreaSchema({ maxLength: 300 }),
-  reviewImages: ImageInputSchema(3),
+  reviewContent: TextAreaSchema({ maxLength: MAX_CONTENT_LENGTH }),
+  reviewImages: ImageInputSchema(MAX_IMAGE_COUNT),
 });
 
 type ReviewFormData = z.infer<typeof reviewFormSchema>;
 
 const ReviewFormDialog = ({
   mode,
+  //order,
   productId,
   reviewId,
   categoryName,
@@ -48,6 +58,7 @@ const ReviewFormDialog = ({
     handleSubmit,
     register,
     watch,
+    getValues,
   } = useForm<ReviewFormData>({
     resolver: zodResolver(reviewFormSchema),
     mode: 'onBlur',
@@ -58,14 +69,51 @@ const ReviewFormDialog = ({
     },
   });
 
-  const onSubmit = (data: ReviewFormData) => {
+  // const queryClient = useQueryClient();
+
+  // const { mutate: createMutate } = useMutation({
+  //   mutationFn: createReview,
+  //   onSuccess: () => queryClient.invalidateQueries({ queryKey: reviewKeys.list(productId, order) }),
+  //   onError: (error) => {
+  //     alert('리뷰 등록에 실패했습니다: ' + error.message);
+  //   },
+  // });
+
+  // const { mutate: updateMutate } = useMutation({
+  //   mutationFn: (args: UpdateReviewPayload & { reviewId: number }) => {
+  //     const { reviewId, ...payload } = args;
+  //     return updateReview(reviewId, payload);
+  //   },
+  //   onSuccess: () => queryClient.invalidateQueries({ queryKey: reviewKeys.list(productId, order) }),
+  //   onError: (error) => {
+  //     alert('리뷰 수정에 실패했습니다: ' + error.message);
+  //   },
+  // });
+
+  const onSubmit = async (data: ReviewFormData) => {
+    const formImages = getValues('reviewImages');
+    console.log(getValues('reviewImages'));
+    const temp = await getUploadedImageUrlArray(formImages);
+    console.log(temp);
+    console.log(temp[0]);
+    console.log(temp[1]);
+    const uploadImageUrlList = temp.map((url) => {
+      return { source: url };
+    });
+
     const submitData = {
       productId,
-      images: Object.values(data.reviewImages),
+      images: uploadImageUrlList,
       content: data.reviewContent,
       rating: data.rating,
     };
-    console.log(submitData);
+
+    //   if (submitData.images)
+    //     if (mode === 'create') createMutate(submitData);
+    //     else if (reviewId !== undefined) updateMutate({ reviewId, ...submitData });
+    // };
+
+    console.log(submitData.images);
   };
 
   const onInvalid = (errors: FieldErrors<ReviewFormData>) => {
@@ -73,7 +121,7 @@ const ReviewFormDialog = ({
   };
 
   return (
-    <DialogContent className='w-84 gap-7 overflow-x-hidden border-none px-5 py-10 md:w-135 md:gap-10 md:px-10 md:py-12'>
+    <DialogContent className='md:vor w-84 gap-7 overflow-x-hidden border-none px-5 py-10 md:w-135 md:gap-10 md:border-none md:px-10 md:py-12'>
       {/* Header */}
       <DialogHeader>
         <DialogTitle>리뷰 {mode === 'create' ? '작성' : '편집'}하기</DialogTitle>
@@ -81,7 +129,7 @@ const ReviewFormDialog = ({
 
       {/* Body */}
       <form
-        className='flex w-full max-w-74 flex-col gap-6 md:max-w-115 md:gap-8'
+        className='flex w-full max-w-74 flex-col gap-6 md:max-w-108 md:gap-8'
         method={mode === 'create' ? 'POST' : 'PATCH'}
         onSubmit={handleSubmit(onSubmit, onInvalid)}
       >
@@ -116,7 +164,7 @@ const ReviewFormDialog = ({
           <div className='flex flex-col gap-3'>
             <h2 className='text-caption-bold md:text-body2-bold text-gray-900'>상품 후기</h2>
             <TextArea
-              className='min-h-32 border-gray-300 break-words'
+              className='min-h-32 border-gray-300 break-words md:min-h-42'
               register={register('reviewContent')}
               watchValue={watch('reviewContent')}
               defaultValue={reviewContent}
@@ -131,18 +179,22 @@ const ReviewFormDialog = ({
           </div>
         </section>
         <section className='w-full'>
-          <Controller
-            name='reviewImages'
-            control={control}
-            render={({ field }) => (
-              <ScrollContainer
-                className='w-full cursor-grab pt-1.5 active:cursor-grabbing [&::-webkit-scrollbar]:hidden'
-                horizontal
-              >
-                <ImageInput maxImageCount={MAX_IMAGE_COUNT} {...field} />
-              </ScrollContainer>
-            )}
-          />
+          <ScrollContainer
+            className='w-full cursor-grab pt-1.5 active:cursor-grabbing [&::-webkit-scrollbar]:hidden'
+            horizontal
+          >
+            <Controller
+              name='reviewImages'
+              control={control}
+              render={({ field }) => (
+                <ImageInput
+                  maxImageCount={MAX_IMAGE_COUNT}
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              )}
+            />
+          </ScrollContainer>
         </section>
 
         {/* Footer */}
