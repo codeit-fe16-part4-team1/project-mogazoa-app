@@ -2,6 +2,7 @@ import { IDialogComponents } from '@/types/dialog.types';
 import TestDialog from '../TestDialog';
 import TestInnerDialog from '../TestInnerDialog';
 import {
+  ReviewFormDialogProps,
   ProfileEditDialogProps,
   ProfileFollowDialogProps,
   TestInnerDialogProps,
