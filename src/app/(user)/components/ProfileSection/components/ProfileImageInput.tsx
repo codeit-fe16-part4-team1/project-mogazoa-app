@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { useRef } from 'react';
 import IconAdd from '@/assets/icons/icon_imageinput_add.svg';
+import { useSafeImageUrl } from '@/hooks/useSafeImageUrl';
 
 type ImageList = Record<string, File | null>;
 
@@ -11,6 +12,9 @@ interface ImageInputProps {
 }
 
 const ProfileImageInput = ({ value: imageList = {}, onChange }: ImageInputProps) => {
+  const defaultUrl = '/images/image_default_profile.png';
+  const imageUrl = Object.keys(imageList)[0];
+  const { safeImageUrl, onError } = useSafeImageUrl(imageUrl, defaultUrl);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -36,7 +40,13 @@ const ProfileImageInput = ({ value: imageList = {}, onChange }: ImageInputProps)
         className='relative aspect-square w-25 cursor-pointer overflow-hidden rounded-full md:w-35'
         onClick={handleImageClick}
       >
-        <Image src={Object.keys(imageList)[0]} alt='프로필 이미지' className='object-cover' fill />
+        <Image
+          src={safeImageUrl}
+          alt='프로필 이미지'
+          className='object-cover'
+          fill
+          onError={onError}
+        />
         <div className='absolute inset-0 bg-black opacity-40' />
         <IconAdd className='absolute top-1/2 left-1/2 aspect-square w-8 translate-x-[-50%] translate-y-[-50%] text-white' />
       </button>
