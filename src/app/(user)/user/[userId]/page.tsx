@@ -26,10 +26,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   try {
     const userProfile = await getUserProfileAPI({ userId: profileId });
 
-    const { nickname, followersCount, reviewCount } = userProfile;
+    const { nickname, description, followersCount, reviewCount } = userProfile;
 
     const metaTitle = `${nickname}님의 프로필`;
-    const metaDescription = `${nickname}님의 프로필 • 팔로워 ${followersCount}명 • 리뷰 ${reviewCount}개 | mogazoa에서 다양한 상품 리뷰와 정보를 확인하세요.`;
+    const metaDescription = `${nickname}님의 프로필 | 팔로워 ${followersCount}명 • 리뷰 ${reviewCount}개\n\n${description}\n\nmogazoa에서 다양한 상품 리뷰와 정보를 확인하세요`;
 
     return {
       title: metaTitle,
@@ -46,8 +46,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
           ? [
               {
                 url: userProfile.image,
-                width: 400,
-                height: 400,
+                width: 200,
+                height: 200,
                 alt: `${nickname}님의 프로필 사진`,
               },
             ]
