@@ -1,7 +1,10 @@
 'use server';
 
-export const getMyProfileId = async () => {
+export const getUserInfo = async () => {
   const { cookies } = await import('next/headers');
   const userId = (await cookies()).get('userId')?.value;
-  return userId;
+  return {
+    userId: Number(userId),
+    isAuthenticated: !!userId,
+  };
 };

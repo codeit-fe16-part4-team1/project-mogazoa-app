@@ -2,7 +2,7 @@ import { userFollowAPI } from '@/api/follow/userFollowAPI';
 import { userUnfollowAPI } from '@/api/follow/userUnfollowAPI';
 import { Button } from '@/components/Button/Button';
 import { profileKeys } from '@/constant/queryKeys';
-import { getMyProfileId } from '@/lib/getMyProfileId';
+import { getUserInfo } from '@/lib/getUserInfo';
 import useAuthStore from '@/store/useAuthStore';
 import { Profile } from '@/types/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -54,9 +54,8 @@ const ProfileButtonArea = ({ profile, isMyProfile }: Props) => {
     },
     onSettled: async () => {
       queryClient.invalidateQueries({ queryKey: profileKeys.detail(profile.id) });
-      const myProfileId = Number(await getMyProfileId());
-      if (!myProfileId) return;
-      queryClient.invalidateQueries({ queryKey: profileKeys.detail(myProfileId) });
+      const { userId } = await getUserInfo();
+      queryClient.invalidateQueries({ queryKey: profileKeys.detail(userId) });
     },
   });
 

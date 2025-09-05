@@ -2,7 +2,6 @@ import { UserRanking } from '@/types/api';
 import Image from 'next/image';
 import clsx from 'clsx';
 import { cn } from '@/lib/cn';
-import NoProfile from '@/assets/images/noProfile.png';
 import IconFirstRank from '@/assets/icons/icon_ranking_first.svg';
 
 const TOP_1_PROFILE_IMAGE_STYLES = 'w-16 h-16 md:w-25 md:h-25';
@@ -26,7 +25,7 @@ const TopRanking = ({ user, index }: { user: UserRanking; index: number }) => {
         )}
       >
         <Image
-          src={user.image ? user.image : NoProfile}
+          src={user.image ? user.image : '/images/noProfile.png'}
           sizes='100'
           alt={user.nickname}
           priority

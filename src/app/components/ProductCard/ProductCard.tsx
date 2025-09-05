@@ -1,14 +1,17 @@
 'use client';
 import clsx from 'clsx';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 interface ProductCardProps {
+  id?: number;
   imgUrl: string;
   name: string;
   reviewCount: number;
   likeCount: number;
   rating: number;
   isLandingPage?: boolean;
+  linkToDetailPage?: boolean;
 }
 
 const PRODUCT_NAME_STYLES = [
@@ -25,15 +28,23 @@ const PRODUCT_STATS_STYLES = [
 ];
 
 const ProductCard = ({
+  id,
   imgUrl,
   name,
   reviewCount,
   likeCount,
   rating,
   isLandingPage = false,
+  linkToDetailPage = true,
 }: ProductCardProps) => {
+  const router = useRouter();
+  const handleClick = () => {
+    if (linkToDetailPage && id) {
+      router.push(`/product/${id}`);
+    }
+  };
   return (
-    <div className='flex flex-col gap-3 md:gap-5'>
+    <div className='flex cursor-pointer flex-col gap-3 md:gap-5' onClick={handleClick}>
       <div className='relative aspect-square w-full md:aspect-[300/276]'>
         <Image
           src={imgUrl}
