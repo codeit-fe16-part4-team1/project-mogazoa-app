@@ -10,7 +10,7 @@ const ProfileImageViewer = ({ imageUrl }: Props) => {
   const defaultUrl = '/images/image_default_profile.png';
   const { safeImageUrl, onError } = useSafeImageUrl(imageUrl, defaultUrl);
   return (
-    <div className='relative aspect-square w-17 rounded-full md:w-40'>
+    <div className='relative size-17 rounded-full md:size-40'>
       <Image
         src={safeImageUrl}
         className='rounded-full object-cover'
