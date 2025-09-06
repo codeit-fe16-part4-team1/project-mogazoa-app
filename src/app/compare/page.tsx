@@ -8,6 +8,7 @@ import CompareDetail from '@/components/CompareDetail/CompareDetail';
 import CompareCard from '@/components/CompareCard/CompareCard';
 import CompareDetailDefault from '@/components/CompareDetail/CompareDetailDefault';
 import Badge from '@/components/Badge/Badge';
+import { Button } from '@/components/Button/Button';
 import { useQuery } from '@tanstack/react-query';
 
 const fetchAllProducts = async () => {
@@ -303,22 +304,19 @@ const ComparePage = () => {
 
         {/* 비교하기/다시 비교하기 버튼 */}
         {isComparing ? (
-          <button
-            onClick={handleResetClick}
-            className='bg-primary-orange-600 text-body1-bold h-[50px] w-85 rounded-full text-white md:h-[55px]'
-          >
+          <Button onClick={handleResetClick} className='text-body1-bold h-[50px] w-85 md:h-[55px]'>
             다시 비교하기
-          </button>
+          </Button>
         ) : (
-          <button
+          <Button
             onClick={handleCompareClick}
             disabled={!bothProductsSelected}
-            className={`text-body1-bold h-[50px] w-85 rounded-full transition-colors duration-200 md:h-[55px] ${bothProductsSelected ? 'bg-primary-orange-600 text-white' : 'cursor-not-allowed bg-gray-200 text-gray-500'}`}
+            className='h-[50px] w-85 md:h-[55px]'
           >
             {bothProductsSelected
               ? '상품 비교하기'
               : `비교할 상품 2개를 입력해주세요 (${[selectedProductA, selectedProductB].filter(Boolean).length}/2)`}
-          </button>
+          </Button>
         )}
       </div>
     </div>
