@@ -39,7 +39,7 @@ const ProductDetailPage = ({ productId, order: initialOrder }: ProductDetailPage
           )}
         >
           {/* 상품 이미지 컨테이너 */}
-          <ProductImage className='my-5 md:my-0 lg:flex-1 lg:self-end' imageUrl={product.image} />
+          <ProductImage className='my-5 lg:flex-1 lg:self-end' imageUrl={product.image} />
           {/* 상품 설명 컨테이너 */}
           <section className='relative w-full px-5 py-8 md:px-16 md:py-12 lg:basis-51/100 lg:self-end lg:p-0'>
             <ProductEditButton className='absolute top-[-48px] right-5 md:top-[-32px] md:right-13 lg:top-[-32px] lg:right-0' />

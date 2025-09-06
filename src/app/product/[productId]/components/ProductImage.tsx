@@ -17,7 +17,7 @@ const ProductImage = ({ className, imageUrl, ...props }: ProductImageProps) => {
         {...props}
       >
         <Image
-          className='absolute inset-0 opacity-80 blur-3xl md:blur-2xl lg:blur-xl'
+          className='absolute inset-0 opacity-80 blur-3xl md:opacity-50 md:blur-2xl lg:opacity-80 lg:blur-xl'
           src={imageUrl}
           alt='블러 이미지'
           fill
