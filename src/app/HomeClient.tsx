@@ -83,7 +83,7 @@ const HomeClient = () => {
     }
 
     router.push(`?${params.toString()}`);
-  }, [category, categoryParam]);
+  }, [category]);
 
   const filteredTitle = useMemo(() => {
     const categoryName = getCategoryName(category || 0) || '';
