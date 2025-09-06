@@ -6,17 +6,15 @@ import ProductReviewList from './components/ProductReviewList';
 import ProductDetailHeader from './components/ProductDetailHeader';
 import { OrderOptions } from '@/types/api';
 import ProductEditButton from './components/ProductEditButton';
-import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import ProductImage from './components/ProductImage';
 import ProductInfo from './components/ProductInfo';
 import ProductShareBtns from './components/ProductShareBtns';
 import ProductBtns from './components/ProductBtns';
 import { cn } from '@/lib/cn';
 import { useProductData } from './hooks/useProductData';
-import { useProductReviewListData } from './hooks/useProductReviewListData';
-import ProductNoReview from './components/ProductNoReview';
 import Dropdown from '@/components/Dropdown/Dropdown';
 import DropdownItem from '@/components/Dropdown/DropdownItem';
+import { ThreeDotsIndicator } from '@/components/ThreeDotIndicator/ThreeDotIndicator';
 
 interface ProductDetailPageProps {
   productId: number;
@@ -26,14 +24,6 @@ interface ProductDetailPageProps {
 const ProductDetailPage = ({ productId, order: initialOrder }: ProductDetailPageProps) => {
   const [order, setOrder] = useState<OrderOptions>(initialOrder);
   const { data: product } = useProductData(productId);
-  const {
-    data: reviewList,
-    hasNextPage,
-    fetchNextPage,
-  } = useProductReviewListData(productId, order);
-  const observerRef = useIntersectionObserver(() => {
-    if (hasNextPage) fetchNextPage();
-  });
 
   const pageContainerStyles = 'lg:mx-auto lg:w-full lg:max-w-[980px]';
 
@@ -112,25 +102,15 @@ const ProductDetailPage = ({ productId, order: initialOrder }: ProductDetailPage
               </Dropdown>
             </ProductDetailHeader>
             <div className='relative mb-4 lg:mb-16'>
-              {/* <ProductEditButton className='absolute right-[-4px] bottom-[-30px] lg:right-[-30px]' /> */}
-              {reviewList.length > 0 ? (
-                <>
-                  <Suspense fallback=''>
-                    <ProductReviewList
-                      reviewList={reviewList}
-                      productId={productId}
-                      order={order}
-                      categoryName={product.category.name}
-                      productName={product.name}
-                      productImageUrl={product.image}
-                    />
-                  </Suspense>
-                  {/* Intersection Observer  */}
-                  <div className='h-10 w-full' ref={observerRef} />
-                </>
-              ) : (
-                <ProductNoReview className='h-[320px] w-full' />
-              )}
+              <Suspense fallback={<ThreeDotsIndicator />}>
+                <ProductReviewList
+                  productId={productId}
+                  order={order}
+                  categoryName={product.category.name}
+                  productName={product.name}
+                  productImageUrl={product.image}
+                />
+              </Suspense>
             </div>
           </section>
         </article>
