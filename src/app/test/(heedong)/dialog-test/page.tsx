@@ -53,6 +53,41 @@ const DialogTest = () => {
           리뷰 편집 다이얼로그 오픈
         </Button>
       </div>
+      <div>
+        <Button
+          size='S'
+          onClick={() =>
+            open({
+              dialogName: 'product-form-dialog',
+              dialogProps: {
+                mode: 'create',
+              },
+            })
+          }
+        >
+          상품 추가 다이얼로그 오픈
+        </Button>
+      </div>
+      <div>
+        <Button
+          size='S'
+          onClick={() =>
+            open({
+              dialogName: 'product-form-dialog',
+              dialogProps: {
+                mode: 'edit',
+                productId: 1,
+                categoryId: 3,
+                imageUrl: 'test',
+                productName: 'test',
+                productDescription: 'this is test!!!!!!!!!!!!!!!!!!',
+              },
+            })
+          }
+        >
+          상품 편집 다이얼로그 오픈
+        </Button>
+      </div>
     </div>
   );
 };

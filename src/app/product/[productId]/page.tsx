@@ -3,13 +3,14 @@ import { getReviewList } from '@/api/product/getReviewList';
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 import { productKeys, reviewKeys } from '@/constant/queryKeys';
 import ProductDetailPage from './ProductDetailPage';
+import { getUserInfo } from '@/lib/getUserInfo';
 
 const ProductDetailPageServer = async ({ params }: { params: Promise<{ productId: string }> }) => {
   const { productId: slug } = await params;
   const productId = Number(slug);
-
-  const queryClient = new QueryClient();
   const order = 'recent';
+  const { userId } = await getUserInfo();
+  const queryClient = new QueryClient();
 
   await Promise.all([
     queryClient.prefetchQuery({
@@ -25,7 +26,7 @@ const ProductDetailPageServer = async ({ params }: { params: Promise<{ productId
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ProductDetailPage productId={productId} order={order} />
+      <ProductDetailPage productId={productId} order={order} userId={userId} />
     </HydrationBoundary>
   );
 };

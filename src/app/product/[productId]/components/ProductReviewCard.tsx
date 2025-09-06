@@ -18,6 +18,7 @@ interface ProductReviewCardProps extends HTMLAttributes<HTMLDivElement> {
   productName: string;
   productImageUrl: string;
   review: Review;
+  userId: number;
 }
 
 const ProductReviewCard = ({
@@ -28,6 +29,7 @@ const ProductReviewCard = ({
   productName,
   productImageUrl,
   review,
+  userId,
   ...props
 }: ProductReviewCardProps) => {
   const queryClient = useQueryClient();
@@ -58,39 +60,43 @@ const ProductReviewCard = ({
         {/*  */}
         <Rating rating={review.rating} readonly size='sm' />
         <span className={clsx(reviewInfoTextStyle, 'grow-1')}>{review.user.nickname}</span>
-        <button
-          className={clsx(reviewInfoTextStyle, editTextStyle)}
-          onClick={() =>
-            open({
-              dialogName: 'review-form-dialog',
-              dialogProps: {
-                mode: 'edit',
-                order,
-                productId,
-                categoryName,
-                productName,
-                productImageUrl,
-                reviewId: review.id,
-                rating: review.rating,
-                reviewContent: review.content,
-                reviewImages: review.reviewImages,
-              },
-              isBlockBackgroundClose: true,
-            })
-          }
-        >
-          수정
-        </button>
-        <button
-          className={clsx(reviewInfoTextStyle, editTextStyle)}
-          onClick={() => {
-            reviewRemoveMutate(review.id);
-          }}
-        >
-          삭제
-        </button>
+        {userId === review.userId && (
+          <button
+            className={clsx(reviewInfoTextStyle, editTextStyle)}
+            onClick={() =>
+              open({
+                dialogName: 'review-form-dialog',
+                dialogProps: {
+                  mode: 'edit',
+                  order,
+                  productId,
+                  categoryName,
+                  productName,
+                  productImageUrl,
+                  reviewId: review.id,
+                  rating: review.rating,
+                  reviewContent: review.content,
+                  reviewImages: review.reviewImages,
+                },
+                isBlockBackgroundClose: true,
+              })
+            }
+          >
+            수정
+          </button>
+        )}
+        {userId === review.userId && (
+          <button
+            className={clsx(reviewInfoTextStyle, editTextStyle)}
+            onClick={() => {
+              reviewRemoveMutate(review.id);
+            }}
+          >
+            삭제
+          </button>
+        )}
         <span className={clsx(reviewInfoTextStyle, 'text-gray-700')}>
-          {formatDate(review.updatedAt)}
+          {formatDate(review.createdAt)}
         </span>
       </div>
       {/* 본문 */}
