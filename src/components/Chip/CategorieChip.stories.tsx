@@ -32,11 +32,9 @@ const Template: StoryFn<typeof CategorieChip> = (args) => {
 
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-      {categories.map((category) => (
+      {categories.map((category, index) => (
         // {...args}를 통해 variant prop이 전달됩니다.
-        <CategorieChip key={category} {...args}>
-          {category}
-        </CategorieChip>
+        <CategorieChip key={category} {...args} categoryId={index + 1} />
       ))}
     </div>
   );
