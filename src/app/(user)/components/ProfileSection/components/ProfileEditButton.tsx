@@ -91,6 +91,7 @@ const ProfileEditButton = ({ className, profile }: Props) => {
       className={clsx(
         'bg-gray-150 rounded-x1 text-gray-700 hover:bg-gray-300',
         'text-caption-medium md:text-body1-medium',
+        'hover-animate cursor-pointer',
         className,
       )}
       onClick={handleProfileEditClick}
