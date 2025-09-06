@@ -36,6 +36,7 @@ const ProductList = ({ profileId, productType }: Props) => {
       {allProducts.map((product) => (
         <ProductCard
           key={product.id}
+          id={product.id}
           imgUrl={product.image}
           name={product.name}
           reviewCount={product.reviewCount}
