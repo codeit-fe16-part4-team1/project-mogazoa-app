@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import ProductStatisticCard from './components/ProductStatisticCard';
 import ProductReviewList from './components/ProductReviewList';
 import ProductDetailHeader from './components/ProductDetailHeader';
@@ -115,14 +115,16 @@ const ProductDetailPage = ({ productId, order: initialOrder }: ProductDetailPage
               {/* <ProductEditButton className='absolute right-[-4px] bottom-[-30px] lg:right-[-30px]' /> */}
               {reviewList.length > 0 ? (
                 <>
-                  <ProductReviewList
-                    reviewList={reviewList}
-                    productId={productId}
-                    order={order}
-                    categoryName={product.category.name}
-                    productName={product.name}
-                    productImageUrl={product.image}
-                  />
+                  <Suspense fallback=''>
+                    <ProductReviewList
+                      reviewList={reviewList}
+                      productId={productId}
+                      order={order}
+                      categoryName={product.category.name}
+                      productName={product.name}
+                      productImageUrl={product.image}
+                    />
+                  </Suspense>
                   {/* Intersection Observer  */}
                   <div className='h-10 w-full' ref={observerRef} />
                 </>
