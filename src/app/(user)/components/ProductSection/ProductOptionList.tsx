@@ -16,7 +16,11 @@ const ProductOptionList = ({ productType, onChange }: Props) => {
 
   return (
     <article className='mx-auto max-w-235'>
-      <OptionList className='mb-8 flex flex-row' selectedValue={productType}>
+      <OptionList
+        className='mb-8 flex flex-row'
+        selectedValue={productType}
+        layoutId='user-product'
+      >
         {Object.entries(OPTION_MAP).map(([value, label]) => (
           <OptionList.button
             key={value}
@@ -25,8 +29,6 @@ const ProductOptionList = ({ productType, onChange }: Props) => {
               'text-sub-headline-medium flex items-center justify-center',
               'h-14 w-40',
               'cursor-pointer',
-              'data-[state=active]:border-b-3 data-[state=active]:border-gray-900 data-[state=active]:text-gray-800',
-              'data-[state=inactive]:border-b-1 data-[state=inactive]:border-gray-400 data-[state=inactive]:text-gray-400 data-[state=inactive]:hover:bg-gray-200',
             )}
             value={value}
             onClick={() => onChange(value as ProductType)}
