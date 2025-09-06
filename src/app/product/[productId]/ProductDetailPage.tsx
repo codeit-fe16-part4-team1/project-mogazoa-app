@@ -70,7 +70,13 @@ const ProductDetailPage = ({ productId, order: initialOrder, userId }: ProductDe
               description={product.description}
             />
             <ProductShareBtns productId={product.id} isHeartFavorite={product.isFavorite} />
-            <ProductBtns />
+            <ProductBtns
+              order={order}
+              productId={productId}
+              categoryName={product.category.name}
+              productName={product.name}
+              productImageUrl={product.image}
+            />
           </section>
         </article>
       </section>
@@ -125,6 +131,9 @@ const ProductDetailPage = ({ productId, order: initialOrder, userId }: ProductDe
                     productId={productId}
                     order={order}
                     userId={userId}
+                    categoryName={product.category.name}
+                    productName={product.name}
+                    productImageUrl={product.image}
                   />
                   {/* Intersection Observer  */}
                   <div className='h-10 w-full' ref={observerRef} />

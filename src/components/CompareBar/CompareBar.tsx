@@ -7,14 +7,19 @@ import debounce from 'lodash.debounce';
 
 interface CompareBarProps {
   products: ProductItem[];
+  selectedProduct: ProductItem | null;
   onSelectProduct: (product: ProductItem) => void;
-  onRemoveProduct: (product: ProductItem) => void;
+  onRemoveProduct: () => void;
 }
 
-const CompareBar = ({ products, onSelectProduct, onRemoveProduct }: CompareBarProps) => {
+const CompareBar = ({
+  products,
+  selectedProduct,
+  onSelectProduct,
+  onRemoveProduct,
+}: CompareBarProps) => {
   const [inputValue, setInputValue] = useState('');
   const [filteredProducts, setFilteredProducts] = useState<ProductItem[]>([]);
-  const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(null);
 
   const debounceFilter = useMemo(
     () =>
@@ -27,9 +32,14 @@ const CompareBar = ({ products, onSelectProduct, onRemoveProduct }: CompareBarPr
       }, 0),
     [products],
   );
+  useEffect(() => {
+    if (selectedProduct === null) {
+      setInputValue('');
+    }
+  }, [selectedProduct]);
 
   useEffect(() => {
-    if (inputValue.length > 0 && !selectedProduct) {
+    if (inputValue.length > 0) {
       debounceFilter(inputValue);
     } else {
       setFilteredProducts([]);
@@ -37,24 +47,20 @@ const CompareBar = ({ products, onSelectProduct, onRemoveProduct }: CompareBarPr
     return () => {
       debounceFilter.cancel();
     };
-  }, [inputValue, selectedProduct, debounceFilter, products]);
+  }, [inputValue, debounceFilter]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
   };
 
   const handleSelect = (product: ProductItem) => {
-    setSelectedProduct(product);
     setInputValue('');
     setFilteredProducts([]);
     onSelectProduct(product);
   };
 
   const handleRemove = () => {
-    if (selectedProduct) {
-      onRemoveProduct(selectedProduct);
-      setSelectedProduct(null);
-    }
+    onRemoveProduct();
   };
 
   return (

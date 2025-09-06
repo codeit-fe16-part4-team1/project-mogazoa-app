@@ -249,7 +249,7 @@ body {
     @apply z-[9];
   }
   .z-winner {
-    @apple z-[1];
+    @apply z-[1];
   }
 }
 
@@ -278,6 +278,10 @@ body {
 
   .hover-grow {
     @apply transition-all duration-200 hover:scale-120;
+  }
+
+  .hover-animate {
+    @apply transition-all duration-200;
   }
 }
 

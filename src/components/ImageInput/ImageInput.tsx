@@ -117,7 +117,7 @@ const ImageInput = ({
       className={clsx(ADDBUTTON_STYLES, COMMON_ELEMENT_STYLES)}
       onClick={handleAddButtonClick}
     >
-      <IconAdd />
+      <IconAdd className='size-6' />
       <span>이미지추가</span>
       <div>
         <span className={clsx(Object.keys(imageList).length > 0 && 'text-primary-orange-700')}>

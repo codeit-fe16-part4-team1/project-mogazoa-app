@@ -8,14 +8,20 @@ interface ProductReviewListProps extends HTMLAttributes<HTMLDivElement> {
   productId: number;
   order: OrderOptions;
   userId: number;
+  categoryName: string;
+  productName: string;
+  productImageUrl: string;
 }
 
 const ProductReviewList = ({
   className,
   reviewList,
-  order,
   productId,
   userId,
+  order,
+  categoryName,
+  productName,
+  productImageUrl,
   ...props
 }: ProductReviewListProps) => {
   return (
@@ -25,6 +31,9 @@ const ProductReviewList = ({
           key={review.id}
           productId={productId}
           order={order}
+          categoryName={categoryName}
+          productName={productName}
+          productImageUrl={productImageUrl}
           review={review}
           userId={userId}
         />
