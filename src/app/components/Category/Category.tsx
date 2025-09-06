@@ -1,6 +1,5 @@
 import clsx from 'clsx';
 import OptionList from '@/components/OptionList/OptionList';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { useCategoryMap } from '@/hooks/useCategoryMap';
 import { useHorizontalScroll } from '@/hooks/useHorizontalScroll';
 import CategoryButton from '@/app/components/Category/CategoryButton';
@@ -38,27 +37,21 @@ const CategoryItemSet = ({ name, type }: { name: string; type: 'button' | 'tab' 
 
 interface CategoryProps {
   type: 'button' | 'tab';
+  category?: number;
+  setCategory: (category: number | undefined) => void;
 }
 
-const Category = ({ type }: CategoryProps) => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const currentCategory = searchParams.get('category');
+const Category = ({ type, category, setCategory }: CategoryProps) => {
   const { categoryData } = useCategoryMap();
   const { scrollContainerRef, canScrollPrev, canScrollNext, scrollToDirection } =
     useHorizontalScroll();
 
   const handleCategoryClick = (categoryId: number) => {
-    const params = new URLSearchParams(searchParams);
-    const currentCategoryId = currentCategory ? Number(currentCategory) : undefined;
-
-    if (currentCategoryId === categoryId) {
-      params.delete('category');
+    if (category === categoryId) {
+      setCategory(undefined);
     } else {
-      params.set('category', categoryId.toString());
+      setCategory(categoryId);
     }
-
-    router.push(`/?${params.toString()}`);
   };
 
   const renderCategoryItems = () => {
@@ -68,7 +61,7 @@ const Category = ({ type }: CategoryProps) => {
       return (
         <OptionList
           className='flex w-full justify-between'
-          selectedValue={currentCategory || undefined}
+          selectedValue={category?.toString() || undefined}
         >
           {categoryData.map((item) => (
             <OptionList.button
