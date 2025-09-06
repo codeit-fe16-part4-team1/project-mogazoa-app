@@ -27,7 +27,7 @@ const ProductOptionList = ({ productType, onChange }: Props) => {
             role='tab'
             className={clsx(
               'text-sub-headline-medium flex items-center justify-center',
-              'h-14 w-40',
+              'h-14 w-40 border-b-1 border-gray-400 hover:text-gray-800',
               'cursor-pointer',
             )}
             value={value}

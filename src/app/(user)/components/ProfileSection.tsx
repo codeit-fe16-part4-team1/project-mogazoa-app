@@ -20,7 +20,7 @@ const ProfileSection = ({ profileId, isMyProfile }: Props) => {
   if (!profile) return;
 
   return (
-    <section className='rounded-b-4xl bg-white px-5 py-7 md:px-15 md:py-15 lg:py-10'>
+    <section className='rounded-b-4xl bg-white px-5 py-7 shadow-md md:px-15 md:py-15 lg:py-10'>
       <ProfileCard profile={profile} isMyProfile={isMyProfile} />
       <ProfileStats profile={profile} />
       <ProfileButtonArea profile={profile} isMyProfile={isMyProfile} />

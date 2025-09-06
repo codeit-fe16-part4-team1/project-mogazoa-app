@@ -4,9 +4,10 @@ import { getUserInfo } from '@/lib/getUserInfo';
 import { redirect } from 'next/navigation';
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 import { getUserProfileAPI } from '@/api/user/getUserProfileAPI';
-import { profileKeys } from '@/constant/queryKeys';
+import { productKeys, profileKeys } from '@/constant/queryKeys';
 import { headers } from 'next/headers';
 import { Metadata } from 'next';
+import { getUserProductsAPI } from '@/api/user/getUserProductsAPI';
 
 interface PageProps {
   params: Promise<{
@@ -88,11 +89,24 @@ const UserPage = async ({ params }: PageProps) => {
 
   console.log(`[DEBUG] User Profile Id: ${profileId}`);
 
-  await queryClient.prefetchQuery({
-    queryKey: profileKeys.detail(profileId),
-    queryFn: () => getUserProfileAPI({ userId: profileId }),
-  });
-
+  await Promise.all([
+    queryClient.prefetchQuery({
+      queryKey: profileKeys.detail(profileId),
+      queryFn: () => getUserProfileAPI({ userId: profileId }),
+    }),
+    queryClient.prefetchInfiniteQuery({
+      queryKey: productKeys.userProductList(profileId, 'reviewed'),
+      queryFn: ({ pageParam }) =>
+        getUserProductsAPI({
+          userId: profileId,
+          type: 'reviewed',
+          ...(pageParam && { cursor: pageParam }),
+        }),
+      initialPageParam: 0,
+      getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+      pages: 0,
+    }),
+  ]);
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <ProfileSection profileId={profileId} isMyProfile={false} />

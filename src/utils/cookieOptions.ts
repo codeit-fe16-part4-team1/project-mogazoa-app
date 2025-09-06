@@ -3,7 +3,7 @@ export const DEFAULT_COOKIE_OPTIONS = {
   secure: process.env.NODE_ENV === 'production',
   sameSite: 'lax' as const,
   path: '/',
-  maxAge: 60 * 10,
+  maxAge: 60 * 60 * 6, //6시간
 };
 
 export const HTTPONLY_COOKIE_OPTIONS = {
