@@ -42,11 +42,13 @@ const ProfileFollowInfo = ({ profile }: Props) => {
       {ListMap.map(({ label, value, type }) => (
         <div
           key={label}
-          className='flex cursor-pointer flex-row items-center gap-1'
+          className='group hover-animate flex cursor-pointer flex-row items-center gap-1'
           onClick={() => handleFollowInfoClick(type)}
         >
           <label className='text-body1 cursor-pointer text-gray-600'>{label}</label>
-          <p className='text-sub-headline-bold cursor-pointer text-gray-900'>{value}</p>
+          <p className='text-sub-headline-bold group-hover:text-primary-orange-700 hover-animate cursor-pointer text-gray-900'>
+            {value}
+          </p>
         </div>
       ))}
     </div>
