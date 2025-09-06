@@ -1,7 +1,7 @@
 'use client';
 import clsx from 'clsx';
 import Link from 'next/link';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import useAuthStore from '@/store/useAuthStore';
 import IconLogo from '@/assets/icons/logo.svg';
 import IconMenu from '@/assets/icons/menu.svg';
@@ -11,7 +11,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 
 const DEBOUNCE_TIME = 1000;
-const HEADER_LINK_STYLES = 'text-body2 hidden py-2 text-gray-700 hover:text-gray-800 md:block';
+const HEADER_LINK_STYLES =
+  'block text-body2-medium w-40 px-5 py-3 rounded-[8px] text-gray-600 hover:text-primary-orange-600 hover:bg-primary-orange-200 tracking-[-0.4px]';
 
 const Header = () => {
   const { isAuthenticated } = useAuthStore();
@@ -23,30 +24,44 @@ const Header = () => {
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get('query') || '';
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
+  const previousSearchQueryRef = useRef(searchQuery);
 
-  // searchQuery가 외부에서 변경될 때 localSearchQuery 동기화
-  useEffect(() => {
-    setLocalSearchQuery(searchQuery);
-  }, [searchQuery]);
-
-  const updateQuery = useCallback(
-    debounce((newQuery: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-
+  const updateQuery = useMemo(() => {
+    return debounce((newQuery: string) => {
+      const params = new URLSearchParams();
       if (newQuery) {
         params.set('query', newQuery);
-      } else {
-        params.delete('query');
       }
-      router.push(`?${params.toString()}`);
-    }, DEBOUNCE_TIME),
-    [searchParams],
-  );
+      const queryString = params.toString();
+      const newUrl = queryString ? `/?${queryString}` : '/';
+      router.push(newUrl);
+    }, DEBOUNCE_TIME);
+  }, [router]);
+
+  // // searchQuery가 외부에서 변경될 때 localSearchQuery 동기화
+  useEffect(() => {
+    if (searchQuery !== previousSearchQueryRef.current) {
+      setLocalSearchQuery(searchQuery);
+      previousSearchQueryRef.current = searchQuery;
+    }
+  }, [searchQuery]);
+
+  useEffect(() => {
+    if (localSearchQuery !== previousSearchQueryRef.current) {
+      updateQuery(localSearchQuery);
+    }
+  }, [localSearchQuery, updateQuery]);
+
+  // 컴포넌트 언마운트 시 debounce 함수 정리
+  useEffect(() => {
+    return () => {
+      updateQuery.cancel();
+    };
+  }, [updateQuery]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
     setLocalSearchQuery(inputValue);
-    updateQuery(inputValue);
   };
 
   const toggleMenu = () => {
@@ -62,16 +77,24 @@ const Header = () => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsMenuOpen(false);
       }
+
+      if (
+        !localSearchQuery &&
+        searchRef.current &&
+        !searchRef.current.contains(event.target as Node)
+      ) {
+        setIsSearchOpen(false);
+      }
     };
 
-    if (isMenuOpen) {
+    if (isMenuOpen || isSearchOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isMenuOpen, isSearchOpen]);
+  }, [isMenuOpen, isSearchOpen, localSearchQuery]);
 
   return (
     <Suspense fallback={<div>로딩 중...</div>}>
@@ -82,6 +105,7 @@ const Header = () => {
               <button
                 className={clsx(
                   'cursor-pointer rounded-md p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900 md:hidden',
+                  isMenuOpen && 'bg-gray-100',
                   'toggle-menu',
                 )}
                 onClick={toggleMenu}
@@ -89,21 +113,20 @@ const Header = () => {
                 <IconMenu />
               </button>
               {isMenuOpen && (
-                // TODO: 공통 드롭다운 만들어지면 수정
-                <div className='absolute top-full left-0 z-50 mt-2 w-48 rounded-md border border-gray-200 bg-white shadow-lg transition-all duration-200 ease-in-out'>
-                  <div className='py-2'>
+                <div className='z-dropdown absolute top-full left-0 rounded-[8px] bg-white shadow-lg transition-all duration-200 ease-in-out'>
+                  <div className='space-y-1'>
                     {!isAuthenticated ? (
                       <>
                         <Link
                           href='/signin'
-                          className='text-body2 block px-4 py-2 text-gray-700 transition-colors duration-150 hover:bg-gray-100 hover:text-gray-900'
+                          className={HEADER_LINK_STYLES}
                           onClick={() => setIsMenuOpen(false)}
                         >
                           로그인
                         </Link>
                         <Link
                           href='/signup'
-                          className='text-body2 block px-4 py-2 text-gray-700 transition-colors duration-150 hover:bg-gray-100 hover:text-gray-900'
+                          className={HEADER_LINK_STYLES}
                           onClick={() => setIsMenuOpen(false)}
                         >
                           회원가입
@@ -150,16 +173,16 @@ const Header = () => {
                       onChange={handleSearchChange}
                       autoFocus
                     />
+                    <button
+                      onClick={() => {
+                        toggleSearch();
+                        setLocalSearchQuery('');
+                      }}
+                      className='absolute inset-y-0 right-0 mr-3 cursor-pointer p-2 text-xl text-gray-500 hover:text-gray-800'
+                    >
+                      ✕
+                    </button>
                   </div>
-                  <button
-                    onClick={() => {
-                      toggleSearch();
-                      setLocalSearchQuery('');
-                    }}
-                    className='ml-3 cursor-pointer p-2 text-xl text-gray-500 hover:text-gray-800'
-                  >
-                    ✕
-                  </button>
                 </div>
               </div>
             )}
@@ -180,10 +203,20 @@ const Header = () => {
                   <input
                     type='text'
                     placeholder='상품 이름을 검색해 보세요'
-                    className='bg-gray-150 text-body2 block h-full w-full rounded-full py-4 pr-4 pl-14 placeholder-gray-800 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none'
+                    className='bg-gray-150 text-body2 block h-full w-full rounded-full py-4 pr-12 pl-14 placeholder-gray-800 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none'
                     value={localSearchQuery}
                     onChange={handleSearchChange}
                   />
+                  {localSearchQuery && (
+                    <button
+                      onClick={() => {
+                        setLocalSearchQuery('');
+                      }}
+                      className='absolute inset-y-0 right-0 mr-3 cursor-pointer p-2 text-xl text-gray-500 hover:text-gray-800'
+                    >
+                      ✕
+                    </button>
+                  )}
                 </div>
               </div>
               {!isAuthenticated ? (
