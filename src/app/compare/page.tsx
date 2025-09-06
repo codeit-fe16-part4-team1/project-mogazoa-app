@@ -186,9 +186,9 @@ const ComparePage = () => {
             <div className='font-cafe24-supermagic text-h1-bold text-gray-600'>VS</div>
 
             <div className='flex w-20 flex-col items-center gap-[63px]'>
-              <div className='text-body2-bold text-gray-600'>⭐️별점</div>
-              <div className='text-body2-bold text-gray-600'>📝 리뷰 개수</div>
-              <div className='text-body2-bold text-gray-600'>🫶🏻 찜 개수</div>
+              <div className='text-body2-bold whitespace-nowrap text-gray-600'>⭐️별점</div>
+              <div className='text-body2-bold whitespace-nowrap text-gray-600'>📝 리뷰 개수</div>
+              <div className='text-body2-bold whitespace-nowrap text-gray-600'>🫶🏻 찜 개수</div>
             </div>
           </div>
           <CompareCard
@@ -259,9 +259,9 @@ const ComparePage = () => {
                     <CompareDetailDefault placeholder='A' />
                   )}
                   <div className='flex w-15 flex-col items-center gap-13 text-gray-600'>
-                    <div className='text-[12px]'>⭐️별점</div>
-                    <div className='text-[12px]'>📝 리뷰 개수</div>
-                    <div className='text-[12px]'>🫶🏻 찜 개수</div>
+                    <div className='text-[12px] whitespace-nowrap'>⭐️별점</div>
+                    <div className='text-[12px] whitespace-nowrap'>📝 리뷰 개수</div>
+                    <div className='text-[12px] whitespace-nowrap'>🫶🏻 찜 개수</div>
                   </div>
                   {selectedProductB ? (
                     <CompareDetail
