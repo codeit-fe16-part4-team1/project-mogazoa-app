@@ -14,6 +14,15 @@ export interface TestTest {
   test: string;
 }
 
+export interface ProductFormDialogProps extends DialogContentProps {
+  mode: 'create' | 'edit';
+  productId?: number;
+  categoryId?: number;
+  imageUrl?: string;
+  productName?: string;
+  productDescription?: string;
+}
+
 export interface ReviewFormDialogProps extends DialogContentProps {
   mode: 'create' | 'edit';
   productId: number;
