@@ -7,6 +7,7 @@ interface ProductReviewListProps extends HTMLAttributes<HTMLDivElement> {
   reviewList: Review[];
   productId: number;
   order: OrderOptions;
+  userId: number;
 }
 
 const ProductReviewList = ({
@@ -14,12 +15,19 @@ const ProductReviewList = ({
   reviewList,
   order,
   productId,
+  userId,
   ...props
 }: ProductReviewListProps) => {
   return (
     <div className={cn('flex-between-center flex-col gap-5', className)} {...props}>
       {reviewList.map((review) => (
-        <ProductReviewCard key={review.id} productId={productId} order={order} review={review} />
+        <ProductReviewCard
+          key={review.id}
+          productId={productId}
+          order={order}
+          review={review}
+          userId={userId}
+        />
       ))}
     </div>
   );

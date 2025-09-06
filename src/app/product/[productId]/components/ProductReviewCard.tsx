@@ -14,6 +14,7 @@ interface ProductReviewCardProps extends HTMLAttributes<HTMLDivElement> {
   productId: number;
   order: OrderOptions;
   review: Review;
+  userId: number;
 }
 
 const ProductReviewCard = ({
@@ -21,6 +22,7 @@ const ProductReviewCard = ({
   productId,
   order,
   review,
+  userId,
   ...props
 }: ProductReviewCardProps) => {
   const queryClient = useQueryClient();
@@ -48,19 +50,23 @@ const ProductReviewCard = ({
         {/*  */}
         <Rating rating={review.rating} readonly size='sm' />
         <span className={clsx(reviewInfoTextStyle, 'grow-1')}>{review.user.nickname}</span>
-        <button className={clsx(reviewInfoTextStyle, editTextStyle)} onClick={() => {}}>
-          수정
-        </button>
-        <button
-          className={clsx(reviewInfoTextStyle, editTextStyle)}
-          onClick={() => {
-            reviewRemoveMutate(review.id);
-          }}
-        >
-          삭제
-        </button>
+        {userId === review.userId && (
+          <button className={clsx(reviewInfoTextStyle, editTextStyle)} onClick={() => {}}>
+            수정
+          </button>
+        )}
+        {userId === review.userId && (
+          <button
+            className={clsx(reviewInfoTextStyle, editTextStyle)}
+            onClick={() => {
+              reviewRemoveMutate(review.id);
+            }}
+          >
+            삭제
+          </button>
+        )}
         <span className={clsx(reviewInfoTextStyle, 'text-gray-700')}>
-          {formatDate(review.updatedAt)}
+          {formatDate(review.createdAt)}
         </span>
       </div>
       {/* 본문 */}
