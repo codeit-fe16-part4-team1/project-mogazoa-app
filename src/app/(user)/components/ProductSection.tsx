@@ -56,7 +56,7 @@ const ProductSection = ({ profileId }: Props) => {
         productType={productType}
         onChange={(value: ProductType) => setProductType(value)}
       />
-      <Suspense>
+      <Suspense fallback='로딩 중...'>
         <ProductList profileId={profileId} productType={productType} />
       </Suspense>
     </section>
