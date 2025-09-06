@@ -96,6 +96,16 @@ const config: Config = {
         x4: '16px',
         x5: '20px',
       },
+      animation: {
+        reveal: 'revealLoop 2s ease-out infinite',
+      },
+      keyframes: {
+        revealLoop: {
+          '0%': { opacity: '1' },
+          '50%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+      },
     },
   },
   plugins: [],
