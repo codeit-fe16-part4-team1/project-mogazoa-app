@@ -19,11 +19,6 @@ const buttonVariants = cva(
         active: '',
         disabled: '',
       },
-      // size: {
-      //   S: 'w-[335px] h-[50px] text-body1-medium',
-      //   M: 'w-[335px] h-[50px] text-body1-medium md:w-[440px] md:h-[55px]',
-      //   L: 'w-[335px] h-[50px] text-body1-medium md:w-[440px] md:h-[55px] lg:w-[640px] lg:h-[60px] lg:py-5 lg:text-sub-headline-medium',
-      // },
     },
 
     compoundVariants: [
