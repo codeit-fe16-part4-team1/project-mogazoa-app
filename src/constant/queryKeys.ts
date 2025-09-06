@@ -1,5 +1,6 @@
 import { OrderOptions } from '@/types/api';
 import { ProductType } from '@/api/user/getUserProductsAPI';
+import { Follows } from '@/api/user/getUserFollowsAPI';
 
 export const productKeys = {
   all: ['products'] as const,
@@ -18,4 +19,5 @@ export const reviewKeys = {
 export const profileKeys = {
   all: ['profile'] as const,
   detail: (profileId: number) => [...profileKeys.all, profileId],
+  follows: (profileId: number, type: Follows) => [...profileKeys.all, profileId, type],
 };

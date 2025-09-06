@@ -1,3 +1,6 @@
+import { DialogContentProps } from '@radix-ui/react-dialog';
+import { ReviewImage } from './api';
+import { Follows } from '@/api/user/getUserFollowsAPI';
 import { ProfileEditMutationData } from '@/app/(user)/components/ProfileSection/components/ProfileEditButton';
 
 /**
@@ -11,9 +14,27 @@ export interface TestTest {
   test: string;
 }
 
+export interface ReviewFormDialogProps extends DialogContentProps {
+  mode: 'create' | 'edit';
+  productId: number;
+  reviewId?: number;
+  categoryName: string;
+  productName: string;
+  productImageUrl: string;
+  rating?: number;
+  content?: string;
+  reviewImages?: ReviewImage[];
+}
+
 export interface ProfileEditDialogProps {
   imageUrl: string;
   nickname: string;
   description: string;
   onSubmitSuccess: (updatedData: ProfileEditMutationData) => void;
+}
+
+export interface ProfileFollowDialogProps {
+  profileId: number;
+  followsCount: number;
+  type: Follows;
 }

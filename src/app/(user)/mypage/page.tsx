@@ -1,24 +1,24 @@
 import { getMyProfileAPI } from '@/api/user/getMyProfileAPI';
 import ProductSection from '../components/ProductSection';
-import { getMyProfileId } from '@/lib/getMyProfileId';
+import { getUserInfo } from '@/lib/getUserInfo';
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 import ProfileSection from '../components/ProfileSection';
 import { profileKeys } from '@/constant/queryKeys';
 
 const MyPage = async () => {
   const queryClient = new QueryClient();
-  const myProfileId = Number(await getMyProfileId());
-  console.log(`[DEBUG] My Profile Id: ${myProfileId}`);
+  const { userId } = await getUserInfo();
+  console.log(`[DEBUG] My Profile Id: ${userId}`);
 
   await queryClient.prefetchQuery({
-    queryKey: profileKeys.detail(myProfileId),
+    queryKey: profileKeys.detail(userId),
     queryFn: () => getMyProfileAPI(),
   });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ProfileSection profileId={myProfileId} isMyProfile={true} />
-      <ProductSection profileId={myProfileId} />
+      <ProfileSection profileId={userId} isMyProfile={true} />
+      <ProductSection profileId={userId} />
     </HydrationBoundary>
   );
 };
