@@ -3,17 +3,32 @@ import ProductSection from '../components/ProductSection';
 import { getUserInfo } from '@/lib/getUserInfo';
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 import ProfileSection from '../components/ProfileSection';
-import { profileKeys } from '@/constant/queryKeys';
+import { productKeys, profileKeys } from '@/constant/queryKeys';
+import { getUserProductsAPI } from '@/api/user/getUserProductsAPI';
 
 const MyPage = async () => {
   const queryClient = new QueryClient();
   const { userId } = await getUserInfo();
   console.log(`[DEBUG] My Profile Id: ${userId}`);
 
-  await queryClient.prefetchQuery({
-    queryKey: profileKeys.detail(userId),
-    queryFn: () => getMyProfileAPI(),
-  });
+  await Promise.all([
+    queryClient.prefetchQuery({
+      queryKey: profileKeys.detail(userId),
+      queryFn: () => getMyProfileAPI(),
+    }),
+    queryClient.prefetchInfiniteQuery({
+      queryKey: productKeys.userProductList(userId, 'reviewed'),
+      queryFn: ({ pageParam }) =>
+        getUserProductsAPI({
+          userId: userId,
+          type: 'reviewed',
+          cursor: pageParam || 0,
+        }),
+      initialPageParam: 0,
+      getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+      pages: 0,
+    }),
+  ]);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
