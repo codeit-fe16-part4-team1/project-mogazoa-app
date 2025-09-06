@@ -24,7 +24,6 @@ const ProductList = ({ profileId, productType }: Props) => {
       }),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
-    // select: (data) => data.pages.flatMap((page) => page.list),
   });
 
   const fetchObserverRef = useIntersectionObserver(fetchNextPage);
