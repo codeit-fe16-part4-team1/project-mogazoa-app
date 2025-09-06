@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/nextjs';
 import { ThreeDotsIndicator } from './ThreeDotIndicator';
 
 const meta = {
-  title: 'Components/CircleIndicator',
+  title: 'Components/ThreeDotsIndicator',
   component: ThreeDotsIndicator,
   parameters: {
     layout: 'centered',
