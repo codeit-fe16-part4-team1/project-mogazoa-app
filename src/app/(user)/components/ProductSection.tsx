@@ -17,7 +17,6 @@ const ProductSection = ({ profileId }: Props) => {
 
   // 등록한 상품, 찜한 상품 prefetch
   useEffect(() => {
-    console.log(`run ProductSection UseEffect`);
     const prefetchProduct = async () => {
       await Promise.all([
         queryClient.prefetchInfiniteQuery({
