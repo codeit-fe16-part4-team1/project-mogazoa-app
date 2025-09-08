@@ -7,13 +7,16 @@ import clsx from 'clsx';
 import { getUploadedImageUrlAPI } from '@/api/image/getUploadedImageUrlAPI';
 
 // ImageInput 전용 zod schema
-export const ImageInputSchema = (maxImageCount: number) => {
+export const ImageInputSchema = (maxImageCount: number, required: boolean = true) => {
   return z
     .record(
       z.string(),
       z.custom<File | null>((val) => val instanceof File || val === null),
     )
-    .refine((data) => Object.keys(data).length >= 1, '이미지를 1개 이상 선택해주세요')
+    .refine((data) => {
+      if (!required) return true;
+      return Object.keys(data).length >= 1;
+    }, '이미지를 1개 이상 선택해주세요')
     .refine(
       (data) => Object.keys(data).length <= maxImageCount,
       `최대 ${maxImageCount}개까지 선택 가능합니다`,
