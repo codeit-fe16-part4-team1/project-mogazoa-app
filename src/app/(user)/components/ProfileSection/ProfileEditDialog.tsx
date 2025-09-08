@@ -16,7 +16,7 @@ import z from 'zod';
 import ProfileImageInput from './components/ProfileImageInput';
 
 const profileEditScheme = z.object({
-  image: ImageInputSchema(1),
+  image: ImageInputSchema(1, false),
   nickname: z
     .string()
     .min(1, '닉네임은 필수 입력입니다.')
@@ -106,7 +106,7 @@ const ProfileEditDialog = ({
         />
         <Button
           type='submit'
-          className='mt-7 w-full md:mt-13 md:w-full lg:w-full'
+          className='mt-7 h-12 w-full md:mt-13 md:h-15 md:w-full lg:w-full'
           disabled={!isValid}
         >
           {!isSubmitting ? '저장하기' : '저장 중...'}
