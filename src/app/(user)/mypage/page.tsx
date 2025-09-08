@@ -10,7 +10,7 @@ const MyPage = async () => {
   const { userId } = await getUserInfo();
   console.log(`[DEBUG] My Profile Id: ${userId}`);
 
-  await queryClient.prefetchQuery({
+  await queryClient.fetchQuery({
     queryKey: profileKeys.detail(userId),
     queryFn: () => getMyProfileAPI(),
   });
