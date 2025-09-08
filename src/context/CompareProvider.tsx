@@ -77,7 +77,7 @@ export const CompareProvider = ({ children }: { children: ReactNode }) => {
 export const useCompareProducts = () => {
   const context = useContext(CompareContext);
   if (context === undefined) {
-    throw new Error('useCompareProducts 훅은 CompareProvider 내에서 사용되어야 합니다.');
+    throw new Error('CompareProvider 내에서 사용되어야 합니다.');
   }
   return context;
 };
