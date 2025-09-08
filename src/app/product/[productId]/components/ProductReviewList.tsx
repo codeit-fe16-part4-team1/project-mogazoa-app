@@ -1,10 +1,12 @@
 import { HTMLAttributes } from 'react';
 import ProductReviewCard from './ProductReviewCard';
-import { OrderOptions, Review } from '@/types/api';
+import { OrderOptions } from '@/types/api';
 import { cn } from '@/lib/cn';
+import { useProductReviewListData } from '../hooks/useProductReviewListData';
+import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
+import ProductNoReview from './ProductNoReview';
 
 interface ProductReviewListProps extends HTMLAttributes<HTMLDivElement> {
-  reviewList: Review[];
   productId: number;
   order: OrderOptions;
   userId: number;
@@ -15,7 +17,6 @@ interface ProductReviewListProps extends HTMLAttributes<HTMLDivElement> {
 
 const ProductReviewList = ({
   className,
-  reviewList,
   productId,
   userId,
   order,
@@ -24,7 +25,16 @@ const ProductReviewList = ({
   productImageUrl,
   ...props
 }: ProductReviewListProps) => {
-  return (
+  const {
+    data: reviewList,
+    hasNextPage,
+    fetchNextPage,
+  } = useProductReviewListData(productId, order);
+  const observerRef = useIntersectionObserver(() => {
+    if (hasNextPage) fetchNextPage();
+  });
+
+  return reviewList.length > 0 ? (
     <div className={cn('flex-between-center flex-col gap-5', className)} {...props}>
       {reviewList.map((review) => (
         <ProductReviewCard
@@ -38,7 +48,11 @@ const ProductReviewList = ({
           userId={userId}
         />
       ))}
+      {/* Intersection Observer  */}
+      <div className='h-10 w-full' ref={observerRef} />
     </div>
+  ) : (
+    <ProductNoReview className='h-[320px] w-full' />
   );
 };
 

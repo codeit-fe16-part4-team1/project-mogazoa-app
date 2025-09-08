@@ -8,10 +8,22 @@ export const baseAPI = axios.create({
 });
 
 baseAPI.interceptors.request.use(async (config) => {
-  const token = await getAccessToken();
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
+  const isServer = typeof window === 'undefined';
+
+  if (isServer) {
+    const { cookies } = await import('next/headers');
+    const cookieStore = await cookies();
+    const token = cookieStore.get('accessToken')?.value;
+    if (token && config.headers) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  } else {
+    const token = await getAccessToken();
+    if (token && config.headers) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
   }
+
   return config;
 });
 
