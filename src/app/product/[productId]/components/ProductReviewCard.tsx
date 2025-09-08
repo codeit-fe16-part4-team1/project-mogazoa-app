@@ -95,40 +95,43 @@ const ProductReviewCard = ({
             </button>
           </div>
         ) : (
-          {userId === review.userId && (
-            <button
-              className={clsx(reviewInfoTextStyle, editTextStyle)}
-              onClick={() =>
-                open({
-                  dialogName: 'review-form-dialog',
-                  dialogProps: {
-                    mode: 'edit',
-                    order,
-                    productId,
-                    categoryName,
-                    productName,
-                    productImageUrl,
-                    reviewId: review.id,
-                    rating: review.rating,
-                    reviewContent: review.content,
-                    reviewImages: review.reviewImages,
-                  },
-                  isBlockBackgroundClose: true,
-                })
-              }
-            >
-            수정
-          </button>
-        )}
-        {userId === review.userId && (
-          <button
-            className={clsx(reviewInfoTextStyle, editTextStyle)}
-            onClick={() => {
-              reviewRemoveMutate(review.id);
-            }}
-          >
-            삭제
-          </button>
+          <>
+            {userId === review.userId && (
+              <button
+                className={clsx(reviewInfoTextStyle, editTextStyle)}
+                onClick={() =>
+                  open({
+                    dialogName: 'review-form-dialog',
+                    dialogProps: {
+                      mode: 'edit',
+                      order,
+                      productId,
+                      categoryName,
+                      productName,
+                      productImageUrl,
+                      reviewId: review.id,
+                      rating: review.rating,
+                      reviewContent: review.content,
+                      reviewImages: review.reviewImages,
+                    },
+                    isBlockBackgroundClose: true,
+                  })
+                }
+              >
+                수정
+              </button>
+            )}
+            {userId === review.userId && (
+              <button
+                className={clsx(reviewInfoTextStyle, editTextStyle)}
+                onClick={() => {
+                  reviewRemoveMutate(review.id);
+                }}
+              >
+                삭제
+              </button>
+            )}
+          </>
         )}
 
         {/* 작성날짜 */}
