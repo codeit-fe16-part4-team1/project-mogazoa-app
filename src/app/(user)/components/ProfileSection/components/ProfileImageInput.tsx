@@ -89,12 +89,6 @@ const ProfileImageInput = ({ value: imageList = {}, onChange }: ImageInputProps)
       </div>
 
       {resetButtonVisible && (
-        // <div
-        //   className='hover-animate mx-auto mt-2 w-fit cursor-pointer rounded-lg border-1 border-gray-400 bg-white px-2 py-1 text-gray-800 hover:bg-gray-200'
-        //   onClick={handleResetImageSelect}
-        // >
-        //   원복
-        // </div>
         <button
           type='button'
           onClick={handleResetImageSelect}
