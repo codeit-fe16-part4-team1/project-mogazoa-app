@@ -65,9 +65,9 @@ const Dropdown = ({
             <Menu.Button
               as='button'
               className={cn(
-                'rounded-x2 inline-flex w-full items-center justify-between gap-3 border bg-white pt-3 pr-3 pb-3 pl-4',
+                'rounded-x2 inline-flex w-full cursor-pointer items-center justify-between border bg-white pt-3 pr-3 pb-3 pl-4',
                 size === 'S'
-                  ? 'text-body2 md:text-body1 h-[42px] border-gray-300 pt-3 pr-3 pb-3 pl-4 text-gray-600 md:h-13 md:pt-4 md:pb-4'
+                  ? 'text-body2 md:text-body1 h-[42px] border-gray-300 pt-3 pr-3 pb-3 pl-4 whitespace-nowrap text-gray-600 md:h-13'
                   : 'text-body2-medium h-[50px] border-gray-400 text-gray-800',
               )}
             >
