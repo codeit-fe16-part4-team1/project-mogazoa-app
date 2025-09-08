@@ -1,4 +1,5 @@
 'use client';
+import { useSafeImageUrl } from '@/hooks/useSafeImageUrl';
 import clsx from 'clsx';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -37,6 +38,7 @@ const ProductCard = ({
   isLandingPage = false,
   linkToDetailPage = true,
 }: ProductCardProps) => {
+  const { safeImageUrl, onError } = useSafeImageUrl(imgUrl, '/images/image_default_product.png');
   const router = useRouter();
   const handleClick = () => {
     if (linkToDetailPage && id) {
@@ -45,17 +47,21 @@ const ProductCard = ({
   };
   return (
     <div className='flex cursor-pointer flex-col gap-3 md:gap-5' onClick={handleClick}>
-      <div className='relative aspect-square w-full md:aspect-[300/276]'>
+      <div className='relative aspect-square w-full overflow-hidden rounded-xl border-1 border-gray-300 md:aspect-[300/276]'>
         <Image
-          src={imgUrl}
-          sizes='w-[33vw] lg: w-[50vw]'
+          src={safeImageUrl}
+          sizes='(max-width: 768px) 50vw, 33vw'
           fill
           alt={name}
-          className='rounded-xl border-1 border-gray-300'
+          className='hover-grow opacity-0'
           style={{
             objectFit: 'cover',
           }}
           priority={isLandingPage}
+          onLoad={(e) => {
+            e.currentTarget.style.opacity = '1';
+          }}
+          onError={onError}
         />
       </div>
       <div className='flex flex-col gap-2 md:gap-3 md:px-2'>
