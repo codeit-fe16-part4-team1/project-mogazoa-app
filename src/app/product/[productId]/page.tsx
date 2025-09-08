@@ -7,19 +7,19 @@ import { getUserInfo } from '@/lib/getUserInfo';
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
 
-export async function generateMetadata({
+export const generateMetadata = async ({
   params,
 }: {
   params: { productId: string };
-}): Promise<Metadata> {
-  const productId = Number(params.productId);
+}): Promise<Metadata> => {
+  const { productId: slug } = await params;
 
   const headersList = headers();
   const host = (await headersList).get('host') || 'new-project-final.link';
-  const currentUrl = `https://${host}/product/${productId}`;
+  const currentUrl = `https://${host}/product/${slug}`;
 
   try {
-    const productDetail = await getProductDetail(productId);
+    const productDetail = await getProductDetail(Number(slug));
 
     return {
       title: `${productDetail.name} - 상품 상세`,
@@ -75,7 +75,7 @@ export async function generateMetadata({
       },
     };
   }
-}
+};
 
 const ProductDetailPageServer = async ({ params }: { params: Promise<{ productId: string }> }) => {
   const { productId: slug } = await params;
