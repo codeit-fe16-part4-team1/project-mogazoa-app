@@ -90,11 +90,11 @@ const UserPage = async ({ params }: PageProps) => {
   console.log(`[DEBUG] User Profile Id: ${profileId}`);
 
   await Promise.all([
-    queryClient.prefetchQuery({
+    queryClient.fetchQuery({
       queryKey: profileKeys.detail(profileId),
       queryFn: () => getUserProfileAPI({ userId: profileId }),
     }),
-    queryClient.prefetchInfiniteQuery({
+    queryClient.fetchInfiniteQuery({
       queryKey: productKeys.userProductList(profileId, 'reviewed'),
       queryFn: ({ pageParam }) =>
         getUserProductsAPI({
