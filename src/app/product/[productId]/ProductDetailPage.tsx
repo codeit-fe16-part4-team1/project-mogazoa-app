@@ -117,6 +117,7 @@ const ProductDetailPage = ({ productId, order: initialOrder, userId }: ProductDe
                 <ProductReviewList
                   productId={productId}
                   order={order}
+                  userId={userId}
                   categoryName={product.category.name}
                   productName={product.name}
                   productImageUrl={product.image}
