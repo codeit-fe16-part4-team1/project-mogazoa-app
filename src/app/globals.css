@@ -283,6 +283,10 @@ body {
   .hover-animate {
     @apply transition-all duration-200;
   }
+
+  .skeleton-animate {
+    @apply animate-pulse bg-gray-200;
+  }
 }
 
 /* Dialog Scroll bar */
