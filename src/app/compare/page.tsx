@@ -10,7 +10,7 @@ import CompareDetailDefault from '@/components/CompareDetail/CompareDetailDefaul
 import Badge from '@/components/Badge/Badge';
 import { Button } from '@/components/Button/Button';
 import { useQuery } from '@tanstack/react-query';
-import { useCompareProducts } from '@/hooks/useCompareProducts';
+import { useCompareProducts } from '@/context/CompareProvider';
 
 const fetchAllProducts = async () => {
   let allItems: ProductItem[] = [];

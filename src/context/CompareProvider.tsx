@@ -1,15 +1,25 @@
 'use client';
 
+import React, { createContext, useContext, useEffect, useState, useRef, ReactNode } from 'react';
 import { ProductItem } from '@/types/api';
-import { useEffect, useRef, useState } from 'react';
+
+interface CompareContextType {
+  products: ProductItem[];
+  addProduct: (
+    product: ProductItem,
+    openReplaceModal: (onReplace: (replaceProductId: number) => void) => void,
+  ) => void;
+  removeProduct: (productId: number) => void;
+  resetProducts: () => void;
+}
+
+const CompareContext = createContext<CompareContextType | undefined>(undefined);
 
 const STORAGE_KEY = 'compareProducts';
 
-export const useCompareProducts = () => {
+export const CompareProvider = ({ children }: { children: ReactNode }) => {
   const [products, setProducts] = useState<ProductItem[]>([]);
   const isInitialized = useRef(false);
-
-  console.log('현재 products 상태:', products);
 
   useEffect(() => {
     try {
@@ -38,22 +48,16 @@ export const useCompareProducts = () => {
     openReplaceModal: (onReplace: (replaceProductId: number) => void) => void,
   ) => {
     setProducts((prev) => {
-      // 이미 존재하는 상품인지 확인
       if (prev.some((p) => p.id === product.id)) {
         return prev;
       }
-      // 상품이 2개 미만일 때(0개 or 1개)
       if (prev.length < 2) {
         return [...prev, product];
       }
-
-      // 목록이 2개일 때 -> 상품 교체 모달 띄우기
       openReplaceModal((replaceProductId: number) => {
-        // 모달에서 교체할 상품 ID를 받아서 처리
         setProducts([...prev.filter((p) => p.id !== replaceProductId), product]);
       });
-
-      return prev; // 모달이 닫힐 때까지 상태 변경하지 않음
+      return prev;
     });
   };
 
@@ -65,5 +69,15 @@ export const useCompareProducts = () => {
     setProducts([]);
   };
 
-  return { products, addProduct, removeProduct, resetProducts };
+  const value = { products, addProduct, removeProduct, resetProducts };
+
+  return <CompareContext.Provider value={value}>{children}</CompareContext.Provider>;
+};
+
+export const useCompareProducts = () => {
+  const context = useContext(CompareContext);
+  if (context === undefined) {
+    throw new Error('useCompareProducts 훅은 CompareProvider 내에서 사용되어야 합니다.');
+  }
+  return context;
 };
