@@ -9,6 +9,7 @@ import ProductNoReview from './ProductNoReview';
 interface ProductReviewListProps extends HTMLAttributes<HTMLDivElement> {
   productId: number;
   order: OrderOptions;
+  userId: number;
   categoryName: string;
   productName: string;
   productImageUrl: string;
@@ -17,6 +18,7 @@ interface ProductReviewListProps extends HTMLAttributes<HTMLDivElement> {
 const ProductReviewList = ({
   className,
   productId,
+  userId,
   order,
   categoryName,
   productName,
@@ -43,6 +45,7 @@ const ProductReviewList = ({
           productName={productName}
           productImageUrl={productImageUrl}
           review={review}
+          userId={userId}
         />
       ))}
       {/* Intersection Observer  */}

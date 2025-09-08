@@ -19,6 +19,7 @@ interface ProductReviewCardProps extends HTMLAttributes<HTMLDivElement> {
   productName: string;
   productImageUrl: string;
   review: Review;
+  userId: number;
 }
 
 const ProductReviewCard = ({
@@ -29,6 +30,7 @@ const ProductReviewCard = ({
   productName,
   productImageUrl,
   review,
+  userId,
   ...props
 }: ProductReviewCardProps) => {
   const queryClient = useQueryClient();
@@ -93,39 +95,43 @@ const ProductReviewCard = ({
             </button>
           </div>
         ) : (
-          <div className='flex gap-2'>
-            <button
-              className={clsx(reviewInfoTextStyle, editTextStyle)}
-              onClick={() =>
-                open({
-                  dialogName: 'review-form-dialog',
-                  dialogProps: {
-                    mode: 'edit',
-                    order,
-                    productId,
-                    categoryName,
-                    productName,
-                    productImageUrl,
-                    reviewId: review.id,
-                    rating: review.rating,
-                    reviewContent: review.content,
-                    reviewImages: review.reviewImages,
-                  },
-                  isBlockBackgroundClose: true,
-                })
-              }
-            >
-              수정
-            </button>
-            <button
-              className={clsx(reviewInfoTextStyle, editTextStyle)}
-              onClick={() => {
-                setIsDeleteMode(true);
-              }}
-            >
-              삭제
-            </button>
-          </div>
+          <>
+            {userId === review.userId && (
+              <button
+                className={clsx(reviewInfoTextStyle, editTextStyle)}
+                onClick={() =>
+                  open({
+                    dialogName: 'review-form-dialog',
+                    dialogProps: {
+                      mode: 'edit',
+                      order,
+                      productId,
+                      categoryName,
+                      productName,
+                      productImageUrl,
+                      reviewId: review.id,
+                      rating: review.rating,
+                      reviewContent: review.content,
+                      reviewImages: review.reviewImages,
+                    },
+                    isBlockBackgroundClose: true,
+                  })
+                }
+              >
+                수정
+              </button>
+            )}
+            {userId === review.userId && (
+              <button
+                className={clsx(reviewInfoTextStyle, editTextStyle)}
+                onClick={() => {
+                  reviewRemoveMutate(review.id);
+                }}
+              >
+                삭제
+              </button>
+            )}
+          </>
         )}
 
         {/* 작성날짜 */}
