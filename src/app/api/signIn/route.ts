@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
 import { AuthResponse } from '@/types/api';
-import { DEFAULT_COOKIE_OPTIONS } from '@/utils/cookieOptions';
+import { DEFAULT_COOKIE_OPTIONS, HTTPONLY_COOKIE_OPTIONS } from '@/utils/cookieOptions';
 
 const BaseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -12,7 +12,7 @@ export const POST = async (req: NextRequest) => {
     const { accessToken, user } = response.data;
 
     const res = NextResponse.json(user, { status: 200 });
-    res.cookies.set('accessToken', accessToken, DEFAULT_COOKIE_OPTIONS);
+    res.cookies.set('accessToken', accessToken, HTTPONLY_COOKIE_OPTIONS);
     res.cookies.set('userId', String(user.id), DEFAULT_COOKIE_OPTIONS);
     return res;
   } catch (err) {

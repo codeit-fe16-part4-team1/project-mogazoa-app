@@ -24,7 +24,6 @@ const ProductList = ({ profileId, productType }: Props) => {
       }),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
-    // select: (data) => data.pages.flatMap((page) => page.list),
   });
 
   const fetchObserverRef = useIntersectionObserver(fetchNextPage);
@@ -36,6 +35,7 @@ const ProductList = ({ profileId, productType }: Props) => {
       {allProducts.map((product) => (
         <ProductCard
           key={product.id}
+          id={product.id}
           imgUrl={product.image}
           name={product.name}
           reviewCount={product.reviewCount}

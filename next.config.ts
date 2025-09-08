@@ -1,17 +1,25 @@
 // next.config.ts
 import type { NextConfig } from 'next';
 import type { Configuration as WebpackConfig } from 'webpack';
+import { IMAGE_PATTERNS } from './config/imageConfig';
 
 const nextConfig: NextConfig = {
   images: {
-    remotePatterns: [
+    remotePatterns: IMAGE_PATTERNS,
+  },
+  async headers() {
+    return [
       {
-        protocol: 'https',
-        hostname: 'sprint-fe-project.s3.ap-northeast-2.amazonaws.com',
-        port: '',
-        pathname: '/**',
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value:
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://t1.kakaocdn.net; object-src 'none';",
+          },
+        ],
       },
-    ],
+    ];
   },
   webpack(config: WebpackConfig) {
     config.module?.rules?.push({

@@ -8,7 +8,7 @@ const FloatingButton = ({ className, children, ...props }: ProductEditButtonProp
   return (
     <button
       className={cn(
-        'flex-center absolute z-100 size-15 rounded-full border',
+        'flex-center absolute z-30 size-15 rounded-full border',
         interactionStyles,
         className,
       )}

@@ -279,6 +279,10 @@ body {
   .hover-grow {
     @apply transition-all duration-200 hover:scale-120;
   }
+
+  .hover-animate {
+    @apply transition-all duration-200;
+  }
 }
 
 /* Dialog Scroll bar */

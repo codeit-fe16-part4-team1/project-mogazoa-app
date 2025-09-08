@@ -1,8 +1,17 @@
 import { IDialogComponents } from '@/types/dialog.types';
 import TestDialog from '../TestDialog';
 import TestInnerDialog from '../TestInnerDialog';
-import { ProfileEditDialogProps, TestInnerDialogProps } from '@/types/dialogProps.types';
+import {
+  ReviewFormDialogProps,
+  ProfileEditDialogProps,
+  ProfileFollowDialogProps,
+  TestInnerDialogProps,
+  ProductFormDialogProps,
+} from '@/types/dialogProps.types';
+import ReviewFormDialog from '../ReviewFormDialog';
 import ProfileEditDialog from '@/app/(user)/components/ProfileSection/ProfileEditDialog';
+import ProfileFollowDialog from '@/app/(user)/components/ProfileSection/ProfileFollowDialog';
+import ProductFormDialog from '../ProductFormDialog';
 
 /**
  * 모든 다이얼로그 컴포넌트를 매핑하는 객체.
@@ -24,5 +33,8 @@ import ProfileEditDialog from '@/app/(user)/components/ProfileSection/ProfileEdi
 export const DIALOG_COMPONENTS: IDialogComponents<any> = {
   'test-dialog': () => <TestDialog />,
   'test-inner-dialog': (props: TestInnerDialogProps) => <TestInnerDialog {...props} />,
+  'product-form-dialog': (props: ProductFormDialogProps) => <ProductFormDialog {...props} />,
+  'review-form-dialog': (props: ReviewFormDialogProps) => <ReviewFormDialog {...props} />,
   'profile-edit-dialog': (props: ProfileEditDialogProps) => <ProfileEditDialog {...props} />,
+  'profile-follow-dialog': (props: ProfileFollowDialogProps) => <ProfileFollowDialog {...props} />,
 } as const;

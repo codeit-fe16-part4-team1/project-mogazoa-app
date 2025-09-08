@@ -8,7 +8,9 @@ import CompareDetail from '@/components/CompareDetail/CompareDetail';
 import CompareCard from '@/components/CompareCard/CompareCard';
 import CompareDetailDefault from '@/components/CompareDetail/CompareDetailDefault';
 import Badge from '@/components/Badge/Badge';
+import { Button } from '@/components/Button/Button';
 import { useQuery } from '@tanstack/react-query';
+import { useCompareProducts } from '@/hooks/useCompareProducts';
 
 const fetchAllProducts = async () => {
   let allItems: ProductItem[] = [];
@@ -29,40 +31,37 @@ const fetchAllProducts = async () => {
 };
 
 const ComparePage = () => {
+  const { products, addProduct, removeProduct, resetProducts } = useCompareProducts();
+  const [isComparing, setIsComparing] = useState(false);
+
   const {
     data: allProducts,
-    isLoading,
+    isPending,
     error,
   } = useQuery({
     queryKey: ['allProducts'],
     queryFn: fetchAllProducts,
   });
 
-  const [selectedProductA, setSelectedProductA] = useState<ProductItem | null>(null);
-  const [selectedProductB, setSelectedProductB] = useState<ProductItem | null>(null);
-  const [isComparing, setIsComparing] = useState(false);
+  const selectedProductA = products[0] || null;
+  const selectedProductB = products[1] || null;
 
-  if (isLoading || !allProducts) {
-    return <div>로딩 중...</div>;
+  if (isPending || !allProducts) {
+    return null;
   }
   if (error) {
     return <div>{error.message}</div>;
   }
 
-  const handleProductSelect = (product: ProductItem, position: 'A' | 'B') => {
-    if (position === 'A') {
-      setSelectedProductA(product);
-    } else {
-      setSelectedProductB(product);
-    }
-    setIsComparing(false);
+  const handleProductSelect = (product: ProductItem) => {
+    console.log('상품 선택 로직 실행', product);
+    addProduct(product, () => {});
   };
 
   const handleProductRemove = (position: 'A' | 'B') => {
-    if (position === 'A') {
-      setSelectedProductA(null);
-    } else {
-      setSelectedProductB(null);
+    const productToRemove = position === 'A' ? selectedProductA : selectedProductB;
+    if (productToRemove) {
+      removeProduct(productToRemove.id);
     }
     setIsComparing(false);
   };
@@ -72,8 +71,8 @@ const ComparePage = () => {
   };
 
   const handleResetClick = () => {
-    setSelectedProductA(null);
-    setSelectedProductB(null);
+    console.log('resetProducts가 호출되었습니다.');
+    resetProducts();
     setIsComparing(false);
   };
 
@@ -172,7 +171,7 @@ const ComparePage = () => {
             products={allProducts}
             selectedProduct={selectedProductA}
             label='A'
-            onSelectProduct={(p) => handleProductSelect(p, 'A')}
+            onSelectProduct={handleProductSelect}
             onRemoveProduct={() => handleProductRemove('A')}
             isComparing={isComparing}
             isRatingWinner={isRatingAWinner}
@@ -185,16 +184,16 @@ const ComparePage = () => {
             <div className='font-cafe24-supermagic text-h1-bold text-gray-600'>VS</div>
 
             <div className='flex w-20 flex-col items-center gap-[63px]'>
-              <div className='text-body2-bold text-gray-600'>⭐️별점</div>
-              <div className='text-body2-bold text-gray-600'>📝 리뷰 개수</div>
-              <div className='text-body2-bold text-gray-600'>🫶🏻 찜 개수</div>
+              <div className='text-body2-bold whitespace-nowrap text-gray-600'>⭐️별점</div>
+              <div className='text-body2-bold whitespace-nowrap text-gray-600'>📝 리뷰 개수</div>
+              <div className='text-body2-bold whitespace-nowrap text-gray-600'>🫶🏻 찜 개수</div>
             </div>
           </div>
           <CompareCard
             products={allProducts}
             selectedProduct={selectedProductB}
             label='B'
-            onSelectProduct={(p) => handleProductSelect(p, 'B')}
+            onSelectProduct={handleProductSelect}
             onRemoveProduct={() => handleProductRemove('B')}
             isComparing={isComparing}
             isRatingWinner={isRatingBWinner}
@@ -258,9 +257,9 @@ const ComparePage = () => {
                     <CompareDetailDefault placeholder='A' />
                   )}
                   <div className='flex w-15 flex-col items-center gap-13 text-gray-600'>
-                    <div className='text-[12px]'>⭐️별점</div>
-                    <div className='text-[12px]'>📝 리뷰 개수</div>
-                    <div className='text-[12px]'>🫶🏻 찜 개수</div>
+                    <div className='text-[12px] whitespace-nowrap'>⭐️별점</div>
+                    <div className='text-[12px] whitespace-nowrap'>📝 리뷰 개수</div>
+                    <div className='text-[12px] whitespace-nowrap'>🫶🏻 찜 개수</div>
                   </div>
                   {selectedProductB ? (
                     <CompareDetail
@@ -283,7 +282,7 @@ const ComparePage = () => {
                   <CompareBar
                     products={allProducts}
                     selectedProduct={selectedProductA}
-                    onSelectProduct={(p) => handleProductSelect(p, 'A')}
+                    onSelectProduct={handleProductSelect}
                     onRemoveProduct={() => handleProductRemove('A')}
                   />
                 </div>
@@ -292,7 +291,7 @@ const ComparePage = () => {
                   <CompareBar
                     products={allProducts}
                     selectedProduct={selectedProductB}
-                    onSelectProduct={(p) => handleProductSelect(p, 'B')}
+                    onSelectProduct={handleProductSelect}
                     onRemoveProduct={() => handleProductRemove('B')}
                   />
                 </div>
@@ -303,22 +302,22 @@ const ComparePage = () => {
 
         {/* 비교하기/다시 비교하기 버튼 */}
         {isComparing ? (
-          <button
+          <Button
             onClick={handleResetClick}
-            className='bg-primary-orange-600 text-body1-bold h-[50px] w-85 rounded-full text-white md:h-[55px]'
+            className='text-body1-bold h-[50px] w-85 text-white md:h-[55px]'
           >
             다시 비교하기
-          </button>
+          </Button>
         ) : (
-          <button
+          <Button
             onClick={handleCompareClick}
             disabled={!bothProductsSelected}
-            className={`text-body1-bold h-[50px] w-85 rounded-full transition-colors duration-200 md:h-[55px] ${bothProductsSelected ? 'bg-primary-orange-600 text-white' : 'cursor-not-allowed bg-gray-200 text-gray-500'}`}
+            className='h-[50px] w-85 md:h-[55px]'
           >
             {bothProductsSelected
               ? '상품 비교하기'
               : `비교할 상품 2개를 입력해주세요 (${[selectedProductA, selectedProductB].filter(Boolean).length}/2)`}
-          </button>
+          </Button>
         )}
       </div>
     </div>
