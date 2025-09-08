@@ -7,10 +7,6 @@ const meta: Meta<typeof Button> = {
   tags: ['autodocs'],
   argTypes: {
     onClick: { action: 'clicked' },
-    size: {
-      control: 'select',
-      options: ['S', 'M', 'L'],
-    },
     state: {
       control: 'select',
       options: ['default', 'active', 'disabled'],
@@ -33,7 +29,6 @@ type Story = StoryObj<typeof Button>;
 export const Primary: Story = {
   args: {
     intent: 'primary',
-    size: 'S', // 초기 사이즈
     state: 'default', // 초기 상태
     children: 'Primary Button', // 초기 텍스트
   },
@@ -43,7 +38,6 @@ export const Primary: Story = {
 export const Secondary: Story = {
   args: {
     intent: 'secondary',
-    size: 'S',
     state: 'default',
     children: 'Secondary Button',
   },
@@ -53,7 +47,6 @@ export const Secondary: Story = {
 export const Tertiary: Story = {
   args: {
     intent: 'tertiary',
-    size: 'S',
     state: 'default',
     children: 'Tertiary Button',
   },
