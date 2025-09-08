@@ -1,16 +1,24 @@
+'use client';
+
 import { ProductItem } from '@/types/api';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const STORAGE_KEY = 'compareProducts';
 
 export const useCompareProducts = () => {
   const [products, setProducts] = useState<ProductItem[]>([]);
+  const isInitialized = useRef(false);
+
+  console.log('현재 products 상태:', products);
 
   useEffect(() => {
     try {
-      const storedProducts = localStorage.getItem(STORAGE_KEY);
-      if (storedProducts) {
-        setProducts(JSON.parse(storedProducts));
+      if (!isInitialized.current) {
+        const storedProducts = localStorage.getItem(STORAGE_KEY);
+        if (storedProducts) {
+          setProducts(JSON.parse(storedProducts));
+        }
+        isInitialized.current = true;
       }
     } catch (e) {
       console.error('localStorage에서 상품을 로드하지 못했습니다.', e);

@@ -54,6 +54,7 @@ const ComparePage = () => {
   }
 
   const handleProductSelect = (product: ProductItem) => {
+    console.log('상품 선택 로직 실행', product);
     addProduct(product, () => {});
   };
 
@@ -70,6 +71,7 @@ const ComparePage = () => {
   };
 
   const handleResetClick = () => {
+    console.log('resetProducts가 호출되었습니다.');
     resetProducts();
     setIsComparing(false);
   };
