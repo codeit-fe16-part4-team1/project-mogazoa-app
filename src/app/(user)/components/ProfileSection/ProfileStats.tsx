@@ -24,8 +24,8 @@ const ProfileStats = ({ profile }: Props) => {
       value: (
         <CategorieChip
           key={profile.mostFavoriteCategory?.name}
+          categoryId={profile.mostFavoriteCategory.id}
           variant='default'
-          className='md:text-xl'
         >
           {profile.mostFavoriteCategory?.name}
         </CategorieChip>
