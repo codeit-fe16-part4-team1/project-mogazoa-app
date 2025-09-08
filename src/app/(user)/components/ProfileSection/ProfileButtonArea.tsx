@@ -73,13 +73,12 @@ const ProfileButtonArea = ({ profile, isMyProfile }: Props) => {
   return (
     <article>
       {isMyProfile && (
-        <Button intent='tertiary' size='S' className={BUTTON_STYLES} onClick={handleSignoutClick}>
+        <Button intent='tertiary' className={BUTTON_STYLES} onClick={handleSignoutClick}>
           로그아웃
         </Button>
       )}
       {!isMyProfile && (
         <Button
-          size='S'
           intent={profile.isFollowing ? 'secondary' : 'primary'}
           className={BUTTON_STYLES}
           onClick={handleFollowToggle}
