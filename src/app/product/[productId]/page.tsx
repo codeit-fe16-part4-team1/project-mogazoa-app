@@ -7,11 +7,13 @@ import { getUserInfo } from '@/lib/getUserInfo';
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
 
-export const generateMetadata = async ({
-  params,
-}: {
-  params: { productId: string };
-}): Promise<Metadata> => {
+interface PageProps {
+  params: Promise<{
+    productId: string;
+  }>;
+}
+
+export const generateMetadata = async ({ params }: PageProps): Promise<Metadata> => {
   const { productId: slug } = await params;
 
   const headersList = headers();
