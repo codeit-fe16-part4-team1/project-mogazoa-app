@@ -10,6 +10,7 @@ import CompareDetailDefault from '@/components/CompareDetail/CompareDetailDefaul
 import Badge from '@/components/Badge/Badge';
 import { Button } from '@/components/Button/Button';
 import { useQuery } from '@tanstack/react-query';
+import { useCompareProducts } from '@/hooks/useCompareProducts';
 
 const fetchAllProducts = async () => {
   let allItems: ProductItem[] = [];
@@ -30,6 +31,9 @@ const fetchAllProducts = async () => {
 };
 
 const ComparePage = () => {
+  const { products, addProduct, removeProduct, resetProducts } = useCompareProducts();
+  const [isComparing, setIsComparing] = useState(false);
+
   const {
     data: allProducts,
     isPending,
@@ -39,9 +43,8 @@ const ComparePage = () => {
     queryFn: fetchAllProducts,
   });
 
-  const [selectedProductA, setSelectedProductA] = useState<ProductItem | null>(null);
-  const [selectedProductB, setSelectedProductB] = useState<ProductItem | null>(null);
-  const [isComparing, setIsComparing] = useState(false);
+  const selectedProductA = products[0] || null;
+  const selectedProductB = products[1] || null;
 
   if (isPending || !allProducts) {
     return null;
@@ -50,20 +53,14 @@ const ComparePage = () => {
     return <div>{error.message}</div>;
   }
 
-  const handleProductSelect = (product: ProductItem, position: 'A' | 'B') => {
-    if (position === 'A') {
-      setSelectedProductA(product);
-    } else {
-      setSelectedProductB(product);
-    }
-    setIsComparing(false);
+  const handleProductSelect = (product: ProductItem) => {
+    addProduct(product, () => {});
   };
 
   const handleProductRemove = (position: 'A' | 'B') => {
-    if (position === 'A') {
-      setSelectedProductA(null);
-    } else {
-      setSelectedProductB(null);
+    const productToRemove = position === 'A' ? selectedProductA : selectedProductB;
+    if (productToRemove) {
+      removeProduct(productToRemove.id);
     }
     setIsComparing(false);
   };
@@ -73,8 +70,7 @@ const ComparePage = () => {
   };
 
   const handleResetClick = () => {
-    setSelectedProductA(null);
-    setSelectedProductB(null);
+    resetProducts();
     setIsComparing(false);
   };
 
@@ -173,7 +169,7 @@ const ComparePage = () => {
             products={allProducts}
             selectedProduct={selectedProductA}
             label='A'
-            onSelectProduct={(p) => handleProductSelect(p, 'A')}
+            onSelectProduct={handleProductSelect}
             onRemoveProduct={() => handleProductRemove('A')}
             isComparing={isComparing}
             isRatingWinner={isRatingAWinner}
@@ -195,7 +191,7 @@ const ComparePage = () => {
             products={allProducts}
             selectedProduct={selectedProductB}
             label='B'
-            onSelectProduct={(p) => handleProductSelect(p, 'B')}
+            onSelectProduct={handleProductSelect}
             onRemoveProduct={() => handleProductRemove('B')}
             isComparing={isComparing}
             isRatingWinner={isRatingBWinner}
@@ -284,7 +280,7 @@ const ComparePage = () => {
                   <CompareBar
                     products={allProducts}
                     selectedProduct={selectedProductA}
-                    onSelectProduct={(p) => handleProductSelect(p, 'A')}
+                    onSelectProduct={handleProductSelect}
                     onRemoveProduct={() => handleProductRemove('A')}
                   />
                 </div>
@@ -293,7 +289,7 @@ const ComparePage = () => {
                   <CompareBar
                     products={allProducts}
                     selectedProduct={selectedProductB}
-                    onSelectProduct={(p) => handleProductSelect(p, 'B')}
+                    onSelectProduct={handleProductSelect}
                     onRemoveProduct={() => handleProductRemove('B')}
                   />
                 </div>
@@ -304,7 +300,10 @@ const ComparePage = () => {
 
         {/* 비교하기/다시 비교하기 버튼 */}
         {isComparing ? (
-          <Button onClick={handleResetClick} className='text-body1-bold h-[50px] w-85 md:h-[55px]'>
+          <Button
+            onClick={handleResetClick}
+            className='text-body1-bold h-[50px] w-85 text-white md:h-[55px]'
+          >
             다시 비교하기
           </Button>
         ) : (
