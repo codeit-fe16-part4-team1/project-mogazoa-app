@@ -95,7 +95,7 @@ const ProductReviewCard = ({
             </button>
           </div>
         ) : (
-          <div className='flex gap-2'>
+          {userId === review.userId && (
             <button
               className={clsx(reviewInfoTextStyle, editTextStyle)}
               onClick={() =>
@@ -117,17 +117,18 @@ const ProductReviewCard = ({
                 })
               }
             >
-              수정
-            </button>
-            <button
-              className={clsx(reviewInfoTextStyle, editTextStyle)}
-              onClick={() => {
-                setIsDeleteMode(true);
-              }}
-            >
-              삭제
-            </button>
-          </div>
+            수정
+          </button>
+        )}
+        {userId === review.userId && (
+          <button
+            className={clsx(reviewInfoTextStyle, editTextStyle)}
+            onClick={() => {
+              reviewRemoveMutate(review.id);
+            }}
+          >
+            삭제
+          </button>
         )}
 
         {/* 작성날짜 */}
