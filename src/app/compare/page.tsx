@@ -32,7 +32,7 @@ const fetchAllProducts = async () => {
 const ComparePage = () => {
   const {
     data: allProducts,
-    isLoading,
+    isPending,
     error,
   } = useQuery({
     queryKey: ['allProducts'],
@@ -43,7 +43,7 @@ const ComparePage = () => {
   const [selectedProductB, setSelectedProductB] = useState<ProductItem | null>(null);
   const [isComparing, setIsComparing] = useState(false);
 
-  if (isLoading || !allProducts) {
+  if (isPending || !allProducts) {
     return null;
   }
   if (error) {
