@@ -7,6 +7,7 @@ import Script from 'next/script';
 import { Suspense } from 'react';
 import Header from '@/components/Header/Header';
 import Loading from './loading/loading';
+import { CompareProvider } from '@/context/CompareProvider';
 
 const cafe24Supermagic = localFont({
   src: [
@@ -64,11 +65,13 @@ export default function RootLayout({
       </head>
       <body>
         <Providers>
-          <Suspense fallback={<Loading />}>
-            <Header />
-            {children}
-          </Suspense>
-          <GlobalDialog />
+          <CompareProvider>
+            <Suspense fallback={<Loading />}>
+              <Header />
+              {children}
+            </Suspense>
+            <GlobalDialog />
+          </CompareProvider>
         </Providers>
       </body>
     </html>
