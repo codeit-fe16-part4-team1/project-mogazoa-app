@@ -13,6 +13,7 @@ interface ProductReviewListProps extends HTMLAttributes<HTMLDivElement> {
   categoryName: string;
   productName: string;
   productImageUrl: string;
+  authenticated: boolean;
 }
 
 const ProductReviewList = ({
@@ -23,6 +24,7 @@ const ProductReviewList = ({
   categoryName,
   productName,
   productImageUrl,
+  authenticated,
   ...props
 }: ProductReviewListProps) => {
   const {
@@ -46,6 +48,7 @@ const ProductReviewList = ({
           productImageUrl={productImageUrl}
           review={review}
           userId={userId}
+          authenticated={authenticated}
         />
       ))}
       {/* Intersection Observer  */}
