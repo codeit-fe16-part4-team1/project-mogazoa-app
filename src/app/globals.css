@@ -283,6 +283,10 @@ body {
   .hover-animate {
     @apply transition-all duration-200;
   }
+
+  .formfield-animate {
+    @apply transition-all duration-300 ease-in-out;
+  }
 }
 
 @layer utilities {

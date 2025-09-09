@@ -125,7 +125,7 @@ const SigninPage = () => {
             />
           </FormFieldContainer>
           <Button
-            className='mt-10 w-full md:mt-20 md:h-16'
+            className='mt-10 h-12 w-full md:mt-20 md:h-16'
             type='submit'
             disabled={isSubmitting || !isValid}
           >
