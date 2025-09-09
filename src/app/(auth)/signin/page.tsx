@@ -68,7 +68,7 @@ const SigninPage = () => {
   };
 
   const handleKakaoSigninClick = () => {
-    redirectKakaoAuth();
+    redirectKakaoAuth.signin();
   };
 
   const FORM_MARGIN_STYLES = 'mt-28 md:mt-42 lg:my-10';
