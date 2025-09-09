@@ -5,14 +5,16 @@ import {
   DialogTitle,
 } from '@/components/Dialog/core/DialogComponents';
 import { Button } from '../Button/Button';
+import { useRouter } from 'next/navigation';
+import useDialogStore from '@/store/useDialogStore';
 
-interface CompareConfirmDialogProps {
-  onNavigate: () => void;
-}
+const CompareConfirmDialog = () => {
+  const router = useRouter();
+  const { closeDialog } = useDialogStore();
 
-const CompareConfirmDialog = ({ onNavigate }: CompareConfirmDialogProps) => {
   const handleNavigateClick = () => {
-    onNavigate();
+    router.push('/compare');
+    closeDialog();
   };
   return (
     <DialogContent className='rounded-x5 flex h-52 w-[335px] flex-col items-center justify-center border border-gray-200 md:h-[263px] md:w-125'>

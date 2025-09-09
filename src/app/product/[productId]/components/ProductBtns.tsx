@@ -4,7 +4,7 @@ import useDialogStore from '@/store/useDialogStore';
 import { cn } from '@/lib/cn';
 import { OrderOptions, ProductItem } from '@/types/api';
 import { HTMLAttributes } from 'react';
-import { useCompareProducts } from '@/context/CompareProvider';
+import { useCompareStore } from '@/store/useCompareStore';
 import { useRouter } from 'next/navigation';
 import CompareDialog from '@/components/Dialog/CompareDialog';
 
@@ -28,7 +28,7 @@ const ProductBtns = ({
   ...props
 }: ProductBtnsProps) => {
   const router = useRouter();
-  const { products, addProduct } = useCompareProducts();
+  const { products, addProduct } = useCompareStore();
   const { open } = useDialog();
   const { openDialog } = useDialogStore();
 

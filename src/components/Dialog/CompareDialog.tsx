@@ -3,7 +3,6 @@ import { ProductItem } from '@/types/api';
 import { useState } from 'react';
 import { DialogContent, DialogHeader, DialogTitle } from './core/DialogComponents';
 import { Button } from '../Button/Button';
-import { useRouter } from 'next/navigation';
 import CompareConfirmDialog from './CompareConfirmDialog';
 
 export interface CompareDialogProps {
@@ -13,7 +12,6 @@ export interface CompareDialogProps {
 }
 
 const CompareDialog = ({ products, newProduct, onReplace }: CompareDialogProps) => {
-  const router = useRouter();
   const { openDialog, closeDialog } = useDialogStore();
   const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
 
@@ -24,7 +22,7 @@ const CompareDialog = ({ products, newProduct, onReplace }: CompareDialogProps) 
 
       openDialog({
         dialogName: 'compare-confirmation-dialog',
-        dialogContent: <CompareConfirmDialog onNavigate={() => router.push('/compare')} />,
+        dialogContent: <CompareConfirmDialog />,
       });
     }
   };
@@ -58,7 +56,7 @@ const CompareDialog = ({ products, newProduct, onReplace }: CompareDialogProps) 
         disabled={selectedProductId === null}
         className='h-[55px] w-full md:h-[67px] md:w-105'
       >
-        교체하기
+        비교하기
       </Button>
     </DialogContent>
   );
