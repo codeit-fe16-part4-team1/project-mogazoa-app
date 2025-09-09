@@ -5,10 +5,8 @@ import { ProductItem } from '@/types/api';
 
 interface CompareStore {
   products: ProductItem[];
-  addProduct: (
-    product: ProductItem,
-    openReplaceModal: (onReplace: (replaceProductId: number) => void) => void,
-  ) => void;
+  addProduct: (product: ProductItem) => void;
+  setComparisonProducts: (newProducts: ProductItem[]) => void;
   removeProduct: (productId: number) => void;
   resetProducts: () => void;
 }
@@ -17,18 +15,16 @@ const STORAGE_KEY = 'compareProducts';
 
 export const useCompareStore = create<CompareStore>((set, get) => ({
   products: [],
-  addProduct: (product, openReplaceModal) => {
+  addProduct: (product) => {
     const state = get();
-    if (state.products.some((p) => p.id === product.id)) {
+    // 상품이 이미 있거나, 목록이 2개면 추가하지 않고 바로 반환
+    if (state.products.some((p) => p.id === product.id) || state.products.length >= 2) {
       return;
     }
-    if (state.products.length < 2) {
-      set({ products: [...state.products, product] });
-    } else {
-      openReplaceModal((replaceProductId) => {
-        set({ products: [...state.products.filter((p) => p.id !== replaceProductId), product] });
-      });
-    }
+    set({ products: [...state.products, product] });
+  },
+  setComparisonProducts: (newProducts) => {
+    set({ products: newProducts });
   },
   removeProduct: (productId) => {
     set((state) => ({ products: state.products.filter((p) => p.id !== productId) }));
