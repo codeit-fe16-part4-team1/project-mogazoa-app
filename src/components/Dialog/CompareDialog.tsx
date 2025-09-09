@@ -7,7 +7,7 @@ import { Button } from '../Button/Button';
 import CompareConfirmDialog from './CompareConfirmDialog';
 
 export interface CompareDialogProps {
-  products: ProductItem[];
+  products: (ProductItem | null)[];
   newProduct: ProductItem;
 }
 
@@ -18,7 +18,7 @@ const CompareDialog = ({ products, newProduct }: CompareDialogProps) => {
 
   const handleReplaceClick = () => {
     if (selectedProductId !== null) {
-      const selectedProduct = products.find((p) => p.id === selectedProductId);
+      const selectedProduct = products.find((p) => p?.id === selectedProductId);
       if (selectedProduct) {
         setComparisonProducts([selectedProduct, newProduct]);
       }
@@ -44,13 +44,13 @@ const CompareDialog = ({ products, newProduct }: CompareDialogProps) => {
       <div className='flex w-[290px] flex-col gap-3 md:w-105'>
         {products.map((product) => (
           <Button
-            key={product.id}
-            onClick={() => setSelectedProductId(product.id)}
+            key={product?.id}
+            onClick={() => setSelectedProductId(product?.id || null)}
             className='h-[50px] w-full md:h-15'
-            state={selectedProductId === product.id ? 'default' : 'disabled'}
+            state={selectedProductId === product?.id ? 'default' : 'disabled'}
             intent='secondary'
           >
-            {product.name}
+            {product?.name}
           </Button>
         ))}
       </div>

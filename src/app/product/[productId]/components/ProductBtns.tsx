@@ -33,7 +33,7 @@ const ProductBtns = ({
   const { openDialog } = useDialogStore();
 
   const handleCompareClick = () => {
-    if (products.length < 2) {
+    if (products.filter(Boolean).length < 2) {
       addProduct(product);
     } else {
       openDialog({
