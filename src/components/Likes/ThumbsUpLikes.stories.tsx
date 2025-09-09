@@ -25,9 +25,23 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  args: { productId: 0, reviewId: 0, likes: 123, liked: false, order: 'recent' },
+  args: {
+    productId: 0,
+    reviewId: 0,
+    likes: 123,
+    liked: false,
+    order: 'recent',
+    authenticated: true,
+  },
 };
 
 export const Liked: Story = {
-  args: { productId: 0, reviewId: 0, likes: 123, liked: true, order: 'recent' },
+  args: {
+    productId: 0,
+    reviewId: 0,
+    likes: 123,
+    liked: true,
+    order: 'recent',
+    authenticated: true,
+  },
 };

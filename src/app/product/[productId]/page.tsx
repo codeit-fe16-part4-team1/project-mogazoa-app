@@ -83,7 +83,7 @@ const ProductDetailPageServer = async ({ params }: { params: Promise<{ productId
   const { productId: slug } = await params;
   const productId = Number(slug);
   const order = 'recent';
-  const { userId } = await getUserInfo();
+  const { userId, isAuthenticated } = await getUserInfo();
   const queryClient = new QueryClient();
 
   await Promise.all([
@@ -100,7 +100,12 @@ const ProductDetailPageServer = async ({ params }: { params: Promise<{ productId
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ProductDetailPage productId={productId} order={order} userId={userId} />
+      <ProductDetailPage
+        productId={productId}
+        order={order}
+        userId={userId}
+        authenticated={isAuthenticated}
+      />
     </HydrationBoundary>
   );
 };

@@ -8,12 +8,14 @@ import useCopyToClipboard from '@/hooks/useCopyToClipboard';
 interface ProductShareBtnsProps extends HTMLAttributes<HTMLDivElement> {
   productId: number;
   isHeartFavorite: boolean;
+  authenticated: boolean;
 }
 
 const ProductShareBtns = ({
   className,
   productId,
   isHeartFavorite,
+  authenticated,
   ...props
 }: ProductShareBtnsProps) => {
   const [_isCopyed, copy] = useCopyToClipboard();
@@ -44,7 +46,7 @@ const ProductShareBtns = ({
 
   return (
     <div className={cn('inline-flex-between-center mb-8 gap-3 md:mb-12', className)} {...props}>
-      <HeartLikes productId={productId} favorite={isHeartFavorite} />
+      <HeartLikes productId={productId} favorite={isHeartFavorite} authenticated={authenticated} />
       <KakaoShareBtn className='hover-grow cursor-pointer' onClick={shareKakaoTalk} />
       <ShareBtn className='hover-grow cursor-pointer' onClick={copy} />
     </div>

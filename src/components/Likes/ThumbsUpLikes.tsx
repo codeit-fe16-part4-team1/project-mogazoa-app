@@ -16,6 +16,7 @@ interface ThumbsUpLikesProps
   order: OrderOptions;
   likes: number;
   liked: boolean;
+  authenticated: boolean;
 }
 
 const buttonLayoutStyle =
@@ -27,6 +28,9 @@ const thumbsUpButtonVariants = cva(cn(buttonLayoutStyle, buttonStyle), {
     liked: {
       true: 'bg-gray-900 text-white border-gray-900 hover:bg-gray-800',
       false: cn('bg-white text-gray-900 border-gray-300 hover:bg-gray-200'),
+    },
+    authenticated: {
+      false: 'cursor-not-allowed',
     },
   },
   defaultVariants: { liked: false },
@@ -55,6 +59,7 @@ const ThumbsUpLikes = ({
   order,
   likes,
   liked = false,
+  authenticated,
   ...props
 }: ThumbsUpLikesProps) => {
   const { mutate } = useOptimisticMutation<
@@ -86,8 +91,9 @@ const ThumbsUpLikes = ({
 
   return (
     <button
-      className={cn(thumbsUpButtonVariants({ liked }), className)}
+      className={cn(thumbsUpButtonVariants({ liked, authenticated }), className)}
       onClick={() => mutate(reviewId)}
+      disabled={!authenticated}
       {...props}
     >
       <ThumbsUpIcon className={cn(thumbsUpIconVariants({ liked }))} />

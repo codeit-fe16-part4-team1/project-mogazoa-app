@@ -20,6 +20,7 @@ interface ProductReviewCardProps extends HTMLAttributes<HTMLDivElement> {
   productImageUrl: string;
   review: Review;
   userId: number;
+  authenticated: boolean;
 }
 
 const ProductReviewCard = ({
@@ -31,6 +32,7 @@ const ProductReviewCard = ({
   productImageUrl,
   review,
   userId,
+  authenticated,
   ...props
 }: ProductReviewCardProps) => {
   const queryClient = useQueryClient();
@@ -164,6 +166,7 @@ const ProductReviewCard = ({
         order={order}
         likes={review.likeCount}
         liked={review.isLiked}
+        authenticated={authenticated}
       />
     </div>
   );

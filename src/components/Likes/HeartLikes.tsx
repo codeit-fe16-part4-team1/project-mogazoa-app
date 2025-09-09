@@ -14,6 +14,7 @@ interface HeartLikesProps
   extends HTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof heartFavoritedVariants> {
   productId: number;
+  authenticated: boolean;
 }
 
 const heartFavoritedVariants = cva(
@@ -24,6 +25,9 @@ const heartFavoritedVariants = cva(
         true: 'text-heart-full',
         false: 'text-gray-100',
       },
+      authenticated: {
+        false: 'text-gray-400 cursor-not-allowed',
+      },
     },
     defaultVariants: { favorite: false },
   },
@@ -31,7 +35,13 @@ const heartFavoritedVariants = cva(
 
 type MutaionParams = number;
 
-const HeartLikes = ({ className, productId, favorite = false, ...props }: HeartLikesProps) => {
+const HeartLikes = ({
+  className,
+  productId,
+  favorite = false,
+  authenticated,
+  ...props
+}: HeartLikesProps) => {
   const { mutate } = useOptimisticMutation<ProductDetail, ProductDetail, MutaionParams>({
     mutationFn: favorite ? removeFavoriteProduct : addFavoriteProduct,
     queryKey: productKeys.detail(productId),
@@ -40,9 +50,10 @@ const HeartLikes = ({ className, productId, favorite = false, ...props }: HeartL
 
   return (
     <button
-      className={cn(heartFavoritedVariants({ favorite }), className)}
+      className={cn(heartFavoritedVariants({ favorite, authenticated }), className)}
       {...props}
       onClick={() => mutate(productId)}
+      disabled={!authenticated}
     >
       <HeartIcon className='size-fit fill-current stroke-black stroke-12' />
     </button>
