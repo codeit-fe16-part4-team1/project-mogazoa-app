@@ -21,7 +21,7 @@ const ProfileStats = ({ profile }: Props) => {
     },
     {
       label: '관심 카테고리',
-      value: (
+      value: profile?.mostFavoriteCategory ? (
         <CategorieChip
           key={profile.mostFavoriteCategory?.name}
           categoryId={profile.mostFavoriteCategory.id}
@@ -29,6 +29,8 @@ const ProfileStats = ({ profile }: Props) => {
         >
           {profile.mostFavoriteCategory?.name}
         </CategorieChip>
+      ) : (
+        <p className='text-sub-headline-bold px-2 py-1 md:text-2xl'>-</p>
       ),
     },
   ];

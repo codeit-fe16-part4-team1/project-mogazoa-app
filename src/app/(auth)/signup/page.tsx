@@ -145,7 +145,7 @@ const SignupPage = () => {
             {/* 제출 버튼 */}
           </div>
           <Button
-            className='mt-10 w-full md:h-16'
+            className='mt-10 h-12 w-full md:h-16'
             type='submit'
             disabled={isSubmitting || !isValid}
           >
