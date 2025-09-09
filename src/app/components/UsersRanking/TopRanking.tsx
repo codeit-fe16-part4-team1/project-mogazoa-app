@@ -13,7 +13,7 @@ const TopRanking = ({ user, index }: { user: UserRanking; index: number }) => {
   return (
     <div
       className={clsx(
-        'flex flex-col items-center justify-end gap-2 tracking-[-0.4px] md:gap-5',
+        'flex flex-col items-center justify-end gap-2 tracking-[-0.4px] whitespace-nowrap md:gap-5',
         index === 0 && 'order-1',
         index === 2 && 'order-2',
       )}
