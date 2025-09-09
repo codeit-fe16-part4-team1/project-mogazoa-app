@@ -12,12 +12,13 @@ const SigninKakao = () => {
   const pathname = usePathname();
   const code = searchParams.get('code');
   const error = searchParams.get('error');
+  const state = searchParams.get('state');
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
   const redirectUri = `${origin}${pathname}`;
 
   const [type, setType] = useState<AuthType>('signin');
 
-  const { signinKakao } = useAuthStore();
+  const { signinKakao, signupKakao } = useAuthStore();
 
   const router = useRouter();
 
@@ -34,10 +35,18 @@ const SigninKakao = () => {
       }
 
       try {
-        await signinKakao({
-          redirectUri,
-          token: code,
-        });
+        if (!state) {
+          await signinKakao({
+            redirectUri,
+            token: code,
+          });
+        } else {
+          await signupKakao({
+            redirectUri,
+            token: code,
+            nickname: state,
+          });
+        }
         router.replace('/');
       } catch (e) {
         if (e instanceof AxiosError) {
@@ -54,7 +63,7 @@ const SigninKakao = () => {
     };
 
     handleKakaoSignIn();
-  }, [code, error, redirectUri, router, signinKakao]); // 의존성 배열도 추가
+  }, [code, error, redirectUri, router, signinKakao, signupKakao, state]); // 의존성 배열도 추가
   if (type === 'signin') return <div>간편 로그인중...</div>;
   if (!code) return;
   return <SignupKakao code={code} redirectUri={redirectUri} />;

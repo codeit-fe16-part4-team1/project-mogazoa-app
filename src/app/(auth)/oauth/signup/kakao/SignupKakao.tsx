@@ -11,6 +11,7 @@ import IconBack from '@/assets/icons/icon_arrow_prev.svg';
 import { useRouter } from 'next/navigation';
 import useAuthStore from '@/store/useAuthStore';
 import { AxiosError } from 'axios';
+import { redirectKakaoAuth } from '@/lib/redirectKakaoAuth';
 
 const kakaoSignupSchema = z.object({
   nickname: z
@@ -55,16 +56,20 @@ const SignupKakao = ({ code, redirectUri }: Props) => {
       router.replace('/');
     } catch (e) {
       if (e instanceof AxiosError) {
-        const errorKey = Object.keys(e.response?.data.details)[0];
         const errorMessage = e.response?.data.message;
         // 닉네임 중복 에러 처리
+        console.log(errorMessage);
         if (e.status === 400 && errorMessage === '이미 사용중인 닉네임입니다.') {
+          const errorKey = Object.keys(e.response?.data.details)[0];
           if (errorKey === 'nickname') {
             setError('nickname', {
               type: 'manual',
               message: errorMessage,
             });
           }
+        }
+        if (e.status === 400 && errorMessage === '잘못된 인가 코드입니다.') {
+          redirectKakaoAuth.signup({ state: data.nickname });
         }
       } else {
         router.replace('/error?type=unknown_error');
