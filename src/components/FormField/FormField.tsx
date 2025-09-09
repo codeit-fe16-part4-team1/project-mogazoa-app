@@ -82,29 +82,33 @@ const FormField = ({
   const FLOATING_LABEL_STYLES = {
     base: cn(
       'bg-white px-2 text-body1-medium',
-      'absolute top-0 left-11 translate-y-[-50%]',
+      'absolute top-0 left-11 translate-y-[-50%] text-center',
       ERROR_STATE_STYLES.text[`${errorState}`],
     ),
     hidden: 'group-has-[:placeholder-shown]:group-[:not(:focus-within)]:opacity-0',
     visible: 'group-focus-within:opacity-100 group-has-[:not(:placeholder-shown)]:opacity-100',
-    animation: 'transition-all duration-200 ease-in-out',
+    animation: 'formfield-animate',
   };
 
   const INPUT_CONTAINER_STYLES = cn(
     'flex h-13 flex-row items-center gap-3 rounded-full border-1 px-5 md:h-16',
     ERROR_STATE_STYLES.border[`${errorState}`],
+    'formfield-animate',
   );
 
-  const FIELD_ICON_STYLES = cn(ERROR_STATE_STYLES.text[`${errorState}`]);
+  const FIELD_ICON_STYLES = cn(ERROR_STATE_STYLES.text[`${errorState}`], 'formfield-animate');
 
   const INPUT_STYLES = cn(
-    'text-body1 grow outline-0 placeholder:text-gray-600',
-    'group-focus-within:placeholder:text-transparent',
+    'text-body1 grow outline-0',
+    'placeholder:text-gray-600 placeholder:transition-opacity placeholder:duration-300',
+    'group-focus-within:placeholder:opacity-0',
   );
 
   const HINT_STYLES = cn(
     'mt-3 h-[17px] text-[14px]/[17px]',
     ERROR_STATE_STYLES.text[`${errorState}`],
+    'formfield-animate opacity-0',
+    errorState && 'opacity-100',
   );
 
   return (
@@ -132,7 +136,9 @@ const FormField = ({
           autoComplete={autoComplete}
           {...InputRegister}
         />
-        {type === 'password' && <IconEye onClick={handlePasswordIconClick} />}
+        {type === 'password' && (
+          <IconEye className='cursor-pointer' onClick={handlePasswordIconClick} />
+        )}
       </div>
       <p className={HINT_STYLES}>{hint}</p>
     </div>

@@ -7,13 +7,16 @@ import clsx from 'clsx';
 import { getUploadedImageUrlAPI } from '@/api/image/getUploadedImageUrlAPI';
 
 // ImageInput 전용 zod schema
-export const ImageInputSchema = (maxImageCount: number) => {
+export const ImageInputSchema = (maxImageCount: number, required: boolean = true) => {
   return z
     .record(
       z.string(),
       z.custom<File | null>((val) => val instanceof File || val === null),
     )
-    .refine((data) => Object.keys(data).length >= 1, '이미지를 1개 이상 선택해주세요')
+    .refine((data) => {
+      if (!required) return true;
+      return Object.keys(data).length >= 1;
+    }, '이미지를 1개 이상 선택해주세요')
     .refine(
       (data) => Object.keys(data).length <= maxImageCount,
       `최대 ${maxImageCount}개까지 선택 가능합니다`,
@@ -47,12 +50,20 @@ export const getUploadedImageUrlArray = async (imageList: ImageList): Promise<st
 
 // ImageInput Type
 interface ImageInputProps {
+  className?: string;
   value?: ImageList;
   onChange: (imageList: ImageList) => void;
   maxImageCount: number;
+  singleImageMode?: boolean;
 }
 
-const ImageInput = ({ value: imageList = {}, onChange, maxImageCount }: ImageInputProps) => {
+const ImageInput = ({
+  className,
+  value: imageList = {},
+  onChange,
+  maxImageCount,
+  singleImageMode = false,
+}: ImageInputProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleAddButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -104,21 +115,26 @@ const ImageInput = ({ value: imageList = {}, onChange, maxImageCount }: ImageInp
   const COMMON_ELEMENT_STYLES =
     'border-1 border-gray-300 aspect-square w-30 md:w-35 rounded-xl flex-shrink-0';
 
+  const inputButton = (
+    <button
+      className={clsx(ADDBUTTON_STYLES, COMMON_ELEMENT_STYLES)}
+      onClick={handleAddButtonClick}
+    >
+      <IconAdd className='size-6' />
+      <span>이미지추가</span>
+      <div>
+        <span className={clsx(Object.keys(imageList).length > 0 && 'text-primary-orange-700')}>
+          {Object.keys(imageList).length}
+        </span>
+        <span>{`/${maxImageCount}`}</span>
+      </div>
+    </button>
+  );
+
   return (
-    <div className={CONTAINER_STYLES}>
-      <button
-        className={clsx(ADDBUTTON_STYLES, COMMON_ELEMENT_STYLES)}
-        onClick={handleAddButtonClick}
-      >
-        <IconAdd />
-        <span>이미지추가</span>
-        <div>
-          <span className={clsx(Object.keys(imageList).length > 0 && 'text-primary-orange-700')}>
-            {Object.keys(imageList).length}
-          </span>
-          <span>{`/${maxImageCount}`}</span>
-        </div>
-      </button>
+    <div className={clsx(CONTAINER_STYLES, className)}>
+      {singleImageMode && imageList && Object.keys(imageList).length === 0 && inputButton}
+      {!singleImageMode && inputButton}
       <input
         ref={fileInputRef}
         className='hidden'

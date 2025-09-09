@@ -1,6 +1,6 @@
 import axios from 'axios';
-import Cookies from 'js-cookie';
 import { redirect } from 'next/navigation';
+import { getAccessToken } from './getAccessToken';
 
 export const baseAPI = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
@@ -9,18 +9,21 @@ export const baseAPI = axios.create({
 
 baseAPI.interceptors.request.use(async (config) => {
   const isServer = typeof window === 'undefined';
+
   if (isServer) {
     const { cookies } = await import('next/headers');
-    const token = (await cookies()).get('accessToken')?.value;
+    const cookieStore = await cookies();
+    const token = cookieStore.get('accessToken')?.value;
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
   } else {
-    const token = Cookies.get('accessToken');
+    const token = await getAccessToken();
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
   }
+
   return config;
 });
 
@@ -29,9 +32,11 @@ baseAPI.interceptors.response.use(
     return response;
   },
   async (error) => {
-    if (error.response?.status === 401) {
-      alert('로그인이 필요한 서비스입니다.');
-      redirect('/signin');
+    const status = error.response?.status;
+    if (status) {
+      if (status === 401) {
+        redirect('/signin?error=unauthorized');
+      }
     }
     return Promise.reject(error);
   },

@@ -20,41 +20,47 @@ const CompareDetail = ({
   const spacer = <div className='h-9 w-9' />;
 
   return (
-    <div className='rounded-x4 flex w-full flex-col items-center justify-center gap-6 bg-white'>
+    <div className='rounded-x4 flex w-25 flex-col items-center justify-center gap-6 bg-white md:h-[282px] md:w-full lg:w-[405px]'>
       {/* 별점 */}
-      <div className='flex w-59 items-center justify-between border-b border-gray-200 py-5 text-center'>
-        {spacer}
+      <div className='flex w-full items-center justify-center border-b border-gray-200 py-5 text-center md:w-59 md:justify-between'>
+        <div className='hidden md:flex'>{spacer}</div>
         <span className='relative inline-flex items-center justify-center'>
           {isRatingWinner && (
-            <span className='absolute top-1/4 right-0 left-0 h-6 rounded-full bg-orange-200'></span>
+            <span className='bg-primary-orange-200 absolute top-1/4 right-0 left-0 h-6 rounded-full'></span>
           )}
-          <span className='text-h2-bold z-winner relative px-4'>{rating.toFixed(1)}</span>
+          <span className='text-sub-headline-bold md:text-h2-bold z-winner relative px-4'>
+            {rating.toFixed(1)}
+          </span>
         </span>
-        {isRatingWinner ? winIcon : spacer}
+        <div className='hidden md:flex'>{isRatingWinner ? winIcon : spacer}</div>
       </div>
 
       {/* 리뷰 */}
-      <div className='flex w-59 items-center justify-between border-b border-gray-200 pb-5 text-center'>
-        {spacer}
+      <div className='flex w-full items-center justify-center border-b border-gray-200 pb-5 text-center md:w-59 md:justify-between'>
+        <div className='hidden md:flex'>{spacer}</div>
         <span className='relative inline-flex items-center justify-center'>
           {isReviewCountWinner && (
-            <span className='absolute top-1/4 right-0 left-0 h-6 rounded-full bg-orange-200'></span>
+            <span className='bg-primary-orange-200 absolute top-1/4 right-0 left-0 h-6 rounded-full'></span>
           )}
-          <span className='text-h2-bold z-winner relative px-4'>{reviewCount}개</span>
+          <span className='text-sub-headline-bold md:text-h2-bold z-winner relative px-4'>
+            {reviewCount}개
+          </span>
         </span>
-        {isReviewCountWinner ? winIcon : spacer}
+        <div className='hidden md:flex'>{isReviewCountWinner ? winIcon : spacer}</div>
       </div>
 
       {/* 좋아요 */}
-      <div className='flex w-59 items-center justify-between pb-5 text-center'>
-        {spacer}
+      <div className='flex w-full items-center justify-center pb-5 text-center md:w-59 md:justify-between'>
+        <div className='hidden md:flex'>{spacer}</div>
         <span className='relative inline-flex items-center justify-center'>
           {isFavoriteCountWinner && (
-            <span className='absolute top-1/4 right-0 left-0 h-6 rounded-full bg-orange-200'></span>
+            <span className='bg-primary-orange-200 absolute top-1/4 right-0 left-0 h-6 rounded-full'></span>
           )}
-          <span className='text-h2-bold z-winner relative px-4'>{favoriteCount}개</span>
+          <span className='text-sub-headline-bold md:text-h2-bold z-winner relative px-4'>
+            {favoriteCount}개
+          </span>
         </span>
-        {isFavoriteCountWinner ? winIcon : spacer}
+        <div className='hidden md:flex'>{isFavoriteCountWinner ? winIcon : spacer}</div>
       </div>
     </div>
   );

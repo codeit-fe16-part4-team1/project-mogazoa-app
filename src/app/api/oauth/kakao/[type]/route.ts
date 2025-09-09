@@ -1,5 +1,5 @@
 import { AuthResponse } from '@/types/api';
-import { DEFAULT_COOKIE_OPTIONS } from '@/utils/cookieOptions';
+import { DEFAULT_COOKIE_OPTIONS, HTTPONLY_COOKIE_OPTIONS } from '@/utils/cookieOptions';
 import axios from 'axios';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -18,7 +18,7 @@ export const POST = async (req: NextRequest, { params }: { params: Promise<{ typ
     const { accessToken, user } = response.data;
 
     const res = NextResponse.json(user, { status: 200 });
-    res.cookies.set('accessToken', accessToken, DEFAULT_COOKIE_OPTIONS);
+    res.cookies.set('accessToken', accessToken, HTTPONLY_COOKIE_OPTIONS);
     res.cookies.set('userId', String(user.id), DEFAULT_COOKIE_OPTIONS);
     return res;
   } catch (err) {

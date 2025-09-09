@@ -48,9 +48,14 @@ interface KakaoAPI {
   ) => Promise<KakaoUserInfo | KakaoLogoutResponse | { id: number }>;
 }
 
+interface KakaoShare {
+  sendDefault: (options: KakaoLinkDefaultOptions) => void;
+}
+
 interface KakaoSDK {
   init: (appKey: string) => void;
   isInitialized: () => boolean;
   Auth: KakaoAuth;
   API: KakaoAPI;
+  Share: KakaoShare;
 }
