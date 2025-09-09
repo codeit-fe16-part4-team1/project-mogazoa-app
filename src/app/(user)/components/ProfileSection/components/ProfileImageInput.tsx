@@ -57,7 +57,7 @@ const ProfileImageInput = ({ value: imageList = {}, onChange }: ImageInputProps)
   }, [imageList, onChange]);
 
   return (
-    <div className='relative'>
+    <div className='relative flex flex-col'>
       <button
         className='relative aspect-square w-25 cursor-pointer overflow-hidden rounded-full md:w-35'
         onClick={handleImageClick}
@@ -81,12 +81,13 @@ const ProfileImageInput = ({ value: imageList = {}, onChange }: ImageInputProps)
         onChange={onInputChange}
       />
 
-      <div
+      <button
+        type='button'
         className='hover-animate mx-auto mt-2 w-fit cursor-pointer rounded-lg border-1 border-gray-400 bg-white px-2 py-1 text-gray-800 hover:bg-gray-200'
         onClick={handleDefaultImageSelect}
       >
         기본 이미지
-      </div>
+      </button>
 
       {resetButtonVisible && (
         <button

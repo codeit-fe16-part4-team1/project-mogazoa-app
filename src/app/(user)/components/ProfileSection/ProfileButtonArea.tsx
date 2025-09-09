@@ -7,6 +7,7 @@ import useAuthStore from '@/store/useAuthStore';
 import { Profile } from '@/types/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 interface Props {
   profile: Profile;
@@ -15,6 +16,8 @@ interface Props {
 
 const ProfileButtonArea = ({ profile, isMyProfile }: Props) => {
   const queryClient = useQueryClient();
+
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const router = useRouter();
   const { signout } = useAuthStore();
@@ -70,6 +73,14 @@ const ProfileButtonArea = ({ profile, isMyProfile }: Props) => {
 
   const BUTTON_STYLES = 'mx-auto block w-full md:h-15 lg:w-160';
 
+  useEffect(() => {
+    const getMyUserId = async () => {
+      const { isAuthenticated: isLogin } = await getUserInfo();
+      setIsAuthenticated(isLogin);
+    };
+    getMyUserId();
+  });
+
   return (
     <article>
       {isMyProfile && (
@@ -82,6 +93,7 @@ const ProfileButtonArea = ({ profile, isMyProfile }: Props) => {
           intent={profile.isFollowing ? 'secondary' : 'primary'}
           className={BUTTON_STYLES}
           onClick={handleFollowToggle}
+          disabled={!isAuthenticated}
         >
           {profile.isFollowing ? '팔로우 취소' : '팔로우'}
         </Button>
