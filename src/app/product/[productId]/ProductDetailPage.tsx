@@ -20,9 +20,15 @@ interface ProductDetailPageProps {
   productId: number;
   order: OrderOptions;
   userId: number;
+  authenticated: boolean;
 }
 
-const ProductDetailPage = ({ productId, order: initialOrder, userId }: ProductDetailPageProps) => {
+const ProductDetailPage = ({
+  productId,
+  order: initialOrder,
+  userId,
+  authenticated,
+}: ProductDetailPageProps) => {
   const [order, setOrder] = useState<OrderOptions>(initialOrder);
   const { data: product } = useProductData(productId);
 
@@ -59,13 +65,18 @@ const ProductDetailPage = ({ productId, order: initialOrder, userId }: ProductDe
               productName={product.name}
               description={product.description}
             />
-            <ProductShareBtns productId={product.id} isHeartFavorite={product.isFavorite} />
+            <ProductShareBtns
+              productId={product.id}
+              isHeartFavorite={product.isFavorite}
+              authenticated={authenticated}
+            />
             <ProductBtns
               order={order}
               productId={productId}
               categoryName={product.category.name}
               productName={product.name}
               productImageUrl={product.image}
+              authenticated={authenticated}
             />
           </section>
         </article>
@@ -121,6 +132,7 @@ const ProductDetailPage = ({ productId, order: initialOrder, userId }: ProductDe
                   categoryName={product.category.name}
                   productName={product.name}
                   productImageUrl={product.image}
+                  authenticated={authenticated}
                 />
               </Suspense>
             </div>
