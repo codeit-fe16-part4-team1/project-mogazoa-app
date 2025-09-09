@@ -7,7 +7,7 @@ import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { getProductsAPI } from '@/api/products/getProductsAPI';
 import { ProductItem } from '@/types/api';
 import { useIsDesktop } from '@/hooks/useIsDesktop';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { josa } from 'es-hangul';
 import Dropdown from '@/components/Dropdown/Dropdown';
 import DropdownItem from '@/components/Dropdown/DropdownItem';
@@ -49,9 +49,14 @@ const HomeClient = () => {
 
   // 필터링 데이터 조회
   const searchParams = useSearchParams();
+  const router = useRouter();
   const searchKeyword = searchParams.get('query') || '';
   const categoryParam = searchParams.get('category');
-  const category = categoryParam ? parseInt(categoryParam, 10) : undefined;
+  const [category, setCategory] = useState<number | undefined>(
+    categoryParam ? Number(categoryParam) : undefined,
+  );
+
+  // const [category, setCategory] = useState<number | undefined>(undefined);
   const hasKeyword = searchKeyword.trim().length > 0;
   const hasCategory = category !== undefined;
   const isFiltered = hasKeyword || hasCategory;
@@ -67,6 +72,19 @@ const HomeClient = () => {
     setOrderBy('recent');
   }, [isFiltered]);
 
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (category) {
+      params.set('category', category.toString());
+      console.log('set category');
+    } else {
+      params.delete('category');
+      console.log('delete category');
+    }
+    router.push(`?${params.toString()}`);
+  }, [category]);
+
   const filteredTitle = useMemo(() => {
     const categoryName = getCategoryName(category || 0) || '';
     const onlyJosa = josa(searchKeyword, '으로/로').replace(searchKeyword, '');
@@ -80,7 +98,7 @@ const HomeClient = () => {
     } else {
       return '';
     }
-  }, [category, searchKeyword, getCategoryName]);
+  }, [category, searchKeyword, hasCategory, hasKeyword]);
 
   const {
     data: searchResults,
@@ -173,7 +191,11 @@ const HomeClient = () => {
         {/* 카테고리 */}
         <section className='category' aria-label='category'>
           {!isFiltered && <h4 className={SUBTITLE_STYLES}>카테고리</h4>}
-          <Category type={hasCategory ? 'tab' : 'button'} />
+          <Category
+            type={hasCategory ? 'tab' : 'button'}
+            category={category}
+            setCategory={setCategory}
+          />
         </section>
 
         {/* 리뷰어 랭킹 */}
