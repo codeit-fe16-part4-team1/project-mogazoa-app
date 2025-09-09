@@ -48,14 +48,17 @@ const ProductCard = ({
       <div className='relative aspect-square w-full md:aspect-[300/276]'>
         <Image
           src={imgUrl}
-          sizes='w-[33vw] lg: w-[50vw]'
+          sizes='(max-width: 768px) 50vw, 33vw'
           fill
           alt={name}
-          className='rounded-xl border-1 border-gray-300'
+          className='rounded-xl border-1 border-gray-300 opacity-0 transition-opacity duration-300'
           style={{
             objectFit: 'cover',
           }}
           priority={isLandingPage}
+          onLoad={(e) => {
+            e.currentTarget.style.opacity = '1';
+          }}
         />
       </div>
       <div className='flex flex-col gap-2 md:gap-3 md:px-2'>

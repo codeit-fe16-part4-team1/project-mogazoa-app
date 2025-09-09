@@ -12,11 +12,11 @@ const MyPage = async () => {
   console.log(`[DEBUG] My Profile Id: ${userId}`);
 
   await Promise.all([
-    queryClient.prefetchQuery({
+    queryClient.fetchQuery({
       queryKey: profileKeys.detail(userId),
       queryFn: () => getMyProfileAPI(),
     }),
-    queryClient.prefetchInfiniteQuery({
+    queryClient.fetchInfiniteQuery({
       queryKey: productKeys.userProductList(userId, 'reviewed'),
       queryFn: ({ pageParam }) =>
         getUserProductsAPI({
