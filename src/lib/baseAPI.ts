@@ -32,12 +32,11 @@ baseAPI.interceptors.response.use(
     return response;
   },
   async (error) => {
-    if (error.response?.status === 401) {
-      const isServer = typeof window === 'undefined';
-      if (!isServer) {
-        alert('로그인이 필요한 서비스입니다.');
+    const status = error.response?.status;
+    if (status) {
+      if (status === 401) {
+        redirect('/signin?error=unauthorized');
       }
-      redirect('/signin');
     }
     return Promise.reject(error);
   },

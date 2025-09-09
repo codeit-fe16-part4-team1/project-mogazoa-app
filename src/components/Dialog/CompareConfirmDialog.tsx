@@ -4,7 +4,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/Dialog/core/DialogComponents';
-import { useRouter } from 'next/navigation';
 import { Button } from '../Button/Button';
 
 interface CompareConfirmDialogProps {
@@ -12,10 +11,8 @@ interface CompareConfirmDialogProps {
 }
 
 const CompareConfirmDialog = ({ onNavigate }: CompareConfirmDialogProps) => {
-  const router = useRouter();
-
   const handleNavigateClick = () => {
-    onNavigate(() => router.push('/compare'));
+    onNavigate();
   };
   return (
     <DialogContent className='rounded-x5 flex h-52 w-[335px] flex-col items-center justify-center border border-gray-200 md:h-[263px] md:w-125'>

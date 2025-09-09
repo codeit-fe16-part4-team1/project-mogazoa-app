@@ -6,8 +6,8 @@ import GlobalDialog from '@/components/Dialog/core/GlobalDialog';
 import Script from 'next/script';
 import { Suspense } from 'react';
 import Header from '@/components/Header/Header';
+import { ToastRender } from 'cy-toast';
 import Loading from './loading/loading';
-import { CompareProvider } from '@/context/CompareProvider';
 
 const cafe24Supermagic = localFont({
   src: [
@@ -64,14 +64,13 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <ToastRender />
         <Providers>
-          <CompareProvider>
-            <Suspense fallback={<Loading />}>
-              <Header />
-              {children}
-            </Suspense>
-            <GlobalDialog />
-          </CompareProvider>
+          <Suspense fallback={<Loading />}>
+            <Header />
+            {children}
+          </Suspense>
+          <GlobalDialog />
         </Providers>
       </body>
     </html>
