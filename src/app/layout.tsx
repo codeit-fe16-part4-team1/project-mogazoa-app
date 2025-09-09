@@ -6,6 +6,7 @@ import GlobalDialog from '@/components/Dialog/core/GlobalDialog';
 import Script from 'next/script';
 import { Suspense } from 'react';
 import Header from '@/components/Header/Header';
+import { ToastRender } from 'cy-toast';
 import Loading from './loading/loading';
 
 const cafe24Supermagic = localFont({
@@ -63,6 +64,7 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <ToastRender />
         <Providers>
           <Suspense fallback={<Loading />}>
             <Header />

@@ -142,3 +142,88 @@ export const WithReactHookFormMax5: Story = {
     },
   },
 };
+
+// React Hook Form과 함께 사용하는 스토리 - Required false
+const FormWrapperOptional = ({ maxImageCount }: { maxImageCount: number }) => {
+  const schema = z.object({
+    images: ImageInputSchema(maxImageCount, false),
+    title: z.string().min(1, '제목을 입력해주세요'),
+  });
+  type FormData = z.infer<typeof schema>;
+
+  const {
+    control,
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+    mode: 'onChange',
+    defaultValues: {
+      images: getInitialImageList([]),
+      title: '',
+    },
+  });
+
+  const onSubmit = (data: FormData) => {
+    console.log('Form submitted:', data);
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+      <div>
+        <label htmlFor='title' className='mb-2 block text-sm font-medium'>
+          제품명
+        </label>
+        <input
+          id='title'
+          {...register('title')}
+          className='w-full rounded-lg border border-gray-300 p-2'
+          placeholder='제품명을 입력하세요'
+        />
+        {errors.title && <p className='mt-1 text-sm text-red-500'>{errors.title.message}</p>}
+      </div>
+
+      <div>
+        <label className='mb-2 block text-sm font-medium'>
+          이미지 (선택사항, {maxImageCount}개까지)
+        </label>
+        <Controller
+          name='images'
+          control={control}
+          render={({ field }) => (
+            <ImageInput
+              value={field.value}
+              onChange={field.onChange}
+              maxImageCount={maxImageCount}
+            />
+          )}
+        />
+      </div>
+
+      <button
+        type='submit'
+        disabled={!isValid}
+        className={`rounded-lg px-4 py-2 ${
+          isValid
+            ? 'bg-blue-500 text-white hover:bg-blue-600'
+            : 'cursor-not-allowed bg-gray-300 text-gray-500'
+        }`}
+      >
+        제출하기 {isValid ? '✓' : '✗'}
+      </button>
+    </form>
+  );
+};
+
+export const OptionalImageInput: Story = {
+  render: () => <FormWrapperOptional maxImageCount={3} />,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'required=false로 설정된 ImageInput 예시입니다. 이미지 선택 없이도 폼 제출이 가능합니다.',
+      },
+    },
+  },
+};

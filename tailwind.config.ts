@@ -90,6 +90,16 @@ const config: Config = {
         'caption-medium': ['12px', { lineHeight: '15px', fontWeight: '500' }],
         'caption-light': ['12px', { lineHeight: '15px', fontWeight: '300' }],
       },
+      height: {
+        'h1-skeleton': '39px',
+        'h2-skeleton': '34px',
+        'h3-skeleton': '29px',
+        'h4-skeleton': '24px',
+        'sub-headline-skeleton': '23px',
+        'body1-skeleton': '20px',
+        'body2-skeleton': '18px',
+        'caption-skeleton': '15px',
+      },
       borderRadius: {
         x1: '8px',
         x2: '12px',
