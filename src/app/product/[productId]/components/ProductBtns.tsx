@@ -5,7 +5,6 @@ import { cn } from '@/lib/cn';
 import { OrderOptions, ProductItem } from '@/types/api';
 import { HTMLAttributes } from 'react';
 import { useCompareStore } from '@/store/useCompareStore';
-import { useRouter } from 'next/navigation';
 import CompareDialog from '@/components/Dialog/CompareDialog';
 
 interface ProductBtnsProps extends HTMLAttributes<HTMLDivElement> {
@@ -27,27 +26,17 @@ const ProductBtns = ({
   productImageUrl,
   ...props
 }: ProductBtnsProps) => {
-  const router = useRouter();
   const { products, addProduct } = useCompareStore();
   const { open } = useDialog();
   const { openDialog } = useDialogStore();
 
   const handleCompareClick = () => {
     if (products.length < 2) {
-      addProduct(product, () => {});
+      addProduct(product);
     } else {
       openDialog({
         dialogName: 'compare-dialog',
-        dialogContent: (
-          <CompareDialog
-            products={products}
-            newProduct={product}
-            onReplace={(replaceProductId: number) => {
-              addProduct(product, (onReplaceCallback) => onReplaceCallback(replaceProductId));
-              router.push('/compare');
-            }}
-          />
-        ),
+        dialogContent: <CompareDialog products={products} newProduct={product} />,
       });
     }
   };

@@ -1,4 +1,5 @@
 import useDialogStore from '@/store/useDialogStore';
+import { useCompareStore } from '@/store/useCompareStore';
 import { ProductItem } from '@/types/api';
 import { useState } from 'react';
 import { DialogContent, DialogHeader, DialogTitle } from './core/DialogComponents';
@@ -8,16 +9,19 @@ import CompareConfirmDialog from './CompareConfirmDialog';
 export interface CompareDialogProps {
   products: ProductItem[];
   newProduct: ProductItem;
-  onReplace: (replaceProductId: number) => void;
 }
 
-const CompareDialog = ({ products, newProduct, onReplace }: CompareDialogProps) => {
+const CompareDialog = ({ products, newProduct }: CompareDialogProps) => {
+  const { setComparisonProducts } = useCompareStore();
   const { openDialog, closeDialog } = useDialogStore();
   const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
 
   const handleReplaceClick = () => {
     if (selectedProductId !== null) {
-      onReplace(selectedProductId);
+      const selectedProduct = products.find((p) => p.id === selectedProductId);
+      if (selectedProduct) {
+        setComparisonProducts([selectedProduct, newProduct]);
+      }
       closeDialog();
 
       openDialog({
