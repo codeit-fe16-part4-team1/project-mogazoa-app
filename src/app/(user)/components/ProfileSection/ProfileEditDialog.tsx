@@ -51,12 +51,12 @@ const ProfileEditDialog = ({
   });
 
   const onSubmit = async (data: ProfileEditFormInputs) => {
-    close();
-    onSubmitSuccess({
+    await onSubmitSuccess({
       description: data.description,
       nickname: data.nickname,
       image: getValues('image'),
     });
+    close();
   };
 
   const LABEL_STYLES = 'text-caption-bold md:text-body2-bold mb-3';
@@ -107,7 +107,7 @@ const ProfileEditDialog = ({
         <Button
           type='submit'
           className='mt-7 h-12 w-full md:mt-13 md:h-15 md:w-full lg:w-full'
-          disabled={!isValid}
+          disabled={!isValid || isSubmitting}
         >
           {!isSubmitting ? '저장하기' : '저장 중...'}
         </Button>

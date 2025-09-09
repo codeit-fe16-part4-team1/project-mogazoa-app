@@ -36,7 +36,7 @@ const ProfileEditButton = ({ className, profile }: Props) => {
     });
   };
 
-  const { mutate } = useMutation({
+  const { mutateAsync } = useMutation({
     mutationFn: async ({ image, nickname, description }: ProfileEditMutationData) => {
       const imageKey = Object.keys(image)[0];
       const imageFile = Object.values(image)[0];
@@ -91,8 +91,8 @@ const ProfileEditButton = ({ className, profile }: Props) => {
     // onSettled: () => queryClient.invalidateQueries({ queryKey: profileKeys.detail(profile.id) }),
   });
 
-  const onSubmitSuccess = (updatedData: ProfileEditMutationData) => {
-    mutate(updatedData);
+  const onSubmitSuccess = async (updatedData: ProfileEditMutationData) => {
+    await mutateAsync(updatedData);
   };
 
   return (

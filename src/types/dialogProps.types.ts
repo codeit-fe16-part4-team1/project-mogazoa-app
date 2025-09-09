@@ -41,7 +41,7 @@ export interface ProfileEditDialogProps {
   imageUrl: string;
   nickname: string;
   description: string;
-  onSubmitSuccess: (updatedData: ProfileEditMutationData) => void;
+  onSubmitSuccess: (updatedData: ProfileEditMutationData) => Promise<void>;
 }
 
 export interface ProfileFollowDialogProps {
