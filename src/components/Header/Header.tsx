@@ -28,16 +28,18 @@ const Header = () => {
 
   const updateQuery = useMemo(() => {
     return debounce((newQuery: string) => {
-      const params = new URLSearchParams();
+      const params = new URLSearchParams(searchParams.toString());
 
       if (newQuery) {
         params.set('query', newQuery);
+      } else {
+        params.delete('query');
       }
       const queryString = params.toString();
       const newUrl = queryString ? `/?${queryString}` : '/';
       router.push(newUrl);
     }, DEBOUNCE_TIME);
-  }, [router]);
+  }, [localSearchQuery]);
 
   // // searchQuery가 외부에서 변경될 때 localSearchQuery 동기화
   useEffect(() => {

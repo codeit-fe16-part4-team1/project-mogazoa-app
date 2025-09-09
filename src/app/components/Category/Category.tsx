@@ -5,6 +5,8 @@ import { useHorizontalScroll } from '@/hooks/useHorizontalScroll';
 import CategoryButton from '@/app/components/Category/CategoryButton';
 import PaginationButton from '../../../components/PaginationButton/PaginationButton';
 import ScrollContainer from 'react-indiana-drag-scroll';
+import { useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
 
 const BUTTON_CLASSES = {
   tab: 'min-w-20 flex-1 cursor-pointer',
@@ -46,13 +48,23 @@ const Category = ({ type, category, setCategory }: CategoryProps) => {
   const { scrollContainerRef, canScrollPrev, canScrollNext, scrollToDirection } =
     useHorizontalScroll();
 
+  const searchParams = useSearchParams();
+  const params = new URLSearchParams(searchParams);
+  const categoryParam = params.get('category');
+
   const handleCategoryClick = (categoryId: number) => {
     if (category === categoryId) {
       setCategory(undefined);
+      params.delete('category');
     } else {
       setCategory(categoryId);
+      params.set('category', categoryId.toString());
     }
   };
+
+  useEffect(() => {
+    setCategory(categoryParam ? Number(categoryParam) : undefined);
+  }, [categoryParam, searchParams]);
 
   const renderCategoryItems = () => {
     if (!categoryData) return null;

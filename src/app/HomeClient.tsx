@@ -49,13 +49,13 @@ const HomeClient = () => {
 
   // 필터링 데이터 조회
   const searchParams = useSearchParams();
-
   const router = useRouter();
   const searchKeyword = searchParams.get('query') || '';
   const categoryParam = searchParams.get('category');
   const [category, setCategory] = useState<number | undefined>(
     categoryParam ? Number(categoryParam) : undefined,
   );
+
   // const [category, setCategory] = useState<number | undefined>(undefined);
   const hasKeyword = searchKeyword.trim().length > 0;
   const hasCategory = category !== undefined;
@@ -74,14 +74,14 @@ const HomeClient = () => {
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
-    console.log(category);
 
     if (category) {
       params.set('category', category.toString());
+      console.log('set category');
     } else {
       params.delete('category');
+      console.log('delete category');
     }
-
     router.push(`?${params.toString()}`);
   }, [category]);
 
