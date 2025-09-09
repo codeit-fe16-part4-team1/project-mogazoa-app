@@ -1,9 +1,10 @@
 import useDialogStore from '@/store/useDialogStore';
 import { ProductItem } from '@/types/api';
 import { useState } from 'react';
-import { DialogClose, DialogContent, DialogTitle } from './core/DialogComponents';
-import IconClose from '@/assets/icons/IconClose.svg';
+import { DialogContent, DialogHeader, DialogTitle } from './core/DialogComponents';
 import { Button } from '../Button/Button';
+import { useRouter } from 'next/navigation';
+import CompareConfirmDialog from './CompareConfirmDialog';
 
 export interface CompareDialogProps {
   products: ProductItem[];
@@ -12,46 +13,50 @@ export interface CompareDialogProps {
 }
 
 const CompareDialog = ({ products, newProduct, onReplace }: CompareDialogProps) => {
-  const { closeDialog } = useDialogStore();
+  const router = useRouter();
+  const { openDialog, closeDialog } = useDialogStore();
   const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
 
   const handleReplaceClick = () => {
     if (selectedProductId !== null) {
       onReplace(selectedProductId);
       closeDialog();
+
+      openDialog({
+        dialogName: 'compare-confirmation-dialog',
+        dialogContent: <CompareConfirmDialog onNavigate={() => router.push('/compare')} />,
+      });
     }
   };
 
   return (
-    <DialogContent className=''>
-      <DialogClose asChild>
-        <button className=''>
-          <IconClose className='h-6 w-6 text-gray-400' onClick={closeDialog} />
-        </button>
-      </DialogClose>
+    <DialogContent className='rounded-x5 flex h-[377px] w-[335px] flex-col items-center justify-center gap-10 border border-gray-200 md:h-[453px] md:w-125'>
+      <DialogHeader>
+        <DialogTitle className='text-center'>
+          {`'${newProduct.name}'`}
+          <br />
+          어떤 상품과 비교할까요?
+        </DialogTitle>
+      </DialogHeader>
 
-      <DialogTitle className=''>
-        {`'${newProduct.name}'`}
-        <br />
-        어떤 상품과 비교할까요?
-      </DialogTitle>
-
-      <div className=''>
+      <div className='flex w-[290px] flex-col gap-3 md:w-105'>
         {products.map((product) => (
-          <button
+          <Button
             key={product.id}
             onClick={() => setSelectedProductId(product.id)}
-            className={`rounded-x5 w-full border-2 px-5 py-[18px] text-center text-gray-900 transition-colors ${selectedProductId === product.id ? 'border-primary-orange-400 bg-primary-orange-100 text-body1-bold' : 'text-body1-medium border-gray-300 hover:border-gray-500'}`}
+            className='h-[50px] w-full md:h-15'
+            state={selectedProductId === product.id ? 'default' : 'disabled'}
+            intent='secondary'
           >
             {product.name}
-          </button>
+          </Button>
         ))}
       </div>
 
       <Button
         onClick={handleReplaceClick}
         disabled={selectedProductId === null}
-        className='text-body1-bold h-[55px] w-full'
+        className='h-[55px] w-full md:h-[67px] md:w-105'
       >
         교체하기
       </Button>

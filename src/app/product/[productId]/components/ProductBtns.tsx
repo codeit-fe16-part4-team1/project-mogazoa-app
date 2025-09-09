@@ -1,8 +1,12 @@
 import { Button } from '@/components/Button/Button';
 import useDialog from '@/hooks/useDialog';
+import useDialogStore from '@/store/useDialogStore';
 import { cn } from '@/lib/cn';
-import { OrderOptions } from '@/types/api';
+import { OrderOptions, ProductItem } from '@/types/api';
 import { HTMLAttributes } from 'react';
+import { useCompareProducts } from '@/context/CompareProvider';
+import { useRouter } from 'next/navigation';
+import CompareDialog from '@/components/Dialog/CompareDialog';
 
 interface ProductBtnsProps extends HTMLAttributes<HTMLDivElement> {
   order: OrderOptions;
@@ -10,22 +14,49 @@ interface ProductBtnsProps extends HTMLAttributes<HTMLDivElement> {
   categoryName: string;
   productName: string;
   productImageUrl: string;
+  product: ProductItem;
 }
 
 const ProductBtns = ({
   className,
   order,
+  product,
   productId,
   categoryName,
   productName,
   productImageUrl,
   ...props
 }: ProductBtnsProps) => {
+  const router = useRouter();
+  const { products, addProduct } = useCompareProducts();
   const { open } = useDialog();
+  const { openDialog } = useDialogStore();
+
+  const handleCompareClick = () => {
+    if (products.length < 2) {
+      addProduct(product, () => {});
+    } else {
+      openDialog({
+        dialogName: 'compare-dialog',
+        dialogContent: (
+          <CompareDialog
+            products={products}
+            newProduct={product}
+            onReplace={(replaceProductId: number) => {
+              addProduct(product, (onReplaceCallback) => onReplaceCallback(replaceProductId));
+              router.push('/compare');
+            }}
+          />
+        ),
+      });
+    }
+  };
 
   return (
     <div className={cn('flex-between-center flex-col gap-3 md:flex-row', className)} {...props}>
-      <Button className='w-full md:basis-18/31 lg:w-0'>다른 상품과 비교하기</Button>
+      <Button className='w-full md:basis-18/31 lg:w-0' onClick={handleCompareClick}>
+        다른 상품과 비교하기
+      </Button>
       <Button
         className='w-full md:basis-13/31 lg:w-0'
         intent='secondary'
