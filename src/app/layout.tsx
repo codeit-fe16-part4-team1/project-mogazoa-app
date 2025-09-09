@@ -8,6 +8,7 @@ import { Suspense } from 'react';
 import Header from '@/components/Header/Header';
 import { ToastRender } from 'cy-toast';
 import Loading from './loading/loading';
+import ProductAddButton from '@/components/ProductAddButton/ProductAddButton';
 
 const cafe24Supermagic = localFont({
   src: [
@@ -68,6 +69,7 @@ export default function RootLayout({
         <Providers>
           <Suspense fallback={<Loading />}>
             <Header />
+            <ProductAddButton className='fixed right-5 bottom-8 md:right-8 md:bottom-20 lg:right-[calc((100vw-980px)/2-72px))] lg:bottom-28' />
             {children}
           </Suspense>
           <GlobalDialog />
