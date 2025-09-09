@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 import useAuthStore from '@/store/useAuthStore';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { AxiosError } from 'axios';
 import { Button } from '@/components/Button/Button';
 import KakaoButton from '../components/KakaoButton';
@@ -14,6 +14,9 @@ import FormFieldContainer from '../components/FormFieldContainer';
 import AuthSection from '../components/AuthSection';
 import { cn } from '@/lib/cn';
 import { redirectKakaoAuth } from '@/lib/redirectKakaoAuth';
+import { useEffect } from 'react';
+import { toast } from 'cy-toast';
+import Toast from '@/components/Toast/Toast';
 
 const signinSchema = z.object({
   email: z
@@ -31,6 +34,8 @@ type SigninFormInputs = z.infer<typeof signinSchema>;
 const SigninPage = () => {
   const { signin } = useAuthStore();
   const router = useRouter();
+
+  const searchParams = useSearchParams();
 
   const {
     register,
@@ -67,6 +72,19 @@ const SigninPage = () => {
   };
 
   const FORM_MARGIN_STYLES = 'mt-28 md:mt-42 lg:my-10';
+
+  useEffect(() => {
+    const error = searchParams.get('error');
+    console.log(`error: ${error}`);
+    if (error === 'unauthorized') {
+      toast.run(({ isClosing, isOpening, index }) => (
+        <Toast variant='error' isOpening={isOpening} isClosing={isClosing} index={index}>
+          로그인이 필요한 서비스입니다.
+        </Toast>
+      ));
+      router.push('/signin');
+    }
+  }, [router, searchParams]);
 
   return (
     <AuthSection>
@@ -107,7 +125,7 @@ const SigninPage = () => {
             />
           </FormFieldContainer>
           <Button
-            className='mt-10 w-full md:mt-20 md:h-16'
+            className='mt-10 h-12 w-full md:mt-20 md:h-16'
             type='submit'
             disabled={isSubmitting || !isValid}
           >

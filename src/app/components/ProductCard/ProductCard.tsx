@@ -63,7 +63,7 @@ const ProductCard = ({
           sizes='(max-width: 768px) 50vw, 33vw'
           fill
           alt={name}
-          className='hover-grow opacity-0'
+          className='rounded-xl border-1 border-gray-300 opacity-0 transition-opacity duration-300'
           style={{
             objectFit: 'cover',
           }}
