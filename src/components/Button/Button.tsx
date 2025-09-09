@@ -4,9 +4,9 @@ import { cn } from '@/lib/cn';
 
 // cva로 variant, size 관리
 const buttonVariants = cva(
-  'inline-flex items-center justify-center rounded-full transition-colors  transition-all duration-900 cursor pointer ' +
+  'inline-flex items-center justify-center rounded-full transition-colors  transition-all duration-900 cursor-pointer text-body1-medium lg:text-sub-headline-medium ' +
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ' +
-    'disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed',
+    'disabled:opacity-50 disabled:cursor-not-allowed',
   {
     variants: {
       intent: {
@@ -14,15 +14,16 @@ const buttonVariants = cva(
         secondary: 'bg-white border border-primary-orange-500',
         tertiary: 'bg-white border border-gray-700',
       },
+      size: {
+        S: 'w-[335px] h-[50px]',
+        M: 'w-[335px] h-[50px] md:w-[440px] md:h-[55px]',
+        L: 'w-[335px] h-[50px] md:w-[440px] md:h-[55px] lg:w-[640px] lg:h-[60px] lg:py-5 lg:text-sub-headline-medium',
+        auto: '',
+      },
       state: {
         default: '',
         active: '',
         disabled: '',
-      },
-      size: {
-        S: 'w-[335px] h-[50px] text-body1-medium',
-        M: 'w-[335px] h-[50px] text-body1-medium md:w-[440px] md:h-[55px]',
-        L: 'w-[335px] h-[50px] text-body1-medium md:w-[440px] md:h-[55px] lg:w-[640px] lg:h-[60px] lg:py-5 lg:text-sub-headline-medium',
       },
     },
 
@@ -48,13 +49,11 @@ const buttonVariants = cva(
       { intent: 'primary', state: 'disabled', class: 'bg-gray-200 text-gray-500' },
       { intent: 'secondary', state: 'disabled', class: 'border border-gray-300 text-gray-500' },
       { intent: 'tertiary', state: 'disabled', class: 'border border-gray-400 text-gray-500' },
-
-      { intent: 'tertiary', size: 'M', class: 'hidden' },
     ],
     defaultVariants: {
       intent: 'primary',
       state: 'default',
-      size: 'L',
+      size: 'auto',
     },
   },
 );
@@ -66,13 +65,13 @@ export interface ButtonProps
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, intent, state, size, disabled, ...props }, ref) => {
+  ({ className, intent, size, state, disabled, ...props }, ref) => {
     const effectiveState = disabled ? 'disabled' : state;
     return (
       <button
         ref={ref}
         type={(props as React.ButtonHTMLAttributes<HTMLButtonElement>).type || 'button'}
-        className={cn(buttonVariants({ intent, state: effectiveState, size, className }))}
+        className={cn(buttonVariants({ intent, size, state: effectiveState }), className)}
         disabled={disabled}
         {...props}
       />

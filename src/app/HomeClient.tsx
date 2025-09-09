@@ -344,9 +344,7 @@ const HomeClient = () => {
             <div className={GRID_STYLES}>
               {searchResultsLoading ? (
                 Array.from({ length: itemsPerPage }).map((_, index) => (
-                  <div key={index} className='animate-pulse'>
-                    <div className={PRODUCT_IMAGE_LOADING_STYLES}></div>
-                  </div>
+                  <ProductCard.skeleton key={index} />
                 ))
               ) : searchResultsError ? (
                 <div className='col-span-full py-8 text-center'>
