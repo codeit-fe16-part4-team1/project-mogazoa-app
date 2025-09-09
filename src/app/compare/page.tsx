@@ -10,7 +10,7 @@ import CompareDetailDefault from '@/components/CompareDetail/CompareDetailDefaul
 import Badge from '@/components/Badge/Badge';
 import { Button } from '@/components/Button/Button';
 import { useQuery } from '@tanstack/react-query';
-import { useCompareProducts } from '@/context/CompareProvider';
+import { useCompareStore } from '@/store/useCompareStore';
 
 const fetchAllProducts = async () => {
   let allItems: ProductItem[] = [];
@@ -31,7 +31,7 @@ const fetchAllProducts = async () => {
 };
 
 const ComparePage = () => {
-  const { products, addProduct, removeProduct, resetProducts } = useCompareProducts();
+  const { products, addProduct, removeProduct, resetProducts } = useCompareStore();
   const [isComparing, setIsComparing] = useState(false);
 
   const {
