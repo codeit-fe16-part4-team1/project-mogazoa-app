@@ -4,20 +4,25 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/Dialog/core/DialogComponents';
+import { useRouter } from 'next/navigation';
 import { Button } from '../Button/Button';
 
-interface CompareConfirmDiaglogProps {
+interface CompareConfirmDialogProps {
   onNavigate: () => void;
 }
 
-const CompareConfirmDialog = ({ onNavigate }: CompareConfirmDiaglogProps) => {
+const CompareConfirmDialog = ({ onNavigate }: CompareConfirmDialogProps) => {
+  const router = useRouter();
+
   const handleNavigateClick = () => {
-    onNavigate();
+    onNavigate(() => router.push('/compare'));
   };
   return (
     <DialogContent className='rounded-x5 flex h-52 w-[335px] flex-col items-center justify-center border border-gray-200 md:h-[263px] md:w-125'>
       <DialogHeader>
-        <DialogTitle>비교 상품이 교체되었습니다. 바로 확인해 보시겠어요?</DialogTitle>
+        <DialogTitle className='text-center'>
+          비교 상품이 교체되었습니다. <br /> 바로 확인해 보시겠어요?
+        </DialogTitle>
       </DialogHeader>
 
       <div>
