@@ -9,7 +9,6 @@ import { AxiosError } from 'axios';
 import { Button } from '@/components/Button/Button';
 import FormTitle from '../components/FormTitle';
 import FormFieldContainer from '../components/FormFieldContainer';
-import AuthSection from '../components/AuthSection';
 import Divider from '../components/Divider';
 import KakaoButton from '../components/KakaoButton';
 import { cn } from '@/lib/cn';
@@ -86,78 +85,76 @@ const SignupPage = () => {
   const FORM_MARGIN_STYLES = 'mt-14 lg:my-10';
 
   return (
-    <AuthSection>
-      <div
-        className={cn(
-          'flex flex-1 flex-col justify-between md:flex-auto md:justify-normal',
-          FORM_MARGIN_STYLES,
-        )}
-      >
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div>
-            <FormTitle>회원가입</FormTitle>
-            <FormFieldContainer>
-              <FormField
-                label='이메일'
-                id='email'
-                type='email'
-                placeholder='이메일을 입력해 주세요'
-                autoComplete='email'
-                register={register('email')}
-                error={errors.email}
-              />
-              <FormField
-                label='닉네임'
-                id='nickname'
-                type='text'
-                placeholder='닉네임을 입력해 주세요'
-                register={register('nickname')}
-                error={errors.nickname}
-                defaultHint='최대 10자 입력이 가능해요'
-              />
-              <FormField
-                label='비밀번호'
-                id='password'
-                type='password'
-                placeholder='비밀번호를 입력해 주세요'
-                autoComplete='new-password'
-                register={register('password', {
-                  onChange: () => {
-                    const passwordConfirm = getValues('passwordConfirmation');
-                    if (passwordConfirm) {
-                      trigger('passwordConfirmation');
-                    }
-                  },
-                })}
-                error={errors.password}
-                defaultHint='최소 8자 이상 입력해주세요'
-              />
-              <FormField
-                label='비밀번호 확인'
-                id='passwordConfirm'
-                type='password'
-                placeholder='비밀번호를 다시 한 번 입력해 주세요'
-                autoComplete='new-password'
-                register={register('passwordConfirmation')}
-                error={errors.passwordConfirmation}
-              />
-            </FormFieldContainer>
-            {/* 제출 버튼 */}
-          </div>
-          <Button
-            className='mt-10 h-12 w-full md:h-16'
-            type='submit'
-            disabled={isSubmitting || !isValid}
-          >
-            {isSubmitting ? '가입 중...' : '가입하기'}
-          </Button>
-        </form>
-        <div className='mt-25 flex flex-col gap-6 md:mt-10'>
-          <Divider text='SNS로 바로 시작하기' />
-          <KakaoButton onClick={handleKakaoSigninClick} />
+    <div
+      className={cn(
+        'flex flex-1 flex-col justify-between md:flex-auto md:justify-normal',
+        FORM_MARGIN_STYLES,
+      )}
+    >
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div>
+          <FormTitle>회원가입</FormTitle>
+          <FormFieldContainer>
+            <FormField
+              label='이메일'
+              id='email'
+              type='email'
+              placeholder='이메일을 입력해 주세요'
+              autoComplete='email'
+              register={register('email')}
+              error={errors.email}
+            />
+            <FormField
+              label='닉네임'
+              id='nickname'
+              type='text'
+              placeholder='닉네임을 입력해 주세요'
+              register={register('nickname')}
+              error={errors.nickname}
+              defaultHint='최대 10자 입력이 가능해요'
+            />
+            <FormField
+              label='비밀번호'
+              id='password'
+              type='password'
+              placeholder='비밀번호를 입력해 주세요'
+              autoComplete='new-password'
+              register={register('password', {
+                onChange: () => {
+                  const passwordConfirm = getValues('passwordConfirmation');
+                  if (passwordConfirm) {
+                    trigger('passwordConfirmation');
+                  }
+                },
+              })}
+              error={errors.password}
+              defaultHint='최소 8자 이상 입력해주세요'
+            />
+            <FormField
+              label='비밀번호 확인'
+              id='passwordConfirm'
+              type='password'
+              placeholder='비밀번호를 다시 한 번 입력해 주세요'
+              autoComplete='new-password'
+              register={register('passwordConfirmation')}
+              error={errors.passwordConfirmation}
+            />
+          </FormFieldContainer>
+          {/* 제출 버튼 */}
         </div>
+        <Button
+          className='mt-10 h-12 w-full md:h-16'
+          type='submit'
+          disabled={isSubmitting || !isValid}
+        >
+          {isSubmitting ? '가입 중...' : '가입하기'}
+        </Button>
+      </form>
+      <div className='mt-25 flex flex-col gap-6 md:mt-10'>
+        <Divider text='SNS로 바로 시작하기' />
+        <KakaoButton onClick={handleKakaoSigninClick} />
       </div>
-    </AuthSection>
+    </div>
   );
 };
 

@@ -1,16 +1,18 @@
 export const redirectKakaoAuth = {
   signin: () => {
-    redirect({ type: 'signin' });
+    redirect({});
   },
   signup: ({ state }: { state: string }) => {
-    redirect({ type: 'signup', state });
+    redirect({ state });
   },
 };
 
-type AuthType = 'signin' | 'signup';
+interface RedirectFunctionType {
+  state?: string;
+}
 
-const redirect = ({ type, state }: { type: AuthType; state?: string }) => {
-  const redirectUri = `${window.location.origin}/oauth/${type}/kakao/callback`;
+const redirect = ({ state }: RedirectFunctionType) => {
+  const redirectUri = `${window.location.origin}/oauth/signup/kakao`;
   if (process.env.NODE_ENV === 'development') {
     const clientId = process.env.NEXT_PUBLIC_JS_KEY_KAKAO; // 환경변수에서
 

@@ -11,7 +11,6 @@ import KakaoButton from '../components/KakaoButton';
 import Divider from '../components/Divider';
 import FormTitle from '../components/FormTitle';
 import FormFieldContainer from '../components/FormFieldContainer';
-import AuthSection from '../components/AuthSection';
 import { cn } from '@/lib/cn';
 import { redirectKakaoAuth } from '@/lib/redirectKakaoAuth';
 import { useEffect } from 'react';
@@ -87,57 +86,55 @@ const SigninPage = () => {
   }, [router, searchParams]);
 
   return (
-    <AuthSection>
-      <div
-        className={cn(
-          'flex flex-1 flex-col justify-between md:flex-auto md:justify-normal',
-          FORM_MARGIN_STYLES,
-        )}
-      >
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <FormTitle>
-            <p>
-              쉽게 비교하고
-              <br />
-              똑똑하게 쇼핑하자
-            </p>
-          </FormTitle>
-          {/* 이메일 입력 */}
-          <FormFieldContainer>
-            <FormField
-              label='이메일'
-              id='email'
-              type='email'
-              placeholder='이메일을 입력해 주세요'
-              autoComplete='email'
-              register={register('email')}
-              error={errors.email}
-            />
-            {/* 비밀번호 입력 */}
-            <FormField
-              label='비밀번호'
-              id='password'
-              type='password'
-              placeholder='비밀번호를 입력해 주세요'
-              autoComplete='new-password'
-              register={register('password')}
-              error={errors.password}
-            />
-          </FormFieldContainer>
-          <Button
-            className='mt-10 h-12 w-full md:mt-20 md:h-16'
-            type='submit'
-            disabled={isSubmitting || !isValid}
-          >
-            {isSubmitting ? '로그인 중...' : '로그인'}
-          </Button>
-        </form>
-        <div className='mt-25 flex flex-col gap-6 md:mt-10'>
-          <Divider text='SNS로 바로 시작하기' />
-          <KakaoButton onClick={handleKakaoSigninClick} />
-        </div>
+    <div
+      className={cn(
+        'flex flex-1 flex-col justify-between md:flex-auto md:justify-normal',
+        FORM_MARGIN_STYLES,
+      )}
+    >
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <FormTitle>
+          <p>
+            쉽게 비교하고
+            <br />
+            똑똑하게 쇼핑하자
+          </p>
+        </FormTitle>
+        {/* 이메일 입력 */}
+        <FormFieldContainer>
+          <FormField
+            label='이메일'
+            id='email'
+            type='email'
+            placeholder='이메일을 입력해 주세요'
+            autoComplete='email'
+            register={register('email')}
+            error={errors.email}
+          />
+          {/* 비밀번호 입력 */}
+          <FormField
+            label='비밀번호'
+            id='password'
+            type='password'
+            placeholder='비밀번호를 입력해 주세요'
+            autoComplete='new-password'
+            register={register('password')}
+            error={errors.password}
+          />
+        </FormFieldContainer>
+        <Button
+          className='mt-10 h-12 w-full md:mt-20 md:h-16'
+          type='submit'
+          disabled={isSubmitting || !isValid}
+        >
+          {isSubmitting ? '로그인 중...' : '로그인'}
+        </Button>
+      </form>
+      <div className='mt-25 flex flex-col gap-6 md:mt-10'>
+        <Divider text='SNS로 바로 시작하기' />
+        <KakaoButton onClick={handleKakaoSigninClick} />
       </div>
-    </AuthSection>
+    </div>
   );
 };
 
