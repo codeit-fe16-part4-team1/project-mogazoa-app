@@ -6,7 +6,6 @@ import {
 } from '@/components/Dialog/core/DialogComponents';
 import { Button } from '../Button/Button';
 import { useRouter } from 'next/navigation';
-// import useDialog from '@/hooks/useDialog';
 import useDialogStore from '@/store/useDialogStore';
 
 const CompareConfirmDialog = () => {
