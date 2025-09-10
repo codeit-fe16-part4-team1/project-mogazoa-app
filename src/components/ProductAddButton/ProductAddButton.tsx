@@ -21,7 +21,7 @@ const ProductAddButton = ({ className, ...props }: ProductAddButtonProps) => {
   const interactionStyles = 'hover:border-primary-orange-700 hover:border-2';
 
   useEffect(() => {
-    if (hiddenPaths.includes(pathname)) return;
+    if (isHidden) return;
 
     const fetchUserInfo = async () => {
       try {
@@ -34,7 +34,7 @@ const ProductAddButton = ({ className, ...props }: ProductAddButtonProps) => {
     };
 
     fetchUserInfo();
-  }, [hiddenPaths, pathname]);
+  }, [isHidden, pathname]);
 
   return (
     isAuthenticated &&
