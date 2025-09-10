@@ -5,10 +5,10 @@ import { signOutAPI } from '@/api/auth/signOutAPI';
 import { signUpAPI, SignUpPayload } from '@/api/auth/signUpAPI';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import Cookies from 'js-cookie';
 import { User } from '@/types/api';
 import { signInKakaoAPI, SignInKakaoPayload } from '@/api/auth/signInKakaoAPI';
 import { signUpKakaoAPI, SignUpKakaoPayload } from '@/api/auth/signUpKakaoAPI';
+import { getAccessToken } from '@/lib/getAccessToken';
 
 interface AuthStore {
   isAuthenticated: boolean;
@@ -65,8 +65,8 @@ const useAuthStore = create<AuthStore>()(
       await signOutAPI();
       get().resetUser();
     },
-    userInitialize: () => {
-      const accessToken = Cookies.get('accessToken');
+    userInitialize: async () => {
+      const accessToken = await getAccessToken();
       const user = JSON.parse(localStorage.getItem('user') || 'null');
       // accessToken이 있고 storage에 user가 있을 경우 => user set 처리
       if (accessToken && user) {
