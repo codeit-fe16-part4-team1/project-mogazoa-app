@@ -127,7 +127,7 @@ const ProductReviewCard = ({
               <button
                 className={clsx(reviewInfoTextStyle, editTextStyle)}
                 onClick={() => {
-                  reviewRemoveMutate(review.id);
+                  setIsDeleteMode(true);
                 }}
               >
                 삭제
