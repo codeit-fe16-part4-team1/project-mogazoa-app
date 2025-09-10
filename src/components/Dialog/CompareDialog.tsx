@@ -4,10 +4,12 @@ import { CompareDialogProps } from '@/types/dialogProps.types';
 import { useState } from 'react';
 import { DialogContent, DialogHeader, DialogTitle } from './core/DialogComponents';
 import { Button } from '../Button/Button';
+import useDialogStore from '@/store/useDialogStore';
 
 const CompareDialog = ({ products, newProduct }: CompareDialogProps) => {
   const { setComparisonProducts } = useCompareStore();
-  const { open, close } = useDialog();
+  const { open } = useDialog();
+  const { closeDialog } = useDialogStore();
   const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
 
   const handleReplaceClick = () => {
@@ -16,7 +18,7 @@ const CompareDialog = ({ products, newProduct }: CompareDialogProps) => {
       if (selectedProduct) {
         setComparisonProducts([selectedProduct, newProduct]);
       }
-      close();
+      closeDialog();
 
       open({
         dialogName: 'compare-confirmation-dialog',
