@@ -15,7 +15,7 @@ const TopRanking = ({ user, index }: { user: UserRanking; index: number }) => {
   return (
     <div
       className={clsx(
-        'flex flex-col items-center justify-end gap-2 tracking-[-0.4px] whitespace-nowrap md:gap-5',
+        'group flex flex-col items-center justify-end gap-2 tracking-[-0.4px] whitespace-nowrap md:gap-5',
         index === 0 && 'order-1',
         index === 2 && 'order-2',
       )}
@@ -82,7 +82,7 @@ const TopRanking = ({ user, index }: { user: UserRanking; index: number }) => {
       >
         <div
           className={clsx(
-            'text-body2-medium md:text-body1-bold cursor-pointer text-center text-gray-900 hover:underline hover:underline-offset-2',
+            'text-body2-medium md:text-body1-bold cursor-pointer text-center text-gray-900 group-hover:underline group-hover:underline-offset-2',
             index === 0 && 'md:text-sub-headline-bold',
           )}
           onClick={() => {
