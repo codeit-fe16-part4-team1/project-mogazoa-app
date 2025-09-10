@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next';
 import { Providers } from './Providers';
-import localFont from 'next/font/local';
 import './globals.css';
 import GlobalDialog from '@/components/Dialog/core/GlobalDialog';
 import Script from 'next/script';
@@ -8,23 +7,7 @@ import { Suspense } from 'react';
 import Header from '@/components/Header/Header';
 import { ToastRender } from 'cy-toast';
 import Loading from './loading/loading';
-
-const cafe24Supermagic = localFont({
-  src: [
-    {
-      path: '../../public/fonts/Cafe24Supermagic-Regular-v1.0.woff2',
-      weight: '400',
-      style: 'normal',
-    },
-    {
-      path: '../../public/fonts/Cafe24Supermagic-Bold-v1.0.woff2',
-      weight: '700',
-      style: 'normal',
-    },
-  ],
-  variable: '--font-cafe24-supermagic',
-  display: 'swap',
-});
+import { cafe24Supermagic } from './font';
 
 export const metadata: Metadata = {
   title: {
@@ -42,7 +25,6 @@ export const metadata: Metadata = {
   },
 };
 
-// 별도로 viewport export 추가
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
@@ -54,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='ko' className={`${cafe24Supermagic.variable}`}>
+    <html lang='ko'>
       <head>
         <Script
           src='https://t1.kakaocdn.net/kakao_js_sdk/2.7.6/kakao.min.js'
@@ -63,7 +45,7 @@ export default function RootLayout({
           strategy='beforeInteractive'
         />
       </head>
-      <body>
+      <body className={`${cafe24Supermagic.variable} antialiased`}>
         <ToastRender />
         <Providers>
           <Suspense fallback={<Loading />}>
