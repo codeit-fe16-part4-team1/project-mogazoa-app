@@ -27,14 +27,14 @@ import { updateReview, UpdateReviewPayload } from './../../api/review/updateRevi
 import { productKeys, reviewKeys } from '@/constant/queryKeys';
 import useDialog from '@/hooks/useDialog';
 
-const INITIAL_RATING = 3;
+const INITIAL_RATING = 0;
 const MAX_IMAGE_COUNT = 3;
 const MAX_CONTENT_LENGTH = 300;
 
 const reviewFormSchema = z.object({
-  rating: z.number(),
+  rating: z.number().min(1, '별점으로 상품을 평가해주세요.'),
   reviewContent: TextAreaSchema({ maxLength: MAX_CONTENT_LENGTH }),
-  reviewImages: ImageInputSchema(MAX_IMAGE_COUNT),
+  reviewImages: ImageInputSchema(MAX_IMAGE_COUNT, false),
 });
 
 type ReviewFormData = z.infer<typeof reviewFormSchema>;
@@ -58,14 +58,14 @@ const ReviewFormDialog = ({
 
   const {
     control,
-    formState: { errors, isSubmitted },
+    formState: { errors, isValid },
     handleSubmit,
     register,
     watch,
     getValues,
   } = useForm<ReviewFormData>({
     resolver: zodResolver(reviewFormSchema),
-    mode: 'onBlur',
+    mode: 'onChange',
     defaultValues: {
       rating: rating || INITIAL_RATING,
       reviewContent: reviewContent || '',
@@ -73,7 +73,7 @@ const ReviewFormDialog = ({
     },
   });
 
-  const { mutate: createMutate } = useMutation({
+  const { mutate: createMutate, isPending: createIsPending } = useMutation({
     mutationFn: createReview,
     onSuccess: () => {
       closeAll();
@@ -85,7 +85,7 @@ const ReviewFormDialog = ({
     },
   });
 
-  const { mutate: updateMutate } = useMutation({
+  const { mutate: updateMutate, isPending: updateIsPending } = useMutation({
     mutationFn: (args: UpdateReviewPayload & { reviewId: number }) => {
       const { reviewId, ...payload } = args;
       return updateReview(reviewId, payload);
@@ -176,7 +176,6 @@ const ReviewFormDialog = ({
               defaultValue={reviewContent}
               placeholder='후기를 작성해주세요'
               error={errors.reviewContent}
-              isSubmitted={isSubmitted}
               maxLength={300}
             />
             <p className='text-caption md:text-body2 text-state-error'>
@@ -205,7 +204,12 @@ const ReviewFormDialog = ({
 
         {/* Footer */}
         <DialogFooter className='flex-between-center w-full'>
-          <Button className='w-full' type='submit' size='S'>
+          <Button
+            className='w-full'
+            type='submit'
+            size='S'
+            disabled={!isValid || createIsPending || updateIsPending}
+          >
             리뷰 작성 완료
           </Button>
         </DialogFooter>

@@ -13,7 +13,7 @@ import ImageInput, {
   getUploadedImageUrlArray,
   ImageInputSchema,
 } from '../ImageInput/ImageInput';
-import { Controller, FieldErrors, useForm } from 'react-hook-form';
+import { Controller, FieldError, FieldErrors, useForm } from 'react-hook-form';
 import Input, { InputSchema } from '../Input/Input';
 import { TextArea } from '../TextArea/TextArea';
 import z from 'zod';
@@ -26,7 +26,8 @@ import { useCategoryMap } from '@/hooks/useCategoryMap';
 import { createProduct } from '@/api/product/createProduct';
 import { updateProduct, UpdateProductPayload } from '@/api/product/updateProduct';
 import { productKeys } from '@/constant/queryKeys';
-import useDialog from '@/hooks/useDialog';
+import { useRouter } from 'next/navigation';
+import useDialogStore from '@/store/useDialogStore';
 
 const ProductFormDialog = ({
   mode,
@@ -38,9 +39,11 @@ const ProductFormDialog = ({
 }: ProductFormDialogProps) => {
   if (mode === 'edit' && !productId) throw new Error('ProductFormDialog Props Error');
 
+  const router = useRouter();
+
   const productFormSchema = z.object({
     image: ImageInputSchema(1),
-    categoryId: z.string(),
+    categoryId: z.string().refine((id) => id !== '0', { message: '카테고리를 선택해주세요.' }),
     productName: InputSchema({ minLength: 1, maxLength: 20 }),
     productDescription: TextAreaSchema({ maxLength: 300, minLength: 10 }),
   });
@@ -49,7 +52,7 @@ const ProductFormDialog = ({
 
   const {
     control,
-    formState: { errors },
+    formState: { errors, isValid },
     handleSubmit,
     register,
     watch,
@@ -58,34 +61,41 @@ const ProductFormDialog = ({
     resolver: zodResolver(productFormSchema),
     mode: 'onBlur',
     defaultValues: {
-      image: imageUrl ? getInitialImageList([imageUrl]) : undefined,
-      categoryId: String(categoryId) || '0',
+      image: imageUrl ? getInitialImageList([imageUrl]) : getInitialImageList([]),
+      categoryId: categoryId === undefined ? '0' : String(categoryId),
       productName: productName || '',
       productDescription: productDescription || '',
     },
   });
 
   const queryClient = useQueryClient();
-  const { closeAll } = useDialog();
+  const { closeAllDialog } = useDialogStore();
 
   const { categoryData } = useCategoryMap();
 
-  const { mutate: createMutate } = useMutation({
+  const { mutate: createMutate, isPending: createIsPending } = useMutation({
     mutationFn: createProduct,
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: productKeys.list() });
-      closeAll();
+      closeAllDialog();
+      router.push(`/product/${data.id}`);
+    },
+    onError: (error) => {
+      alert('상품 생성에 실패했습니다: ' + error.message);
     },
   });
 
-  const { mutate: updateMutate } = useMutation({
+  const { mutate: updateMutate, isPending: updateIsPending } = useMutation({
     mutationFn: (args: UpdateProductPayload & { productId: number }) => {
       const { productId, ...payload } = args;
       return updateProduct(productId, payload);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: productKeys.detail(productId as number) });
-      closeAll();
+      closeAllDialog();
+    },
+    onError: (error) => {
+      alert('상품 수정에 실패했습니다: ' + error.message);
     },
   });
 
@@ -118,34 +128,52 @@ const ProductFormDialog = ({
         method={mode === 'create' ? 'POST' : 'PATCH'}
         onSubmit={handleSubmit(onSubmit, onInvalid)}
       >
-        <Controller
-          name='image'
-          control={control}
-          render={({ field }) => (
-            <ImageInput
-              maxImageCount={1}
-              value={field.value}
-              onChange={field.onChange}
-              singleImageMode
-            />
+        <div>
+          <Controller
+            name='image'
+            control={control}
+            render={({ field }) => (
+              <ImageInput
+                maxImageCount={1}
+                value={field.value}
+                onChange={field.onChange}
+                singleImageMode
+              />
+            )}
+          />
+          {errors.image && 'message' in errors.image && (
+            <p className='text-caption md:text-body2 text-state-error mt-1'>
+              {(errors.image as unknown as FieldError).message}
+            </p>
           )}
-        />
-        <Controller
-          name='categoryId'
-          control={control}
-          render={({ field }) => (
-            <Dropdown
-              initialValue={field.value}
-              onChange={field.onChange}
-              placeholder='카테고리 선택'
-              size='L'
-            >
-              {categoryData?.map((category) => (
-                <DropdownItem key={category.id} label={category.name} value={String(category.id)} />
-              ))}
-            </Dropdown>
+        </div>
+        <div>
+          <Controller
+            name='categoryId'
+            control={control}
+            render={({ field }) => (
+              <Dropdown
+                initialValue={field.value}
+                onChange={field.onChange}
+                placeholder='카테고리 선택'
+                size='L'
+              >
+                {categoryData?.map((category) => (
+                  <DropdownItem
+                    key={category.id}
+                    label={category.name}
+                    value={String(category.id)}
+                  />
+                ))}
+              </Dropdown>
+            )}
+          />
+          {errors.categoryId && (
+            <p className='text-caption md:text-body2 text-state-error mt-1'>
+              {errors.categoryId?.message}
+            </p>
           )}
-        />
+        </div>
         <div>
           <Input
             id='productName'
@@ -182,7 +210,12 @@ const ProductFormDialog = ({
 
         {/* Footer */}
         <DialogFooter className='flex-between-center mt-2 w-full md:mt-5'>
-          <Button className='w-full' type='submit' size='S'>
+          <Button
+            className='w-full'
+            type='submit'
+            size='S'
+            disabled={!isValid || createIsPending || updateIsPending}
+          >
             {mode === 'create' ? '추가' : '수정'}하기
           </Button>
         </DialogFooter>
