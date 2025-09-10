@@ -3,6 +3,7 @@ import Image from 'next/image';
 import clsx from 'clsx';
 import { cn } from '@/lib/cn';
 import IconFirstRank from '@/assets/icons/icon_ranking_first.svg';
+import { useRouter } from 'next/navigation';
 
 const TOP_1_PROFILE_IMAGE_STYLES = 'w-16 h-16 md:w-25 md:h-25';
 const RANKING_TEXT_STYLES = 'md:text-caption-medium text-[10px] font-medium';
@@ -10,19 +11,23 @@ const RANKING_BADGE_ROUND_STYLES = 'rounded-full px-1.5 py-1 md:px-2 md:py-1.5';
 const RANKING_BADGE_ROUND_POSITIONS = 'absolute -top-1 -left-2 md:top-1 md:-left-1';
 
 const TopRanking = ({ user, index }: { user: UserRanking; index: number }) => {
+  const router = useRouter();
   return (
     <div
       className={clsx(
-        'flex flex-col items-center justify-end gap-2 tracking-[-0.4px] md:gap-5',
+        'group flex flex-col items-center justify-end gap-2 tracking-[-0.4px] whitespace-nowrap md:gap-5',
         index === 0 && 'order-1',
         index === 2 && 'order-2',
       )}
     >
       <div
         className={cn(
-          'relative h-14 w-14 rounded-full md:h-21 md:w-21',
+          'relative h-14 w-14 cursor-pointer rounded-full md:h-21 md:w-21',
           index === 0 && TOP_1_PROFILE_IMAGE_STYLES,
         )}
+        onClick={() => {
+          router.push(`/user/${user.id}`);
+        }}
       >
         <Image
           src={user.image ? user.image : '/images/noProfile.png'}
@@ -77,9 +82,12 @@ const TopRanking = ({ user, index }: { user: UserRanking; index: number }) => {
       >
         <div
           className={clsx(
-            'text-body2-medium md:text-body1-bold text-center text-gray-900',
+            'text-body2-medium md:text-body1-bold cursor-pointer text-center text-gray-900 group-hover:underline group-hover:underline-offset-2',
             index === 0 && 'md:text-sub-headline-bold',
           )}
+          onClick={() => {
+            router.push(`/user/${user.id}`);
+          }}
         >
           {user.nickname}
         </div>
