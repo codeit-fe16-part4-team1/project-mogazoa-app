@@ -1,11 +1,9 @@
 import { Button } from '@/components/Button/Button';
 import useDialog from '@/hooks/useDialog';
-import useDialogStore from '@/store/useDialogStore';
 import { cn } from '@/lib/cn';
 import { OrderOptions, ProductItem } from '@/types/api';
 import { HTMLAttributes } from 'react';
 import { useCompareStore } from '@/store/useCompareStore';
-import CompareDialog from '@/components/Dialog/CompareDialog';
 
 interface ProductBtnsProps extends HTMLAttributes<HTMLDivElement> {
   order: OrderOptions;
@@ -30,15 +28,17 @@ const ProductBtns = ({
 }: ProductBtnsProps) => {
   const { products, addProduct } = useCompareStore();
   const { open } = useDialog();
-  const { openDialog } = useDialogStore();
 
   const handleCompareClick = () => {
     if (products.filter(Boolean).length < 2) {
       addProduct(product);
     } else {
-      openDialog({
+      open({
         dialogName: 'compare-dialog',
-        dialogContent: <CompareDialog products={products} newProduct={product} />,
+        dialogProps: {
+          products: products,
+          newProduct: product,
+        },
       });
     }
   };

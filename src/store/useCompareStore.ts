@@ -8,7 +8,6 @@ interface CompareStore {
   products: (ProductItem | null)[];
   addProduct: (product: ProductItem) => void;
   setComparisonProducts: (newProducts: ProductItem[]) => void;
-  // removeProduct: (productId: number) => void;
   removeProduct: (position: 'A' | 'B') => void;
   resetProducts: () => void;
 }
@@ -36,9 +35,6 @@ export const useCompareStore = create<CompareStore>()(
       setComparisonProducts: (newProducts) => {
         set({ products: newProducts });
       },
-      // removeProduct: (productId) => {
-      //   set((state) => ({ products: state.products.filter((p) => p.id !== productId) }));
-      // },
       removeProduct: (position) => {
         set((state) => {
           const newProducts = [...state.products];

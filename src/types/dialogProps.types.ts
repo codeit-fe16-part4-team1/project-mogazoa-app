@@ -1,8 +1,8 @@
 import { DialogContentProps } from '@radix-ui/react-dialog';
 import { OrderOptions, ReviewImage } from './api';
 import { Follows } from '@/api/user/getUserFollowsAPI';
-
 import { ProfileEditMutationData } from '@/app/(user)/components/ProfileSection/components/ProfileEditButton';
+import { ProductItem } from '@/types/api';
 
 /**
  * 모든 DialogProps를 정의하는 파일
@@ -48,4 +48,9 @@ export interface ProfileFollowDialogProps {
   profileId: number;
   followsCount: number;
   type: Follows;
+}
+
+export interface CompareDialogProps {
+  products: (ProductItem | null)[];
+  newProduct: ProductItem;
 }
