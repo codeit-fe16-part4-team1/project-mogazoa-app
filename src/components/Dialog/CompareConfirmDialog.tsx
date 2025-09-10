@@ -6,15 +6,16 @@ import {
 } from '@/components/Dialog/core/DialogComponents';
 import { Button } from '../Button/Button';
 import { useRouter } from 'next/navigation';
-import useDialog from '@/hooks/useDialog';
+// import useDialog from '@/hooks/useDialog';
+import useDialogStore from '@/store/useDialogStore';
 
 const CompareConfirmDialog = () => {
   const router = useRouter();
-  const { close } = useDialog();
+  const { closeDialog } = useDialogStore();
 
   const handleNavigateClick = () => {
     router.push('/compare');
-    close();
+    closeDialog();
   };
   return (
     <DialogContent className='rounded-x5 flex h-52 w-[335px] flex-col items-center justify-center gap-10 border border-gray-200 md:h-[263px] md:w-125'>
