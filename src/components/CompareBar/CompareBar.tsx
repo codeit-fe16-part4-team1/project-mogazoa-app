@@ -21,22 +21,25 @@ const CompareBar = ({
 }: CompareBarProps) => {
   const [inputValue, setInputValue] = useState('');
   const [filteredProducts, setFilteredProducts] = useState<ProductItem[]>([]);
-  const { products: selectedCompareProducts } = useCompareStore();
+  const { products: comparisonProducts } = useCompareStore();
 
   const debounceFilter = useMemo(
     () =>
       debounce((keyword: string) => {
         const trimmedKeyword = keyword.toLowerCase();
-        const selectedIds = selectedCompareProducts.map((p) => p?.id);
 
-        const newFilteredProducts = products.filter(
-          (product) =>
-            product.name.toLowerCase().includes(trimmedKeyword) &&
-            !selectedIds.includes(product.id),
-        );
+        const firstProductCategory = comparisonProducts.filter(Boolean)[0]?.categoryId;
+        const newFilteredProducts = products.filter((product) => {
+          const matchesKeyword = product.name.toLowerCase().includes(trimmedKeyword);
+          const isSelected = comparisonProducts.some((p) => p?.id === product.id);
+          const matchesCategory =
+            !firstProductCategory || product.categoryId === firstProductCategory;
+
+          return matchesKeyword && !isSelected && matchesCategory;
+        });
         setFilteredProducts(newFilteredProducts);
       }, 0),
-    [products, selectedCompareProducts],
+    [products, comparisonProducts],
   );
   useEffect(() => {
     if (selectedProduct === null) {
