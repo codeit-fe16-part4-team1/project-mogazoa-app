@@ -31,7 +31,7 @@ const fetchAllProducts = async () => {
 };
 
 const ComparePage = () => {
-  const { products, removeProduct, resetProducts } = useCompareStore();
+  const { products, addProductAtPosition, removeProduct, resetProducts } = useCompareStore();
   const [isComparing, setIsComparing] = useState(false);
 
   const {
@@ -61,13 +61,15 @@ const ComparePage = () => {
   const handleSelectA = (product: ProductItem) => {
     // 이미 존재하는 상품인지 확인
     if (products.some((p) => p?.id === product.id)) return;
-    useCompareStore.setState({ products: [product, products[1] || null] });
+    // useCompareStore.setState({ products: [product, products[1] || null] });
+    addProductAtPosition(product, 'A');
   };
 
   // B 위치에 상품을 추가하는 함수
   const handleSelectB = (product: ProductItem) => {
     if (products.some((p) => p?.id === product.id)) return;
-    useCompareStore.setState({ products: [products[0] || null, product] });
+    // useCompareStore.setState({ products: [products[0] || null, product] });
+    addProductAtPosition(product, 'B');
   };
 
   const handleProductRemove = (position: 'A' | 'B') => {

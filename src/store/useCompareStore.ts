@@ -7,6 +7,7 @@ import { persist } from 'zustand/middleware';
 interface CompareStore {
   products: (ProductItem | null)[];
   addProduct: (product: ProductItem) => void;
+  addProductAtPosition: (product: ProductItem, position: 'A' | 'B') => void;
   setComparisonProducts: (newProducts: ProductItem[]) => void;
   removeProduct: (position: 'A' | 'B') => void;
   resetProducts: () => void;
@@ -14,23 +15,33 @@ interface CompareStore {
 
 export const useCompareStore = create<CompareStore>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       products: [],
       addProduct: (product) => {
-        const state = get();
-        if (state.products.some((p) => p?.id === product.id)) {
-          return;
-        }
-
-        const newProducts = [...state.products];
-        const firstEmptyIndex = newProducts.findIndex((p) => p === null);
-
-        if (firstEmptyIndex !== -1) {
-          newProducts[firstEmptyIndex] = product;
-          set({ products: newProducts });
-        } else if (newProducts.length < 2) {
-          set({ products: [...newProducts, product] });
-        }
+        set((state) => {
+          if (
+            state.products.some((p) => p?.id === product.id) ||
+            state.products.filter(Boolean).length >= 2
+          ) {
+            return state;
+          }
+          const newProducts = [...state.products];
+          const firstEmptyIndex = newProducts.findIndex((p) => p === null);
+          if (firstEmptyIndex !== -1) {
+            newProducts[firstEmptyIndex] = product;
+          } else {
+            newProducts.push(product);
+          }
+          return { products: newProducts };
+        });
+      },
+      addProductAtPosition: (product, position) => {
+        set((state) => {
+          const newProducts = [...state.products];
+          const index = position === 'A' ? 0 : 1;
+          newProducts[index] = product;
+          return { products: newProducts };
+        });
       },
       setComparisonProducts: (newProducts) => {
         set({ products: newProducts });
