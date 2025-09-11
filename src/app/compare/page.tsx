@@ -11,31 +11,6 @@ import Badge from '@/components/Badge/Badge';
 import { Button } from '@/components/Button/Button';
 import { useQuery } from '@tanstack/react-query';
 import { useCompareStore } from '@/store/useCompareStore';
-import { Metadata } from 'next';
-import { headers } from 'next/headers';
-
-export async function generateMetadata(): Promise<Metadata> {
-  // headers에서 현재 URL 가져오기
-  const headersList = headers();
-  const host = (await headersList).get('host') || process.env.DOMAIN;
-  const currentUrl = `https://${host}/signup`;
-
-  return {
-    title: `상품비교 | mogazoa`,
-    description: 'mogazoa에서 다양한 상품을 비교해보세요',
-    openGraph: {
-      title: '상품비교 | mogazoa',
-      description: 'mogazoa에서 다양한 상품을 비교해보세요',
-      url: currentUrl,
-      type: 'website',
-      siteName: 'mogazoa',
-    },
-    robots: {
-      index: false,
-      follow: true,
-    },
-  };
-}
 
 const fetchAllProducts = async () => {
   let allItems: ProductItem[] = [];
