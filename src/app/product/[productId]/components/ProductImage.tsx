@@ -1,12 +1,30 @@
 import { cn } from '@/lib/cn';
 import Image from 'next/image';
-import { HTMLAttributes } from 'react';
+import { HTMLAttributes, MouseEvent, SyntheticEvent, useState } from 'react';
+import ZoomInProductImage from './ZoomInProductImage';
+import ZoomInIcon from '@/assets/icons/icon_zoom_in.svg';
 
 interface ProductImageProps extends HTMLAttributes<HTMLDivElement> {
   imageUrl: string;
 }
 
 const ProductImage = ({ className, imageUrl, ...props }: ProductImageProps) => {
+  const [isMouseOver, setIsMouseOver] = useState(false);
+  const [mousePosition, setMousePosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [originalImageSize, setOriginalImageSize] = useState({ width: 0, height: 0 });
+
+  const handleMouseMove = (e: MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    setMousePosition({ x, y });
+  };
+
+  const handleImageLoad = (e: SyntheticEvent<HTMLImageElement, Event>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setOriginalImageSize({ width: rect.width, height: rect.height });
+  };
+
   return (
     imageUrl && (
       <figure
@@ -14,6 +32,10 @@ const ProductImage = ({ className, imageUrl, ...props }: ProductImageProps) => {
           'relative aspect-[375/320] w-full md:my-10 md:aspect-video lg:my-0 lg:aspect-[16/15]',
           className,
         )}
+        onMouseMove={handleMouseMove}
+        onMouseOver={() => setIsMouseOver(true)}
+        onMouseOut={() => setIsMouseOver(false)}
+        style={{ cursor: isMouseOver ? 'none' : 'default' }}
         {...props}
       >
         <Image
@@ -30,8 +52,20 @@ const ProductImage = ({ className, imageUrl, ...props }: ProductImageProps) => {
           alt='상품 이미지'
           fill
           priority
+          onLoad={handleImageLoad}
           sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw' // 제대로 공부할 필요
         />
+        {!isMouseOver && (
+          <ZoomInIcon className='absolute right-4 bottom-4 z-11 size-8 lg:size-10' />
+        )}
+        {isMouseOver && (
+          <ZoomInProductImage
+            imageUrl={imageUrl}
+            originalImageSize={originalImageSize}
+            mouseOver={isMouseOver}
+            mousePosition={mousePosition}
+          />
+        )}
       </figure>
     )
   );
