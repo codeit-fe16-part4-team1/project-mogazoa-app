@@ -53,22 +53,16 @@ const ComparePage = () => {
     return <div>{error.message}</div>;
   }
 
-  // const handleProductSelect = (product: ProductItem) => {
-  //   addProduct(product);
-  // };
-
   // A 위치에 상품을 추가하는 함수
   const handleSelectA = (product: ProductItem) => {
     // 이미 존재하는 상품인지 확인
     if (products.some((p) => p?.id === product.id)) return;
-    // useCompareStore.setState({ products: [product, products[1] || null] });
     addProductAtPosition(product, 'A');
   };
 
   // B 위치에 상품을 추가하는 함수
   const handleSelectB = (product: ProductItem) => {
     if (products.some((p) => p?.id === product.id)) return;
-    // useCompareStore.setState({ products: [products[0] || null, product] });
     addProductAtPosition(product, 'B');
   };
 
@@ -141,8 +135,8 @@ const ComparePage = () => {
     }
     if (aWins > bWins) {
       return (
-        <div className='flex flex-col items-center gap-2 md:gap-3'>
-          <div className='font-cafe24-supermagic text-h2-bold md:text-[40px]'>
+        <div className='font-cafe24-supermagic flex flex-col items-center gap-2 md:gap-3'>
+          <div className='text-sub-headline-bold md:text-[40px]'>
             {`'${selectedProductA?.name}'`}
           </div>
           <div className='text-sub-headline-bold md:text-h3-bold text-gray-500'>
@@ -153,8 +147,8 @@ const ComparePage = () => {
     }
     if (bWins > aWins) {
       return (
-        <div className='flex flex-col items-center gap-2 md:gap-3'>
-          <div className='font-cafe24-supermagic text-h2-bold md:text-[40px]'>
+        <div className='font-cafe24-supermagic flex flex-col items-center gap-2 md:gap-3'>
+          <div className='text-sub-headline-bold md:text-[40px]'>
             {`'${selectedProductB?.name}'`}
           </div>
           <div className='text-sub-headline-bold md:text-h3-bold text-gray-500'>
@@ -172,11 +166,16 @@ const ComparePage = () => {
 
   return (
     <div className='flex min-h-screen flex-col items-center bg-gray-100'>
-      <div className='mt-20 flex w-85 flex-col items-center gap-10 md:w-170 md:gap-16 lg:w-[889px]'>
+      <div className='mt-10 flex w-85 flex-col items-center gap-10 md:mt-20 md:w-170 md:gap-16 lg:w-[889px]'>
         {getHeaderText()}
 
         {/* PC 레이아웃 (md 이상) */}
-        <div className='hidden flex-col gap-8 md:flex md:flex-row md:gap-12'>
+        <div className='hidden w-full flex-col justify-between md:flex md:flex-row'>
+          {/* <div className='mt-90 flex hidden w-20 flex-col items-center gap-[63px] md:hidden lg:flex'>
+            <div className='text-body2-bold whitespace-nowrap text-gray-600'>⭐️별점</div>
+            <div className='text-body2-bold whitespace-nowrap text-gray-600'>📝 리뷰 개수</div>
+            <div className='text-body2-bold whitespace-nowrap text-gray-600'>🫶🏻 찜 개수</div>
+          </div> */}
           <CompareCard
             products={allProducts}
             selectedProduct={selectedProductA}
@@ -312,10 +311,7 @@ const ComparePage = () => {
 
         {/* 비교하기/다시 비교하기 버튼 */}
         {isComparing ? (
-          <Button
-            onClick={handleResetClick}
-            className='text-body1-bold h-[50px] w-85 text-white md:h-[55px]'
-          >
+          <Button onClick={handleResetClick} className='h-[50px] w-85 text-white md:h-[55px]'>
             다시 비교하기
           </Button>
         ) : (
