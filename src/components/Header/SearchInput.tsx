@@ -34,8 +34,9 @@ const SearchInput = ({
       />
       {value && (
         <button
+          type='button'
           onClick={onClear}
-          className='absolute inset-y-0 right-0 flex items-center pr-4 text-gray-500 hover:text-gray-800'
+          className='absolute inset-y-0 right-0 flex cursor-pointer items-center pr-4 text-gray-500 hover:text-gray-800'
         >
           ✕
         </button>
