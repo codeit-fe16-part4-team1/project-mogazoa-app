@@ -30,6 +30,11 @@ const ProductBtns = ({
   const { open } = useDialog();
 
   const handleCompareClick = () => {
+    const isDuplicate = products.some((p) => p?.id === product.id);
+    if (isDuplicate) {
+      open({ dialogName: 'duplicate-dialog' });
+      return;
+    }
     if (products.filter(Boolean).length < 2) {
       addProduct(product);
     } else {

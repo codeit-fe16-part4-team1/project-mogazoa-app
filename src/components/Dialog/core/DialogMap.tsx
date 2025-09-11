@@ -15,6 +15,7 @@ import ProfileFollowDialog from '@/app/(user)/components/ProfileSection/ProfileF
 import ProductFormDialog from '../ProductFormDialog';
 import CompareDialog from '../CompareDialog';
 import CompareConfirmDialog from '../CompareConfirmDialog';
+import DuplicateDialog from '../DuplicateDialog';
 
 /**
  * 모든 다이얼로그 컴포넌트를 매핑하는 객체.
@@ -42,4 +43,5 @@ export const DIALOG_COMPONENTS: IDialogComponents<any> = {
   'profile-follow-dialog': (props: ProfileFollowDialogProps) => <ProfileFollowDialog {...props} />,
   'compare-dialog': (props: CompareDialogProps) => <CompareDialog {...props} />,
   'compare-confirmation-dialog': () => <CompareConfirmDialog />,
+  'duplicate-dialog': () => <DuplicateDialog />,
 } as const;
