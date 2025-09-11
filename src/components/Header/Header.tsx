@@ -1,23 +1,28 @@
 'use client';
 import clsx from 'clsx';
+import { cn } from '@/lib/cn';
 import Link from 'next/link';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import useAuthStore from '@/store/useAuthStore';
 import IconLogo from '@/assets/icons/logo.svg';
 import IconMenu from '@/assets/icons/menu.svg';
 import IconSearch from '@/assets/icons/search.svg';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import SearchInput from './SearchInput';
 import { useCompareStore } from '@/store/useCompareStore';
 
 const HEADER_LINK_STYLES =
-  'text-body2 hidden py-2 text-gray-700 hover:text-gray-800 md:block lg:text-body1';
+  'text-body2 hidden py-2 text-gray-700 hover:text-gray-800 md:block lg:text-body1 whitespace-nowrap';
+
+const HEADER_ACTIVE_LINK_STYLES =
+  'text-body2-bold border-primary-orange-500 text-primary-orange-600 hover:text-border-primary-orange-500 lg:text-body1-bold hidden rounded-full border-1 px-4 py-3 transition-colors duration-300 ease-in-out md:block';
 
 const HEADER_DROPDOWN_LINK_STYLES =
   'block text-body2-medium w-40 px-5 py-3 rounded-[8px] text-gray-600 hover:text-primary-orange-600 hover:bg-primary-orange-200 tracking-[-0.4px]';
 
 const Header = () => {
   const { isAuthenticated } = useAuthStore();
+  const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -193,7 +198,7 @@ const Header = () => {
               <IconLogo className='h-full w-full' />
             </div>
           </div>
-          <div className='flex items-center md:gap-7 lg:gap-15'>
+          <div className='flex items-center md:gap-4 lg:gap-10'>
             <button className='cursor-pointer md:hidden' onClick={toggleSearch}>
               <IconSearch className='h-6 w-6 text-gray-500 hover:text-gray-800' />
             </button>
@@ -209,10 +214,22 @@ const Header = () => {
             </form>
             {!isAuthenticated ? (
               <>
-                <Link href='/signin' className={HEADER_LINK_STYLES}>
+                <Link
+                  href='/signin'
+                  className={cn(
+                    HEADER_LINK_STYLES,
+                    pathname === '/signin' ? HEADER_ACTIVE_LINK_STYLES : '',
+                  )}
+                >
                   로그인
                 </Link>
-                <Link href='/signup' className={HEADER_LINK_STYLES}>
+                <Link
+                  href='/signup'
+                  className={cn(
+                    HEADER_LINK_STYLES,
+                    pathname === '/signup' ? HEADER_ACTIVE_LINK_STYLES : '',
+                  )}
+                >
                   회원가입
                 </Link>
               </>
@@ -220,11 +237,20 @@ const Header = () => {
               <>
                 <Link
                   href='/compare'
-                  className='text-body2-bold border-primary-orange-500 text-primary-orange-600 hover:bg-primary-orange-200 lg:text-body1-bold hidden rounded-full border-1 px-4 py-3 transition-colors duration-300 ease-in-out md:block'
+                  className={cn(
+                    HEADER_LINK_STYLES,
+                    pathname === '/compare' ? HEADER_ACTIVE_LINK_STYLES : '',
+                  )}
                 >
                   {linkText}
                 </Link>
-                <Link href='/mypage' className={HEADER_LINK_STYLES}>
+                <Link
+                  href='/mypage'
+                  className={cn(
+                    HEADER_LINK_STYLES,
+                    pathname === '/mypage' ? HEADER_ACTIVE_LINK_STYLES : '',
+                  )}
+                >
                   내 프로필
                 </Link>
               </>
