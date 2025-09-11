@@ -1,7 +1,7 @@
 import { Button } from '@/components/Button/Button';
 import useDialog from '@/hooks/useDialog';
 import { cn } from '@/lib/cn';
-import { Category, OrderOptions, ProductItem } from '@/types/api';
+import { OrderOptions, ProductItem } from '@/types/api';
 import { HTMLAttributes } from 'react';
 import { useCompareStore } from '@/store/useCompareStore';
 import { useCategoryMap } from '@/hooks/useCategoryMap';
@@ -14,7 +14,6 @@ interface ProductBtnsProps extends HTMLAttributes<HTMLDivElement> {
   productImageUrl: string;
   authenticated: boolean;
   product: ProductItem;
-  allCategories: Category;
 }
 
 const ProductBtns = ({
