@@ -87,11 +87,11 @@ const ProductDetailPageServer = async ({ params }: { params: Promise<{ productId
   const queryClient = new QueryClient();
 
   await Promise.all([
-    queryClient.prefetchQuery({
+    queryClient.fetchQuery({
       queryKey: productKeys.detail(productId),
       queryFn: () => getProductDetail(productId),
     }),
-    queryClient.prefetchInfiniteQuery({
+    queryClient.fetchInfiniteQuery({
       queryKey: reviewKeys.list(productId, order),
       queryFn: ({ pageParam }) => getReviewList({ productId, cursor: pageParam }),
       initialPageParam: 0,
