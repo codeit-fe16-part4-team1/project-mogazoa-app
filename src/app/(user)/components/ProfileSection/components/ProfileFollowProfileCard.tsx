@@ -1,8 +1,7 @@
 import { FollowUser } from '@/api/user/getUserFollowsAPI';
+import useDialog from '@/hooks/useDialog';
 import { useSafeImageUrl } from '@/hooks/useSafeImageUrl';
-import useDialogStore from '@/store/useDialogStore';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 
 interface Props {
   followUser: FollowUser;
@@ -13,12 +12,10 @@ const ProfileFollowProfileCard = ({ followUser, withDivider = true }: Props) => 
   const defaultUrl = '/images/image_default_profile.png';
   const { safeImageUrl, onError } = useSafeImageUrl(followUser.image, defaultUrl);
 
-  const { closeDialog } = useDialogStore();
-  const router = useRouter();
+  const { closeAllAndRoute } = useDialog();
 
   const handleProfileCardClick = () => {
-    closeDialog();
-    router.push(`/user/${followUser.id}`);
+    closeAllAndRoute(`/user/${followUser.id}`);
   };
 
   return (
