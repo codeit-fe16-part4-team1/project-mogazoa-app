@@ -54,3 +54,7 @@ export interface CompareDialogProps {
   products: (ProductItem | null)[];
   newProduct: ProductItem;
 }
+
+export interface CategoryMismatchDialogProps {
+  newProduct: ProductItem;
+}
