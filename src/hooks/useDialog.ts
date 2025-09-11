@@ -93,7 +93,7 @@ const useDialog = () => {
     closeAll();
     setTimeout(() => {
       router.push(url);
-    }, 1000);
+    }, 500);
   };
 
   return { dialogs, isOpen, isClosing, open, close, closeAll, closeAllAndRoute };
