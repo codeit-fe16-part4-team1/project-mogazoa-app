@@ -31,7 +31,7 @@ const fetchAllProducts = async () => {
 };
 
 const ComparePage = () => {
-  const { products, addProduct, removeProduct, resetProducts } = useCompareStore();
+  const { products, removeProduct, resetProducts } = useCompareStore();
   const [isComparing, setIsComparing] = useState(false);
 
   const {
@@ -53,16 +53,25 @@ const ComparePage = () => {
     return <div>{error.message}</div>;
   }
 
-  const handleProductSelect = (product: ProductItem) => {
-    console.log('상품 선택 로직 실행', product);
-    addProduct(product);
+  // const handleProductSelect = (product: ProductItem) => {
+  //   addProduct(product);
+  // };
+
+  // A 위치에 상품을 추가하는 함수
+  const handleSelectA = (product: ProductItem) => {
+    // 이미 존재하는 상품인지 확인
+    if (products.some((p) => p?.id === product.id)) return;
+    useCompareStore.setState({ products: [product, products[1] || null] });
+  };
+
+  // B 위치에 상품을 추가하는 함수
+  const handleSelectB = (product: ProductItem) => {
+    if (products.some((p) => p?.id === product.id)) return;
+    useCompareStore.setState({ products: [products[0] || null, product] });
   };
 
   const handleProductRemove = (position: 'A' | 'B') => {
-    const productToRemove = position === 'A' ? selectedProductA : selectedProductB;
-    if (productToRemove) {
-      removeProduct(productToRemove.id);
-    }
+    removeProduct(position);
     setIsComparing(false);
   };
 
@@ -71,7 +80,6 @@ const ComparePage = () => {
   };
 
   const handleResetClick = () => {
-    console.log('resetProducts가 호출되었습니다.');
     resetProducts();
     setIsComparing(false);
   };
@@ -129,7 +137,7 @@ const ComparePage = () => {
         </div>
       );
     }
-    if (aWins >= 2) {
+    if (aWins > bWins) {
       return (
         <div className='flex flex-col items-center gap-2 md:gap-3'>
           <div className='font-cafe24-supermagic text-h2-bold md:text-[40px]'>
@@ -141,7 +149,7 @@ const ComparePage = () => {
         </div>
       );
     }
-    if (bWins >= 2) {
+    if (bWins > aWins) {
       return (
         <div className='flex flex-col items-center gap-2 md:gap-3'>
           <div className='font-cafe24-supermagic text-h2-bold md:text-[40px]'>
@@ -171,13 +179,13 @@ const ComparePage = () => {
             products={allProducts}
             selectedProduct={selectedProductA}
             label='A'
-            onSelectProduct={handleProductSelect}
+            onSelectProduct={handleSelectA}
             onRemoveProduct={() => handleProductRemove('A')}
             isComparing={isComparing}
             isRatingWinner={isRatingAWinner}
             isReviewCountWinner={isReviewAWinner}
             isFavoriteCountWinner={isFavoriteAWinner}
-            isWinner={aWins >= 2}
+            isWinner={aWins > bWins}
             isTie={isTie}
           />
           <div className='mt-20 mb-12 flex flex-col items-center justify-between'>
@@ -193,13 +201,13 @@ const ComparePage = () => {
             products={allProducts}
             selectedProduct={selectedProductB}
             label='B'
-            onSelectProduct={handleProductSelect}
+            onSelectProduct={handleSelectB}
             onRemoveProduct={() => handleProductRemove('B')}
             isComparing={isComparing}
             isRatingWinner={isRatingBWinner}
             isReviewCountWinner={isReviewBWinner}
             isFavoriteCountWinner={isFavoriteBWinner}
-            isWinner={bWins >= 2}
+            isWinner={bWins > aWins}
             isTie={isTie}
           />
         </div>
@@ -215,8 +223,8 @@ const ComparePage = () => {
                   imageUrl={selectedProductA?.image || ''}
                   placeholder='A'
                 />
-                {isComparing && (aWins >= 2 || isTie) && (
-                  <Badge isWinner={aWins >= 2} isTie={isTie} />
+                {isComparing && (aWins > bWins || isTie) && (
+                  <Badge isWinner={aWins > bWins} isTie={isTie} />
                 )}
                 <div className='text-caption-bold text-center text-gray-800'>
                   {selectedProductA?.name || ''}
@@ -231,8 +239,8 @@ const ComparePage = () => {
                   imageUrl={selectedProductB?.image || ''}
                   placeholder='B'
                 />
-                {isComparing && (bWins >= 2 || isTie) && (
-                  <Badge isWinner={bWins >= 2} isTie={isTie} />
+                {isComparing && (bWins > aWins || isTie) && (
+                  <Badge isWinner={bWins > aWins} isTie={isTie} />
                 )}
                 <div className='text-caption-bold text-center text-gray-800'>
                   {selectedProductB?.name || ''}
@@ -282,7 +290,7 @@ const ComparePage = () => {
                   <CompareBar
                     products={allProducts}
                     selectedProduct={selectedProductA}
-                    onSelectProduct={handleProductSelect}
+                    onSelectProduct={handleSelectA}
                     onRemoveProduct={() => handleProductRemove('A')}
                   />
                 </div>
@@ -291,7 +299,7 @@ const ComparePage = () => {
                   <CompareBar
                     products={allProducts}
                     selectedProduct={selectedProductB}
-                    onSelectProduct={handleProductSelect}
+                    onSelectProduct={handleSelectB}
                     onRemoveProduct={() => handleProductRemove('B')}
                   />
                 </div>

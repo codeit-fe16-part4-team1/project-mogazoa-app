@@ -7,11 +7,14 @@ import {
   ProfileFollowDialogProps,
   TestInnerDialogProps,
   ProductFormDialogProps,
+  CompareDialogProps,
 } from '@/types/dialogProps.types';
 import ReviewFormDialog from '../ReviewFormDialog';
 import ProfileEditDialog from '@/app/(user)/components/ProfileSection/ProfileEditDialog';
 import ProfileFollowDialog from '@/app/(user)/components/ProfileSection/ProfileFollowDialog';
 import ProductFormDialog from '../ProductFormDialog';
+import CompareDialog from '../CompareDialog';
+import CompareConfirmDialog from '../CompareConfirmDialog';
 
 /**
  * 모든 다이얼로그 컴포넌트를 매핑하는 객체.
@@ -37,4 +40,6 @@ export const DIALOG_COMPONENTS: IDialogComponents<any> = {
   'review-form-dialog': (props: ReviewFormDialogProps) => <ReviewFormDialog {...props} />,
   'profile-edit-dialog': (props: ProfileEditDialogProps) => <ProfileEditDialog {...props} />,
   'profile-follow-dialog': (props: ProfileFollowDialogProps) => <ProfileFollowDialog {...props} />,
+  'compare-dialog': (props: CompareDialogProps) => <CompareDialog {...props} />,
+  'compare-confirmation-dialog': () => <CompareConfirmDialog />,
 } as const;
