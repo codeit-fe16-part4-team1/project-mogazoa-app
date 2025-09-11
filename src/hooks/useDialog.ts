@@ -58,7 +58,7 @@ const useDialog = () => {
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const open = ({ dialogName, dialogProps = undefined, isBlockBackgroundClose }: IOpen<any>) => {
-    router.push(`${pathname}#dialog=${dialogName}`);
+    router.push(`${pathname}#dialog=${dialogName}`, { scroll: false });
     openDialog({
       dialogName,
       dialogContent: DIALOG_COMPONENTS[dialogName](dialogProps),
