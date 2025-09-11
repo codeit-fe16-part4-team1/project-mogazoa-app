@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import { cn } from '@/lib/cn';
 import IconFirstRank from '@/assets/icons/icon_ranking_first.svg';
 import { useRouter } from 'next/navigation';
+import { formatNumberWithK } from '@/utils/formatNumber';
 
 const TOP_1_PROFILE_IMAGE_STYLES = 'w-16 h-16 md:w-25 md:h-25';
 const RANKING_TEXT_STYLES = 'md:text-caption-medium text-[10px] font-medium';
@@ -30,7 +31,7 @@ const TopRanking = ({ user, index }: { user: UserRanking; index: number }) => {
         }}
       >
         <Image
-          src={user.image ? user.image : '/images/noProfile.png'}
+          src={user.image ? user.image : '/images/image_default_profile.png'}
           sizes='100'
           alt={user.nickname}
           priority
@@ -94,11 +95,11 @@ const TopRanking = ({ user, index }: { user: UserRanking; index: number }) => {
         <div className='md:text-body2 flex gap-2 text-[11px] text-gray-500 md:gap-4'>
           <div className='followers flex gap-0.5 md:gap-1'>
             <span>팔로워</span>
-            <span>{user.followersCount}</span>
+            <span>{formatNumberWithK(user.followersCount)}</span>
           </div>
           <div className='reviews flex gap-0.5 md:gap-1'>
             <span>리뷰</span>
-            <span>{user.reviewCount}</span>
+            <span>{formatNumberWithK(user.reviewCount)}</span>
           </div>
         </div>
       </div>
