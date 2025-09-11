@@ -31,6 +31,14 @@ export const Default: Story = {
   },
 };
 
+// 기본 ImageInput 스토리
+export const DefaultSingle: Story = {
+  args: {
+    value: {},
+    maxImageCount: 1,
+  },
+};
+
 // 기본값이 있는 ImageInput 스토리
 export const WithInitialImages: Story = {
   args: {
