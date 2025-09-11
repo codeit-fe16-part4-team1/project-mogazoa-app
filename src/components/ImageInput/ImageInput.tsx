@@ -84,6 +84,20 @@ const ImageInput = ({
         `최대 선택 가능한 갯수를 초과했습니다.\n선택 가능한 이미지 갯수: ${maxImageCount}개 \n총 선택된 이미지 갯수: ${totalFilesCount}개`,
       );
     } else {
+      for (const file of newFileArray) {
+        if (!file.type.startsWith('image/')) {
+          alert('이미지 파일만 업로드 가능합니다.');
+          e.target.value = ''; // input 초기화
+          return;
+        }
+        // 파일 크기 제한 (5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          alert('파일 크기는 5MB 이하만 가능합니다.');
+          e.target.value = '';
+          return;
+        }
+      }
+
       const newImageList: Record<string, File> = {};
       newFileArray.forEach((file) => {
         const url = URL.createObjectURL(file);
@@ -139,7 +153,7 @@ const ImageInput = ({
         ref={fileInputRef}
         className='hidden'
         type='file'
-        multiple
+        multiple={maxImageCount === 1 ? false : true}
         accept='image/*'
         onChange={onInputChange}
       />

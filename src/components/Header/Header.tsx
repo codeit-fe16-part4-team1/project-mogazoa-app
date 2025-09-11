@@ -9,6 +9,7 @@ import IconSearch from '@/assets/icons/search.svg';
 import debounce from 'lodash.debounce';
 import { useRouter, useSearchParams } from 'next/navigation';
 import SearchInput from './SearchInput';
+import { useCompareStore } from '@/store/useCompareStore';
 
 const DEBOUNCE_TIME = 1000;
 const HEADER_LINK_STYLES =
@@ -25,6 +26,8 @@ const Header = () => {
   const searchQuery = searchParams.get('query') || '';
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
   const previousSearchQueryRef = useRef(searchQuery);
+  const { products } = useCompareStore();
+  const compareCount = products.filter(Boolean).length;
 
   const updateQuery = useMemo(() => {
     return debounce((newQuery: string) => {
@@ -104,6 +107,8 @@ const Header = () => {
     };
   }, [isMenuOpen, isSearchOpen, localSearchQuery]);
 
+  const linkText = compareCount > 0 ? `비교하기 (${compareCount}/2)` : '비교하기';
+
   return (
     <header className={clsx('border-b-1 border-gray-200 bg-white', 'header')}>
       <div className='mx-auto max-w-[1680px] px-5 md:px-8'>
@@ -146,7 +151,7 @@ const Header = () => {
                         className={HEADER_LINK_STYLES}
                         onClick={() => setIsMenuOpen(false)}
                       >
-                        비교하기
+                        {linkText}
                       </Link>
                       <Link
                         href='/profile'
@@ -217,7 +222,7 @@ const Header = () => {
                   href='/compare'
                   className='text-body2 hidden py-2 text-gray-700 hover:text-gray-800 md:block'
                 >
-                  비교하기
+                  {linkText}
                 </Link>
                 <Link
                   href='/mypage'

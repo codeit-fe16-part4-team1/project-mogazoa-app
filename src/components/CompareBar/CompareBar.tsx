@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import IconClose from '@/assets/icons/IconClose.svg';
 import { ProductItem } from '@/types/api';
 import debounce from 'lodash.debounce';
+import { useCompareStore } from '@/store/useCompareStore';
 
 interface CompareBarProps {
   products: ProductItem[];
@@ -20,17 +21,22 @@ const CompareBar = ({
 }: CompareBarProps) => {
   const [inputValue, setInputValue] = useState('');
   const [filteredProducts, setFilteredProducts] = useState<ProductItem[]>([]);
+  const { products: selectedCompareProducts } = useCompareStore();
 
   const debounceFilter = useMemo(
     () =>
       debounce((keyword: string) => {
         const trimmedKeyword = keyword.toLowerCase();
-        const newFilteredProducts = products.filter((product) =>
-          product.name.toLowerCase().includes(trimmedKeyword),
+        const selectedIds = selectedCompareProducts.map((p) => p?.id);
+
+        const newFilteredProducts = products.filter(
+          (product) =>
+            product.name.toLowerCase().includes(trimmedKeyword) &&
+            !selectedIds.includes(product.id),
         );
         setFilteredProducts(newFilteredProducts);
       }, 0),
-    [products],
+    [products, selectedCompareProducts],
   );
   useEffect(() => {
     if (selectedProduct === null) {

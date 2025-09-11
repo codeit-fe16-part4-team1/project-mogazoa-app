@@ -1,15 +1,17 @@
 'use client';
 
-import { useEffect } from 'react';
 import useAuthStore from '@/store/useAuthStore';
+import { useEffect } from 'react';
 
-const useUserInitialize = () => {
+interface Props {
+  children: React.ReactNode;
+}
+
+export const UserProvider = ({ children }: Props) => {
   const { userInitialize } = useAuthStore();
   useEffect(() => {
     userInitialize();
   }, [userInitialize]);
 
-  return null;
+  return <>{children}</>;
 };
-
-export default useUserInitialize;
