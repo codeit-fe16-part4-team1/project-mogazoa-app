@@ -30,7 +30,7 @@ const CategoryMismatchDialog = ({ newProduct }: CategoryMismatchDialogProps) => 
       </DialogHeader>
       <div className='flex w-[290px] flex-col gap-3 md:w-105'>
         <Button onClick={handleResetAndCompare} className='h-[50px] w-[290px] md:h-[67px] md:w-105'>
-          초기화하고 비교하기
+          새로 비교하기
         </Button>
         <Button onClick={closeDialog} className='h-[50px] w-[290px] md:h-[67px] md:w-105'>
           돌아가기
