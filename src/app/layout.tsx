@@ -9,6 +9,7 @@ import { ToastRender } from 'cy-toast';
 import Loading from './loading/loading';
 import { cafe24Supermagic } from './font';
 import ProductAddButton from '@/components/ProductAddButton/ProductAddButton';
+import Footer from '@/components/Footer/Footer';
 
 export const metadata: Metadata = {
   title: {
@@ -53,6 +54,7 @@ export default function RootLayout({
             <Header />
             <ProductAddButton className='fixed right-5 bottom-8 md:right-8 md:bottom-20 lg:right-[calc((100vw-980px)/2-72px))] lg:bottom-28' />
             {children}
+            <Footer />
           </Suspense>
           <GlobalDialog />
         </Providers>
