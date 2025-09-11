@@ -32,7 +32,11 @@ const CategoryMismatchDialog = ({ newProduct }: CategoryMismatchDialogProps) => 
         <Button onClick={handleResetAndCompare} className='h-[50px] w-[290px] md:h-[67px] md:w-105'>
           새로 비교하기
         </Button>
-        <Button onClick={closeDialog} className='h-[50px] w-[290px] md:h-[67px] md:w-105'>
+        <Button
+          onClick={closeDialog}
+          intent='secondary'
+          className='h-[50px] w-[290px] md:h-[67px] md:w-105'
+        >
           돌아가기
         </Button>
       </div>
