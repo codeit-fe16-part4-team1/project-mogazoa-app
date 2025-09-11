@@ -4,7 +4,7 @@ import { cn } from '@/lib/cn';
 
 // cva로 variant, size 관리
 const buttonVariants = cva(
-  'inline-flex items-center justify-center rounded-full transition-colors  transition-all duration-900 cursor-pointer text-body1-medium lg:text-sub-headline-medium ' +
+  'inline-flex items-center justify-center rounded-full transition-colors  transition-all duration-300 cursor-pointer text-body1-medium lg:text-sub-headline-medium ' +
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ' +
     'disabled:opacity-50 disabled:cursor-not-allowed',
   {
