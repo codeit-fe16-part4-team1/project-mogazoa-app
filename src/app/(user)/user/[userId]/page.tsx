@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   // headers에서 현재 URL 가져오기
   const headersList = headers();
-  const host = (await headersList).get('host') || 'new-project-final.link';
+  const host = (await headersList).get('host') || process.env.DOMAIN;
   const currentUrl = `https://${host}/user/${userId}`;
 
   try {
