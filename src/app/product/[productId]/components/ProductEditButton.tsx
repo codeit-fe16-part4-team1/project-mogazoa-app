@@ -28,7 +28,7 @@ const ProductEditButton = ({
 
   return (
     <FloatingButton
-      className={cn('size-14 border-gray-400 bg-white md:size-16', interactionStyles, className)}
+      className={cn('size-16 border-gray-400 bg-white', interactionStyles, className)}
       onClick={() =>
         open({
           dialogName: 'product-form-dialog',
