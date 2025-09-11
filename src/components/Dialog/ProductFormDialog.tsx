@@ -26,8 +26,7 @@ import { useCategoryMap } from '@/hooks/useCategoryMap';
 import { createProduct } from '@/api/product/createProduct';
 import { updateProduct, UpdateProductPayload } from '@/api/product/updateProduct';
 import { productKeys } from '@/constant/queryKeys';
-import { useRouter } from 'next/navigation';
-import useDialogStore from '@/store/useDialogStore';
+import useDialog from '@/hooks/useDialog';
 
 const ProductFormDialog = ({
   mode,
@@ -38,8 +37,6 @@ const ProductFormDialog = ({
   productDescription,
 }: ProductFormDialogProps) => {
   if (mode === 'edit' && !productId) throw new Error('ProductFormDialog Props Error');
-
-  const router = useRouter();
 
   const productFormSchema = z.object({
     image: ImageInputSchema(1),
@@ -69,7 +66,7 @@ const ProductFormDialog = ({
   });
 
   const queryClient = useQueryClient();
-  const { closeAllDialog } = useDialogStore();
+  const { closeAll, closeAllAndRoute } = useDialog();
 
   const { categoryData } = useCategoryMap();
 
@@ -77,8 +74,7 @@ const ProductFormDialog = ({
     mutationFn: createProduct,
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: productKeys.list() });
-      closeAllDialog();
-      router.push(`/product/${data.id}`);
+      closeAllAndRoute(`/product/${data.id}`);
     },
     onError: (error) => {
       alert('상품 생성에 실패했습니다: ' + error.message);
@@ -92,7 +88,7 @@ const ProductFormDialog = ({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: productKeys.detail(productId as number) });
-      closeAllDialog();
+      closeAll();
     },
     onError: (error) => {
       alert('상품 수정에 실패했습니다: ' + error.message);

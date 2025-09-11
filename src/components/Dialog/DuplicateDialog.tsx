@@ -1,17 +1,14 @@
 'use client';
 
-import useDialogStore from '@/store/useDialogStore';
-import { useRouter } from 'next/navigation';
 import { DialogContent, DialogHeader, DialogTitle } from './core/DialogComponents';
 import { Button } from '../Button/Button';
+import useDialog from '@/hooks/useDialog';
 
 const DuplicateDialog = () => {
-  const router = useRouter();
-  const { closeDialog } = useDialogStore();
+  const { closeAllAndRoute } = useDialog();
 
   const handleNavigateClick = () => {
-    router.push('/compare');
-    closeDialog();
+    closeAllAndRoute('/compare');
   };
 
   return (

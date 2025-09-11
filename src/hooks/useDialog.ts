@@ -38,7 +38,8 @@ interface IOpen<TProps> {
  * isClosing: boolean,
  * open: ({ dialogName, dialogProps, isBlockBackgroundClose }: IOpen) => void,
  * close: () => void,
- * closeAll: () => void
+ * closeAll: () => void,
+ * closeAllAndRoute: (url: string) => void
  * }}
  * - dialogs: 다이얼로그 히스토리를 추적하기 위한 배열
  * - isOpen: 다이얼로그가 열려있는지 여부
@@ -46,6 +47,7 @@ interface IOpen<TProps> {
  * - open: 특정 다이얼로그를 여는 함수
  * - close: 가장 최근에 열린 다이얼로그를 닫는 함수
  * - closeAll: 모든 다이얼로그를 닫는 함수
+ * - closeAllAndRoute: 모든 다이얼로그를 닫고 페이지를 전환하는 함수
  */
 const useDialog = () => {
   const router = useRouter();
@@ -58,7 +60,7 @@ const useDialog = () => {
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const open = ({ dialogName, dialogProps = undefined, isBlockBackgroundClose }: IOpen<any>) => {
-    router.push(`${pathname}#dialog=${dialogName}`);
+    router.push(`${pathname}#dialog=${dialogName}`, { scroll: false });
     openDialog({
       dialogName,
       dialogContent: DIALOG_COMPONENTS[dialogName](dialogProps),
@@ -83,7 +85,18 @@ const useDialog = () => {
     closeAllDialog();
   };
 
-  return { dialogs, isOpen, isClosing, open, close, closeAll };
+  /**
+   * 열려있는 모든 다이얼로그를 닫고, 히스토리를 초기 상태로 되돌린 후 url로 페이지 전환
+   * @param {string} url - 이동할 페이지의 url
+   */
+  const closeAllAndRoute = (url: string) => {
+    closeAll();
+    setTimeout(() => {
+      router.push(url);
+    }, 500);
+  };
+
+  return { dialogs, isOpen, isClosing, open, close, closeAll, closeAllAndRoute };
 };
 
 export default useDialog;
