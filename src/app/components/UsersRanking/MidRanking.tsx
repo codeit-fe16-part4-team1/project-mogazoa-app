@@ -1,6 +1,7 @@
 import { UserRanking } from '@/types/api';
 import { cn } from '@/lib/cn';
 import { useRouter } from 'next/navigation';
+import { formatNumberWithK } from '@/utils/formatNumber';
 
 const MidRanking = ({
   user,
@@ -30,11 +31,11 @@ const MidRanking = ({
       <div className='text-caption flex gap-3 text-right text-gray-500'>
         <div className='followers flex gap-0.5 md:gap-1'>
           <span>팔로워</span>
-          <span>{user.followersCount}</span>
+          <span>{formatNumberWithK(user.followersCount)}</span>
         </div>
         <div className='reviews flex gap-0.5 md:gap-1'>
           <span>리뷰</span>
-          <span>{user.reviewCount}</span>
+          <span>{formatNumberWithK(user.reviewCount)}</span>
         </div>
       </div>
     </div>
