@@ -1,9 +1,10 @@
 import { Button } from '@/components/Button/Button';
 import useDialog from '@/hooks/useDialog';
 import { cn } from '@/lib/cn';
-import { OrderOptions, ProductItem } from '@/types/api';
+import { Category, OrderOptions, ProductItem } from '@/types/api';
 import { HTMLAttributes } from 'react';
 import { useCompareStore } from '@/store/useCompareStore';
+import { useCategoryMap } from '@/hooks/useCategoryMap';
 
 interface ProductBtnsProps extends HTMLAttributes<HTMLDivElement> {
   order: OrderOptions;
@@ -13,6 +14,7 @@ interface ProductBtnsProps extends HTMLAttributes<HTMLDivElement> {
   productImageUrl: string;
   authenticated: boolean;
   product: ProductItem;
+  allCategories: Category;
 }
 
 const ProductBtns = ({
@@ -28,15 +30,18 @@ const ProductBtns = ({
 }: ProductBtnsProps) => {
   const { products, addProduct } = useCompareStore();
   const { open } = useDialog();
+  const { getCategoryName } = useCategoryMap();
 
   const handleCompareClick = () => {
     const firstProduct = products.filter(Boolean)[0];
 
     if (firstProduct && firstProduct.categoryId !== product.categoryId) {
+      const categoryName = getCategoryName(firstProduct.categoryId) || '';
       open({
         dialogName: 'category-mismatch-dialog',
         dialogProps: {
           newProduct: product,
+          categoryName: categoryName,
         },
       });
       return;

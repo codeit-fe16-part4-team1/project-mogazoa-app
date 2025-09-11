@@ -5,7 +5,7 @@ import { CategoryMismatchDialogProps } from '@/types/dialogProps.types';
 import { DialogContent, DialogHeader, DialogTitle } from './core/DialogComponents';
 import { Button } from '../Button/Button';
 
-const CategoryMismatchDialog = ({ newProduct }: CategoryMismatchDialogProps) => {
+const CategoryMismatchDialog = ({ newProduct, categoryName }: CategoryMismatchDialogProps) => {
   const { setComparisonProducts } = useCompareStore();
   const { open } = useDialog();
   const { closeDialog } = useDialogStore();
@@ -21,7 +21,7 @@ const CategoryMismatchDialog = ({ newProduct }: CategoryMismatchDialogProps) => 
     <DialogContent className='rounded-x5 flex h-70 w-85 flex-col items-center justify-center gap-8 border border-gray-200 md:h-90 md:w-125'>
       <DialogHeader>
         <DialogTitle className='flex flex-col gap-3 text-center'>
-          <div>다른 카테고리의 상품입니다.</div>
+          <div>{`'${categoryName}'`}의 상품 비교 중입니다.</div>
           <div className='text-body2-medium md:text-sub-headline-medium'>
             기존 비교 목록을 초기화하고
             <br />이 상품으로 새로 시작하시겠어요?
