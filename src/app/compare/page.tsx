@@ -25,7 +25,7 @@ const ComparePage = async () => {
 
   return (
     <div className='full-screen flex flex-col items-center bg-gray-100'>
-      <div className='mt-10 flex w-85 flex-col items-center gap-10 md:mt-20 md:w-170 md:gap-16 lg:w-225'>
+      <div className='mt-10 mb-10 flex w-85 flex-col items-center gap-10 md:mt-20 md:mb-10 md:w-170 md:gap-16 lg:w-225'>
         <CompareContent allProducts={allProducts} />
       </div>
     </div>
