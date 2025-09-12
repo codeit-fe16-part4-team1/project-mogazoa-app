@@ -4,7 +4,7 @@ import CompareContent from './CompareContent';
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
 
-export async function generateMetadata(): Promise<Metadata> {
+export const generateMetadata = async (): Promise<Metadata> => {
   const headersList = headers();
   const host = (await headersList).get('host') || process.env.DOMAIN;
   const currentUrl = `https://${host}/compare`;
@@ -24,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
       follow: true,
     },
   };
-}
+};
 const fetchAllProducts = async () => {
   let allItems: ProductItem[] = [];
   let cursor: number | null = null;

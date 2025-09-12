@@ -15,7 +15,7 @@ interface PageProps {
   }>;
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export const generateMetadata = async ({ params }: PageProps): Promise<Metadata> => {
   const { userId } = await params;
   const profileId = Number(userId);
 
@@ -76,7 +76,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       },
     };
   }
-}
+};
 
 const UserPage = async ({ params }: PageProps) => {
   const queryClient = new QueryClient();

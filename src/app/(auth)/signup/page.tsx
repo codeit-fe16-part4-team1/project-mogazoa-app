@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { headers } from 'next/headers';
 import SignupForm from './SignupForm';
 
-export async function generateMetadata(): Promise<Metadata> {
+export const generateMetadata = async (): Promise<Metadata> => {
   // headers에서 현재 URL 가져오기
   const headersList = headers();
   const host = (await headersList).get('host') || process.env.DOMAIN;
@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
       follow: true,
     },
   };
-}
+};
 
 const SignupPage = () => {
   return <SignupForm />;
