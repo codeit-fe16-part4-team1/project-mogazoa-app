@@ -10,11 +10,7 @@ import Badge from '@/components/Badge/Badge';
 import { Button } from '@/components/Button/Button';
 import { useCompareStore } from '@/store/useCompareStore';
 
-interface CompareContentProps {
-  allProducts: ProductItem[];
-}
-
-const CompareContent = ({ allProducts }: CompareContentProps) => {
+const CompareContent = () => {
   const { products, addProductAtPosition, removeProduct, resetProducts } = useCompareStore();
   const [isComparing, setIsComparing] = useState(false);
 
@@ -139,7 +135,6 @@ const CompareContent = ({ allProducts }: CompareContentProps) => {
       {/* PC 레이아웃 (md 이상) */}
       <div className='hidden w-full flex-col justify-between md:flex md:flex-row'>
         <CompareCard
-          products={allProducts}
           selectedProduct={selectedProductA}
           label='A'
           onSelectProduct={handleSelectA}
@@ -161,7 +156,6 @@ const CompareContent = ({ allProducts }: CompareContentProps) => {
           </div>
         </div>
         <CompareCard
-          products={allProducts}
           selectedProduct={selectedProductB}
           label='B'
           onSelectProduct={handleSelectB}
@@ -251,7 +245,6 @@ const CompareContent = ({ allProducts }: CompareContentProps) => {
               <div className='flex flex-col gap-2'>
                 <div className='text-body2-bold text-gray-900'>상품 A</div>
                 <CompareBar
-                  products={allProducts}
                   selectedProduct={selectedProductA}
                   onSelectProduct={handleSelectA}
                   onRemoveProduct={() => handleProductRemove('A')}
@@ -260,7 +253,6 @@ const CompareContent = ({ allProducts }: CompareContentProps) => {
               <div className='flex flex-col gap-2'>
                 <div className='text-body2-bold text-gray-900'>상품 B</div>
                 <CompareBar
-                  products={allProducts}
                   selectedProduct={selectedProductB}
                   onSelectProduct={handleSelectB}
                   onRemoveProduct={() => handleProductRemove('B')}
