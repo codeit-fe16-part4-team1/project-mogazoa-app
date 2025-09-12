@@ -13,6 +13,7 @@ import Divider from '../components/Divider';
 import KakaoButton from '../components/KakaoButton';
 import { cn } from '@/lib/cn';
 import { redirectKakaoAuth } from '@/lib/redirectKakaoAuth';
+import AuthLinks from '../components/AuthLinks';
 
 const signupSchema = z
   .object({
@@ -151,6 +152,7 @@ const SignupForm = () => {
       <div className='mt-25 flex flex-col gap-6 md:mt-10'>
         <Divider text='SNS로 바로 시작하기' />
         <KakaoButton onClick={handleKakaoSigninClick} />
+        <AuthLinks />
       </div>
     </section>
   );
