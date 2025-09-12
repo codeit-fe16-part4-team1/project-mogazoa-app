@@ -23,7 +23,8 @@ const CompareBar = ({ selectedProduct, onSelectProduct, onRemoveProduct }: Compa
 
   const { data: searchResults, isFetching } = useQuery({
     queryKey: ['searchProducts', inputValue, firstProductCategory],
-    queryFn: () => getProductsAPI({ keyword: inputValue, category: firstProductCategory }),
+    queryFn: () =>
+      getProductsAPI({ keyword: inputValue, category: firstProductCategory, order: 'recent' }),
     enabled: inputValue.length > 0,
   });
 
