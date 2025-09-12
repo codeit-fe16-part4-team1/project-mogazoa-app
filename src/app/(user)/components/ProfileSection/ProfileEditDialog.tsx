@@ -21,7 +21,7 @@ const profileEditScheme = z.object({
     .string()
     .min(1, '닉네임은 필수 입력입니다.')
     .max(10, '닉네임은 최대 10자까지 입력 가능합니다.'),
-  description: TextAreaSchema({ minLength: 0, maxLength: 300 }),
+  description: TextAreaSchema({ minLength: 0, maxLength: 300, required: false }),
 });
 
 type ProfileEditFormInputs = z.infer<typeof profileEditScheme>;
@@ -46,13 +46,13 @@ const ProfileEditDialog = ({
     defaultValues: {
       image: getInitialImageList([imageUrl]),
       nickname,
-      description,
+      description: description || '',
     },
   });
 
   const onSubmit = async (data: ProfileEditFormInputs) => {
     await onSubmitSuccess({
-      description: data.description,
+      description: data.description || '',
       nickname: data.nickname,
       image: getValues('image'),
     });
