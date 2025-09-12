@@ -71,6 +71,7 @@ const ProfileImageInput = ({ value: imageList = {}, onChange }: ImageInputProps)
           className='object-cover'
           fill
           onError={onError}
+          sizes='200px'
         />
         <div className='absolute inset-0 bg-black opacity-40' />
         <IconAdd className='absolute top-1/2 left-1/2 aspect-square w-8 translate-x-[-50%] translate-y-[-50%] text-white' />

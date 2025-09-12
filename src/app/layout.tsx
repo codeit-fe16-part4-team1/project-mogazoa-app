@@ -52,7 +52,7 @@ export default function RootLayout({
         <Providers>
           <Suspense fallback={<Loading />}>
             <Header />
-            <ProductAddButton className='fixed right-5 bottom-8 md:right-8 md:bottom-20 lg:right-[calc((100vw-980px)/2-72px))] lg:bottom-28' />
+            <ProductAddButton className='fixed right-5 bottom-[calc(17vw+32px)] md:right-8 md:bottom-20 lg:right-[calc((100vw-980px)/2-72px))] lg:bottom-28' />
             {children}
             <Footer />
           </Suspense>
