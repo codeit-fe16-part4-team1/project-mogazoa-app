@@ -28,6 +28,8 @@ import { updateProduct, UpdateProductPayload } from '@/api/product/updateProduct
 import { productKeys } from '@/constant/queryKeys';
 import useDialog from '@/hooks/useDialog';
 import RequiredLabel from '../RequiredLabel/RequiredLabel';
+import { isAxiosError } from 'axios';
+import { josa } from 'es-hangul';
 
 const ProductFormDialog = ({
   mode,
@@ -55,6 +57,7 @@ const ProductFormDialog = ({
     register,
     watch,
     getValues,
+    setError,
   } = useForm<ProductFormData>({
     resolver: zodResolver(productFormSchema),
     mode: 'onBlur',
@@ -78,7 +81,17 @@ const ProductFormDialog = ({
       closeAllAndRoute(`/product/${data.id}`);
     },
     onError: (error) => {
-      alert('상품 생성에 실패했습니다: ' + error.message);
+      if (isAxiosError(error) && error.response) {
+        const responseData = error.response.data;
+
+        if (responseData.details && responseData.details.name) {
+          const errorMessage = responseData.details.name.message;
+          const errorValue = responseData.details.name.value;
+          setError('productName', { message: `${josa(errorValue, '은/는')} ${errorMessage}` });
+        }
+      } else {
+        alert('알 수 없는 에러가 발생했습니다.');
+      }
     },
   });
 
@@ -92,7 +105,16 @@ const ProductFormDialog = ({
       closeAll();
     },
     onError: (error) => {
-      alert('상품 수정에 실패했습니다: ' + error.message);
+      if (isAxiosError(error) && error.response) {
+        const responseData = error.response.data;
+        if (responseData.details && responseData.details.name) {
+          const errorMessage = responseData.details.name.message;
+          const errorValue = responseData.details.name.value;
+          setError('productName', { message: `${josa(errorValue, '은/는')} ${errorMessage}` });
+        }
+      } else {
+        alert('알 수 없는 에러가 발생했습니다.');
+      }
     },
   });
 
