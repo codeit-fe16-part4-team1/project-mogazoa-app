@@ -14,6 +14,7 @@ import clsx from 'clsx';
 import { Controller, useForm } from 'react-hook-form';
 import z from 'zod';
 import ProfileImageInput from './components/ProfileImageInput';
+import RequiredLabel from '@/components/RequiredLabel/RequiredLabel';
 
 const profileEditScheme = z.object({
   image: ImageInputSchema(1, false),
@@ -77,9 +78,9 @@ const ProfileEditDialog = ({
             )}
           />
         </div>
-        <label htmlFor='edit-nickname' className={LABEL_STYLES}>
+        <RequiredLabel htmlFor='edit-nickname' className={LABEL_STYLES}>
           닉네임
-        </label>
+        </RequiredLabel>
         <Input
           id='edit-nickname'
           size={'S'}
