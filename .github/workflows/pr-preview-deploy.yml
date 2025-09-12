@@ -198,6 +198,12 @@ jobs:
             exit 1
           fi
 
+          FINAL_PORT="${BASE_PORT}"
+          echo "[DEBUG][EC2] ⌛ 이전 프로세스 정리 진행 중..."
+          pm2 delete "preview-${BRANCH}" || true
+          sudo fuser -k ${FINAL_PORT}/tcp || true
+          echo "[DEBUG][EC2] ✅ 이전 프로세스 정리 완료"
+
           echo "[DEBUG][EC2] ⌛ 앱 디렉토리 정리 및 생성 진행 중..."
           echo "[DEBUG][EC2] 🔍 정리 전 메모리: $(free -h | grep '^Mem:' | awk '{print $3 "/" $2}')"
           sudo rm -rf "${APP_DIR}"
@@ -232,12 +238,6 @@ jobs:
           echo "[DEBUG][EC2] ✅ 빌드된 파일 압축 해제 완료"
 
           cd "${APP_DIR}"
-
-          FINAL_PORT="${BASE_PORT}"
-          echo "[DEBUG][EC2] ⌛ 이전 프로세스 정리 진행 중..."
-          pm2 delete "preview-${BRANCH}" || true
-          sudo fuser -k ${FINAL_PORT}/tcp || true
-          echo "[DEBUG][EC2] ✅ 이전 프로세스 정리 완료"
 
           echo "[DEBUG][EC2] ⌛ PM2 실행 진행 중..."
           pm2 start "node_modules/.bin/next start -p ${FINAL_PORT}" --name "preview-${BRANCH}"
