@@ -8,6 +8,7 @@ import {
   TestInnerDialogProps,
   ProductFormDialogProps,
   CompareDialogProps,
+  CategoryMismatchDialogProps,
 } from '@/types/dialogProps.types';
 import ReviewFormDialog from '../ReviewFormDialog';
 import ProfileEditDialog from '@/app/(user)/components/ProfileSection/ProfileEditDialog';
@@ -16,6 +17,7 @@ import ProductFormDialog from '../ProductFormDialog';
 import CompareDialog from '../CompareDialog';
 import CompareConfirmDialog from '../CompareConfirmDialog';
 import DuplicateDialog from '../DuplicateDialog';
+import CategoryMismatchDialog from '../CategoryMismatchDialog';
 
 /**
  * 모든 다이얼로그 컴포넌트를 매핑하는 객체.
@@ -44,4 +46,7 @@ export const DIALOG_COMPONENTS: IDialogComponents<any> = {
   'compare-dialog': (props: CompareDialogProps) => <CompareDialog {...props} />,
   'compare-confirmation-dialog': () => <CompareConfirmDialog />,
   'duplicate-dialog': () => <DuplicateDialog />,
+  'category-mismatch-dialog': (props: CategoryMismatchDialogProps) => (
+    <CategoryMismatchDialog {...props} />
+  ),
 } as const;

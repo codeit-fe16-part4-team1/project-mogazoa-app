@@ -4,6 +4,7 @@ import { cn } from '@/lib/cn';
 import { OrderOptions, ProductItem } from '@/types/api';
 import { HTMLAttributes } from 'react';
 import { useCompareStore } from '@/store/useCompareStore';
+import { useCategoryMap } from '@/hooks/useCategoryMap';
 
 interface ProductBtnsProps extends HTMLAttributes<HTMLDivElement> {
   order: OrderOptions;
@@ -28,13 +29,29 @@ const ProductBtns = ({
 }: ProductBtnsProps) => {
   const { products, addProduct } = useCompareStore();
   const { open } = useDialog();
+  const { getCategoryName } = useCategoryMap();
 
   const handleCompareClick = () => {
+    const firstProduct = products.filter(Boolean)[0];
+
+    if (firstProduct && firstProduct.categoryId !== product.categoryId) {
+      const categoryName = getCategoryName(firstProduct.categoryId) || '';
+      open({
+        dialogName: 'category-mismatch-dialog',
+        dialogProps: {
+          newProduct: product,
+          categoryName: categoryName,
+        },
+      });
+      return;
+    }
+
     const isDuplicate = products.some((p) => p?.id === product.id);
     if (isDuplicate) {
       open({ dialogName: 'duplicate-dialog' });
       return;
     }
+
     if (products.filter(Boolean).length < 2) {
       addProduct(product);
     } else {

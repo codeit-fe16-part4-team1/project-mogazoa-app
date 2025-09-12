@@ -21,22 +21,29 @@ const CompareBar = ({
 }: CompareBarProps) => {
   const [inputValue, setInputValue] = useState('');
   const [filteredProducts, setFilteredProducts] = useState<ProductItem[]>([]);
-  const { products: selectedCompareProducts } = useCompareStore();
+  const { products: comparisonProducts } = useCompareStore();
+
+  const [selectedIdsBucket, firstProductCategory] = useMemo(() => {
+    const bucket = new Map(comparisonProducts.map((p) => [p?.id, true]));
+    const categoryId = comparisonProducts.filter(Boolean)[0]?.categoryId;
+    return [bucket, categoryId];
+  }, [comparisonProducts]);
 
   const debounceFilter = useMemo(
     () =>
       debounce((keyword: string) => {
         const trimmedKeyword = keyword.toLowerCase();
-        const selectedIds = selectedCompareProducts.map((p) => p?.id);
 
-        const newFilteredProducts = products.filter(
-          (product) =>
-            product.name.toLowerCase().includes(trimmedKeyword) &&
-            !selectedIds.includes(product.id),
-        );
+        const newFilteredProducts = products.filter((product) => {
+          const matchesKeyword = product.name.toLowerCase().includes(trimmedKeyword);
+          const isSelected = selectedIdsBucket.has(product.id);
+          const matchesCategory =
+            !firstProductCategory || product.categoryId === firstProductCategory;
+          return matchesKeyword && !isSelected && matchesCategory;
+        });
         setFilteredProducts(newFilteredProducts);
       }, 0),
-    [products, selectedCompareProducts],
+    [products, selectedIdsBucket, firstProductCategory],
   );
   useEffect(() => {
     if (selectedProduct === null) {
@@ -74,7 +81,7 @@ const CompareBar = ({
       {selectedProduct ? (
         <div className='inline-flex w-full items-center justify-between gap-3 rounded-full bg-gray-900 px-5 py-[18px] text-white'>
           <span className='text-body1-bold'>{selectedProduct.name}</span>
-          <button onClick={handleRemove} className='items-center justify-between'>
+          <button onClick={handleRemove} className='cursor-pointer items-center justify-between'>
             <IconClose className='h-5 w-5' />
           </button>
         </div>
