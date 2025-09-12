@@ -236,6 +236,9 @@ body {
   .layout-center {
     @apply flex flex-col items-center justify-center;
   }
+  .z-toast {
+    @apply z-[9999];
+  }
   .z-modal {
     @apply z-[999];
   }
