@@ -17,9 +17,13 @@ const CompareBar = ({ selectedProduct, onSelectProduct, onRemoveProduct }: Compa
   const [inputValue, setInputValue] = useState('');
   const { products: comparisonProducts } = useCompareStore();
 
+  const firstProductCategory = useMemo(() => {
+    return comparisonProducts.filter(Boolean)[0]?.categoryId;
+  }, [comparisonProducts]);
+
   const { data: searchResults, isFetching } = useQuery({
-    queryKey: ['searchProducts', inputValue],
-    queryFn: () => getProductsAPI({ keyword: inputValue }),
+    queryKey: ['searchProducts', inputValue, firstProductCategory],
+    queryFn: () => getProductsAPI({ keyword: inputValue, category: firstProductCategory }),
     enabled: inputValue.length > 0,
   });
 
@@ -41,12 +45,10 @@ const CompareBar = ({ selectedProduct, onSelectProduct, onRemoveProduct }: Compa
     if (!searchResults) return [];
 
     const selectedIdsBucket = new Map(comparisonProducts.map((p) => [p?.id, true]));
-    const firstProductCategory = comparisonProducts.filter(Boolean)[0]?.categoryId;
 
     return searchResults.list.filter((product) => {
       const isSelected = selectedIdsBucket.has(product.id);
-      const matchesCategory = !firstProductCategory || product.categoryId === firstProductCategory;
-      return !isSelected && matchesCategory;
+      return !isSelected;
     });
   }, [searchResults, comparisonProducts]);
 
