@@ -27,6 +27,7 @@ import { createProduct } from '@/api/product/createProduct';
 import { updateProduct, UpdateProductPayload } from '@/api/product/updateProduct';
 import { productKeys } from '@/constant/queryKeys';
 import useDialog from '@/hooks/useDialog';
+import RequiredLabel from '../RequiredLabel/RequiredLabel';
 
 const ProductFormDialog = ({
   mode,
@@ -125,6 +126,9 @@ const ProductFormDialog = ({
         onSubmit={handleSubmit(onSubmit, onInvalid)}
       >
         <div>
+          <RequiredLabel className='text-caption-bold md:text-body2-bold mb-1 inline-block text-gray-900'>
+            상품 이미지
+          </RequiredLabel>
           <Controller
             name='image'
             control={control}
@@ -144,6 +148,9 @@ const ProductFormDialog = ({
           )}
         </div>
         <div>
+          <RequiredLabel className='text-caption-bold md:text-body2-bold mb-1 inline-block text-gray-900'>
+            카테고리
+          </RequiredLabel>
           <Controller
             name='categoryId'
             control={control}
@@ -171,6 +178,12 @@ const ProductFormDialog = ({
           )}
         </div>
         <div>
+          <RequiredLabel
+            className='text-caption-bold md:text-body2-bold mb-1 inline-block text-gray-900'
+            htmlFor='productName'
+          >
+            상품명
+          </RequiredLabel>
           <Input
             id='productName'
             size='S'
@@ -187,7 +200,14 @@ const ProductFormDialog = ({
           )}
         </div>
         <div>
+          <RequiredLabel
+            className='text-caption-bold md:text-body2-bold mb-1 inline-block text-gray-900'
+            htmlFor='productDescription'
+          >
+            상품 설명
+          </RequiredLabel>
           <TextArea
+            id='productDescription'
             className='min-h-45 border-gray-300 break-words md:min-h-60 md:px-3 md:pt-3 md:pl-3'
             register={register('productDescription')}
             watchValue={watch('productDescription')}
