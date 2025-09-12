@@ -22,7 +22,14 @@ const ProfileCard = ({ profile, isMyProfile }: Props) => {
             id='description'
             className={clsx('text-body1 hidden text-gray-900 md:inline-block', 'grow')}
           >
-            {profile.description}
+            {isMyProfile && !profile.description && (
+              <span className='text-gray-500'>
+                아직 자기소개를 작성하지 않으셨네요
+                <br />
+                나를 소개하는 한 마디를 작성해보세요!
+              </span>
+            )}
+            <span>{profile.description}</span>
           </p>
           <ProfileFollowInfo profile={profile} />
         </div>
