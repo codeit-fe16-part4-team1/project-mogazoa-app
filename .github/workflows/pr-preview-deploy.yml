@@ -71,8 +71,10 @@ jobs:
           # 개발 의존성만 제거 (완전히 재설치하지 않고)
           echo "[DEBUG][GHA] ⌛ 개발 의존성 제거 진행 중..."
           BEFORE_SIZE=$(du -sh node_modules | cut -f1)
+          echo "[DEBUG][GHA] 🔍 BEFORE prune: $BEFORE_SIZE"
           npm prune --omit=dev
           AFTER_SIZE=$(du -sh node_modules | cut -f1)
+          echo "[DEBUG][GHA] 🔍 AFTER prune: $AFTER_SIZE"
           echo "[DEBUG][GHA] ✅ 개발 의존성 제거 완료"
 
           # 배포에 필요한 파일들만 선별해서 패키징
@@ -92,7 +94,7 @@ jobs:
 
           # 최적화된 프로덕션 의존성
           cp -r node_modules deploy-package/
-
+          echo "[DEBUG][GHA] 🔍 Copied node_modules size: $(du -sh deploy-package/node_modules | cut -f1)"
           PACKAGE_SIZE=$(du -sh deploy-package | cut -f1)
 
           # 압축
@@ -116,6 +118,13 @@ jobs:
           printf "${CYAN}%-30s${RESET} | %s\n" "Production node_modules size" "$AFTER_SIZE"
           printf "${CYAN}%-30s${RESET} | %s\n" "Deploy package size" "$PACKAGE_SIZE"
           printf "${CYAN}%-30s${RESET} | %s\n" "Final compressed size" "$FINAL_SIZE"
+          echo ""
+          echo -e "${CYAN}📁 Deploy package breakdown:${RESET}"
+          printf "${CYAN}%-30s${RESET} | %s\n" "node_modules" "$(du -sh deploy-package/node_modules | cut -f1)"
+          printf "${CYAN}%-30s${RESET} | %s\n" ".next" "$(du -sh deploy-package/.next | cut -f1)"
+          printf "${CYAN}%-30s${RESET} | %s\n" "public" "$(du -sh deploy-package/public | cut -f1)"
+          printf "${CYAN}%-30s${RESET} | %s\n" "config" "$(du -sh deploy-package/config | cut -f1)"
+          printf "${CYAN}%-30s${RESET} | %s\n" "other files" "$(du -sh deploy-package/*.json deploy-package/*.* 2>/dev/null | awk '{sum+=$1} END {print sum "K"}' || echo "N/A")"
           echo -e "${BLUE}=============================================================${RESET}"
           echo ""
           echo "[DEBUG][GHA] ✅ 배포용 파일 패키징 완료"
