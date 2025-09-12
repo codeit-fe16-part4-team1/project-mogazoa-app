@@ -18,6 +18,7 @@ import CompareDialog from '../CompareDialog';
 import CompareConfirmDialog from '../CompareConfirmDialog';
 import DuplicateDialog from '../DuplicateDialog';
 import CategoryMismatchDialog from '../CategoryMismatchDialog';
+import DirectCompareDialog from '../DirectCompareDialog';
 
 /**
  * 모든 다이얼로그 컴포넌트를 매핑하는 객체.
@@ -49,4 +50,5 @@ export const DIALOG_COMPONENTS: IDialogComponents<any> = {
   'category-mismatch-dialog': (props: CategoryMismatchDialogProps) => (
     <CategoryMismatchDialog {...props} />
   ),
+  'direct-compare-dialog': () => <DirectCompareDialog />,
 } as const;

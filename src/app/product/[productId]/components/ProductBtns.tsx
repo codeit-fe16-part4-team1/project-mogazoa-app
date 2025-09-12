@@ -5,6 +5,8 @@ import { OrderOptions, ProductItem } from '@/types/api';
 import { HTMLAttributes } from 'react';
 import { useCompareStore } from '@/store/useCompareStore';
 import { useCategoryMap } from '@/hooks/useCategoryMap';
+import { toast } from 'cy-toast';
+import Toast from '@/components/Toast/Toast';
 
 interface ProductBtnsProps extends HTMLAttributes<HTMLDivElement> {
   order: OrderOptions;
@@ -33,6 +35,7 @@ const ProductBtns = ({
 
   const handleCompareClick = () => {
     const firstProduct = products.filter(Boolean)[0];
+    const productCount = products.filter(Boolean).length;
 
     if (firstProduct && firstProduct.categoryId !== product.categoryId) {
       const categoryName = getCategoryName(firstProduct.categoryId) || '';
@@ -52,9 +55,19 @@ const ProductBtns = ({
       return;
     }
 
-    if (products.filter(Boolean).length < 2) {
+    if (productCount === 0) {
       addProduct(product);
-    } else {
+      toast.run(({ isClosing, isOpening, index }) => (
+        <Toast variant='success' isOpening={isOpening} isClosing={isClosing} index={index}>
+          비교하기에 상품이 담겼습니다.
+        </Toast>
+      ));
+    } else if (productCount === 1) {
+      addProduct(product);
+      open({
+        dialogName: 'direct-compare-dialog',
+      });
+    } else if (productCount === 2) {
       open({
         dialogName: 'compare-dialog',
         dialogProps: {
