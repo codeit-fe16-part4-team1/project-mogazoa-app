@@ -56,10 +56,11 @@ const ProductImage = ({ className, imageUrl, ...props }: ProductImageProps) => {
           sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw' // 제대로 공부할 필요
         />
         {!isMouseOver && (
-          <ZoomInIcon className='absolute right-4 bottom-4 z-11 size-8 lg:size-10' />
+          <ZoomInIcon className='absolute right-4 bottom-4 z-11 size-8 md:hidden lg:block lg:size-10' />
         )}
         {isMouseOver && (
           <ZoomInProductImage
+            className='md:hidden lg:block'
             imageUrl={imageUrl}
             originalImageSize={originalImageSize}
             mouseOver={isMouseOver}
