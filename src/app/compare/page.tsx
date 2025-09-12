@@ -1,7 +1,30 @@
 import { getProductsAPI } from '@/api/products/getProductsAPI';
 import { ProductItem } from '@/types/api';
 import CompareContent from './CompareContent';
+import { Metadata } from 'next';
+import { headers } from 'next/headers';
 
+export async function generateMetadata(): Promise<Metadata> {
+  const headersList = headers();
+  const host = (await headersList).get('host') || process.env.DOMAIN;
+  const currentUrl = `https://${host}/compare`;
+
+  return {
+    title: `상품비교 | mogazoa`,
+    description: 'mogazoa에서 다양한 상품을 비교해보세요',
+    openGraph: {
+      title: '상품비교 | mogazoa',
+      description: 'mogazoa에서 다양한 상품을 비교해보세요',
+      url: currentUrl,
+      type: 'website',
+      siteName: 'mogazoa',
+    },
+    robots: {
+      index: false,
+      follow: true,
+    },
+  };
+}
 const fetchAllProducts = async () => {
   let allItems: ProductItem[] = [];
   let cursor: number | null = null;
