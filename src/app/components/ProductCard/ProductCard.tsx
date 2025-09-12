@@ -29,7 +29,11 @@ const NAME_STYLES = clsx(
 
 const STATS_CONTAINER_STYLES = 'flex gap-2';
 
-const STATS_STYLES = clsx('text-caption md:text-body1 text-gray-700', 'tracking-[-0.4px]');
+const STATS_STYLES = clsx(
+  'text-caption md:text-body1 text-gray-700',
+  'flex gap-1',
+  'tracking-[-0.4px]',
+);
 
 //skeleton styles
 const NAME_SKELETON_STYLES =
