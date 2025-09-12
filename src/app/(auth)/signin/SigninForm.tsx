@@ -16,6 +16,7 @@ import { redirectKakaoAuth } from '@/lib/redirectKakaoAuth';
 import { useEffect } from 'react';
 import { toast } from 'cy-toast';
 import Toast from '@/components/Toast/Toast';
+import AuthLinks from '../components/AuthLinks';
 
 const signinSchema = z.object({
   email: z
@@ -131,6 +132,7 @@ const SigninForm = () => {
       <div className='mt-25 flex flex-col gap-6 md:mt-10'>
         <Divider text='SNS로 바로 시작하기' />
         <KakaoButton onClick={handleKakaoSigninClick} />
+        <AuthLinks />
       </div>
     </section>
   );

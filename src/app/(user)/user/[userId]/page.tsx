@@ -1,13 +1,14 @@
 import ProfileSection from '../../components/ProfileSection';
 import ProductSection from '../../components/ProductSection';
 import { getUserInfo } from '@/lib/getUserInfo';
-import { redirect } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 import { getUserProfileAPI } from '@/api/user/getUserProfileAPI';
 import { productKeys, profileKeys } from '@/constant/queryKeys';
 import { headers } from 'next/headers';
 import { Metadata } from 'next';
 import { getUserProductsAPI } from '@/api/user/getUserProductsAPI';
+import { AxiosError } from 'axios';
 
 interface PageProps {
   params: Promise<{
@@ -18,6 +19,9 @@ interface PageProps {
 export const generateMetadata = async ({ params }: PageProps): Promise<Metadata> => {
   const { userId } = await params;
   const profileId = Number(userId);
+  if (Number.isNaN(profileId)) {
+    notFound();
+  }
 
   // headers에서 현재 URL 가져오기
   const headersList = headers();
@@ -83,30 +87,44 @@ const UserPage = async ({ params }: PageProps) => {
 
   const { userId } = await params;
   const profileId = Number(userId);
+
+  if (Number.isNaN(profileId)) {
+    notFound();
+  }
+
   const { userId: myProfileId } = await getUserInfo();
 
   if (profileId === myProfileId) redirect('/mypage');
 
   console.log(`[DEBUG] User Profile Id: ${profileId}`);
 
-  await Promise.all([
-    queryClient.fetchQuery({
-      queryKey: profileKeys.detail(profileId),
-      queryFn: () => getUserProfileAPI({ userId: profileId }),
-    }),
-    queryClient.fetchInfiniteQuery({
-      queryKey: productKeys.userProductList(profileId, 'reviewed'),
-      queryFn: ({ pageParam }) =>
-        getUserProductsAPI({
-          userId: profileId,
-          type: 'reviewed',
-          ...(pageParam && { cursor: pageParam }),
-        }),
-      initialPageParam: 0,
-      getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
-      pages: 0,
-    }),
-  ]);
+  try {
+    await Promise.all([
+      queryClient.fetchQuery({
+        queryKey: profileKeys.detail(profileId),
+        queryFn: () => getUserProfileAPI({ userId: profileId }),
+      }),
+      queryClient.fetchInfiniteQuery({
+        queryKey: productKeys.userProductList(profileId, 'reviewed'),
+        queryFn: ({ pageParam }) =>
+          getUserProductsAPI({
+            userId: profileId,
+            type: 'reviewed',
+            ...(pageParam && { cursor: pageParam }),
+          }),
+        initialPageParam: 0,
+        getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+        pages: 0,
+      }),
+    ]);
+  } catch (e) {
+    if (e instanceof AxiosError) {
+      if (e.status === 404) {
+        notFound();
+      }
+    }
+    redirect(`/error?type=unknown_error`);
+  }
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <ProfileSection profileId={profileId} isMyProfile={false} />
