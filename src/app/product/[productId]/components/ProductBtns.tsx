@@ -33,6 +33,7 @@ const ProductBtns = ({
 
   const handleCompareClick = () => {
     const firstProduct = products.filter(Boolean)[0];
+    const productCount = products.filter(Boolean).length;
 
     if (firstProduct && firstProduct.categoryId !== product.categoryId) {
       const categoryName = getCategoryName(firstProduct.categoryId) || '';
@@ -52,9 +53,14 @@ const ProductBtns = ({
       return;
     }
 
-    if (products.filter(Boolean).length < 2) {
+    if (productCount < 2) {
       addProduct(product);
-    } else {
+    }
+    if (productCount === 1) {
+      open({
+        dialogName: 'direct-compare-dialog',
+      });
+    } else if (productCount === 2) {
       open({
         dialogName: 'compare-dialog',
         dialogProps: {
