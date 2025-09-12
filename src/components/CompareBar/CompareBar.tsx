@@ -23,23 +23,27 @@ const CompareBar = ({
   const [filteredProducts, setFilteredProducts] = useState<ProductItem[]>([]);
   const { products: comparisonProducts } = useCompareStore();
 
+  const [selectedIdsBucket, firstProductCategory] = useMemo(() => {
+    const bucket = new Map(comparisonProducts.map((p) => [p?.id, true]));
+    const categoryId = comparisonProducts.filter(Boolean)[0]?.categoryId;
+    return [bucket, categoryId];
+  }, [comparisonProducts]);
+
   const debounceFilter = useMemo(
     () =>
       debounce((keyword: string) => {
         const trimmedKeyword = keyword.toLowerCase();
 
-        const firstProductCategory = comparisonProducts.filter(Boolean)[0]?.categoryId;
         const newFilteredProducts = products.filter((product) => {
           const matchesKeyword = product.name.toLowerCase().includes(trimmedKeyword);
-          const isSelected = comparisonProducts.some((p) => p?.id === product.id);
+          const isSelected = selectedIdsBucket.has(product.id);
           const matchesCategory =
             !firstProductCategory || product.categoryId === firstProductCategory;
-
           return matchesKeyword && !isSelected && matchesCategory;
         });
         setFilteredProducts(newFilteredProducts);
       }, 0),
-    [products, comparisonProducts],
+    [products, selectedIdsBucket, firstProductCategory],
   );
   useEffect(() => {
     if (selectedProduct === null) {
