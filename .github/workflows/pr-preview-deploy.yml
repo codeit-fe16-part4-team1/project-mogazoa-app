@@ -97,6 +97,21 @@ jobs:
           echo "[DEBUG][GHA] 🔍 Copied node_modules size: $(du -sh deploy-package/node_modules | cut -f1)"
           PACKAGE_SIZE=$(du -sh deploy-package | cut -f1)
 
+          RED="\033[1;31m"
+          GREEN="\033[1;32m"
+          BLUE="\033[1;34m"
+          CYAN="\033[1;36m"
+          RESET="\033[0m"
+
+          echo ""
+          echo -e "${CYAN}================== 📁 Deploy package info ==================${RESET}"
+          printf "${CYAN}%-30s${RESET} | %s\n" "node_modules" "$(du -sh deploy-package/node_modules | cut -f1)"
+          printf "${CYAN}%-30s${RESET} | %s\n" ".next" "$(du -sh deploy-package/.next | cut -f1)"
+          printf "${CYAN}%-30s${RESET} | %s\n" "public" "$(du -sh deploy-package/public | cut -f1)"
+          printf "${CYAN}%-30s${RESET} | %s\n" "config" "$(du -sh deploy-package/config | cut -f1)"
+          printf "${CYAN}%-30s${RESET} | %s\n" "other files" "$(du -sh deploy-package/*.json deploy-package/*.* 2>/dev/null | awk '{sum+=$1} END {print sum "K"}' || echo "N/A")"
+          echo -e "${BLUE}=============================================================${RESET}"
+          echo ""
           # 압축
           cd deploy-package
           echo "[DEBUG][GHA] ⌛ 고압축 진행 중..."
@@ -106,25 +121,12 @@ jobs:
 
           FINAL_SIZE=$(du -sh app-built.tar.gz | cut -f1)
 
-          RED="\033[1;31m"
-          GREEN="\033[1;32m"
-          BLUE="\033[1;34m"
-          CYAN="\033[1;36m"
-          RESET="\033[0m"
-
           echo ""
-          echo -e "${BLUE}====================== 📦 패키징 정보 ======================${RESET}"
+          echo -e "${BLUE}===================== 📦 Packaging Info ====================${RESET}"
           printf "${CYAN}%-30s${RESET} | %s\n" "Full node_modules size" "$BEFORE_SIZE"
           printf "${CYAN}%-30s${RESET} | %s\n" "Production node_modules size" "$AFTER_SIZE"
           printf "${CYAN}%-30s${RESET} | %s\n" "Deploy package size" "$PACKAGE_SIZE"
           printf "${CYAN}%-30s${RESET} | %s\n" "Final compressed size" "$FINAL_SIZE"
-          echo ""
-          echo -e "${CYAN}📁 Deploy package breakdown:${RESET}"
-          printf "${CYAN}%-30s${RESET} | %s\n" "node_modules" "$(du -sh deploy-package/node_modules | cut -f1)"
-          printf "${CYAN}%-30s${RESET} | %s\n" ".next" "$(du -sh deploy-package/.next | cut -f1)"
-          printf "${CYAN}%-30s${RESET} | %s\n" "public" "$(du -sh deploy-package/public | cut -f1)"
-          printf "${CYAN}%-30s${RESET} | %s\n" "config" "$(du -sh deploy-package/config | cut -f1)"
-          printf "${CYAN}%-30s${RESET} | %s\n" "other files" "$(du -sh deploy-package/*.json deploy-package/*.* 2>/dev/null | awk '{sum+=$1} END {print sum "K"}' || echo "N/A")"
           echo -e "${BLUE}=============================================================${RESET}"
           echo ""
           echo "[DEBUG][GHA] ✅ 배포용 파일 패키징 완료"
