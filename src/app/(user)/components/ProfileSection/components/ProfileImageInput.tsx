@@ -49,8 +49,8 @@ const ProfileImageInput = ({ value: imageList = {}, onChange }: ImageInputProps)
   const resetButtonVisible =
     Object.keys(initialImageListRef.current)[0] !== Object.keys(imageList)[0];
 
-  console.log(`initialImage: ${Object.keys(initialImageListRef.current)[0]}`);
-  console.log(`currentImage: ${Object.keys(imageList)[0]}`);
+  // console.log(`initialImage: ${Object.keys(initialImageListRef.current)[0]}`);
+  // console.log(`currentImage: ${Object.keys(imageList)[0]}`);
 
   // useEffect(() => {
   //   const imageUrl = Object.keys(imageList)[0];
