@@ -13,19 +13,20 @@ const AuthLinks = () => {
   ];
 
   return (
-    <p className='flex-center mb-10 flex-row font-normal text-gray-900'>
+    <div className='flex-center mb-10 flex-row font-normal text-gray-900'>
       {listMap.map(({ label, href }, index) => {
         const isActivePath = pathname === href;
+        const isNotLast = index !== listMap.length - 1;
         return (
-          <div key={label}>
+          <span key={label}>
             <Link href={href} className={clsx(isActivePath && 'text-blue-600')}>
               {label}
             </Link>
-            {index !== listMap.length - 1 && <span className='px-4'>|</span>}
-          </div>
+            {isNotLast && <span className='px-4'>|</span>}
+          </span>
         );
       })}
-    </p>
+    </div>
   );
 };
 
