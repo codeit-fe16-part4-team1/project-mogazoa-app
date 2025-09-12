@@ -231,7 +231,7 @@ body {
 
 @layer components {
   .fullscreen {
-    @apply min-h-[calc(100vh-74px)] md:min-h-[calc(100vh-90px)] lg:min-h-[calc(100vh-110px)];
+    @apply min-h-[calc(100vh-74px-17vw)] md:min-h-[calc(100vh-90px)] lg:min-h-[calc(100vh-110px)];
   }
   .layout-center {
     @apply flex flex-col items-center justify-center;
@@ -322,6 +322,13 @@ body {
 
   .animation-slide-down-out {
     animation: slideDownOut 0.21s ease-in;
+  }
+}
+
+/* 또는 더 간단하게 */
+@media (max-width: 767px) {
+  body {
+    padding-bottom: 17vw;
   }
 }
 

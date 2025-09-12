@@ -15,7 +15,7 @@ interface PageProps {
   }>;
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export const generateMetadata = async ({ params }: PageProps): Promise<Metadata> => {
   const { userId } = await params;
   const profileId = Number(userId);
 
@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
     const { nickname, description, followersCount, reviewCount } = userProfile;
 
-    const metaTitle = `${nickname}님의 프로필`;
+    const metaTitle = `${nickname}님의 프로필 | mogazoa`;
     const metaDescription = `${nickname}님의 프로필 | 팔로워 ${followersCount}명 • 리뷰 ${reviewCount}개\n\n${description}\n\nmogazoa에서 다양한 상품 리뷰와 정보를 확인하세요`;
 
     return {
@@ -66,7 +66,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     console.error('Failed to fetch user profile for metadata:', error);
 
     return {
-      title: `사용자 프로필`,
+      title: `사용자 프로필 | mogazoa`,
       description: '사용자의 프로필과 리뷰를 확인해보세요.',
       openGraph: {
         title: '사용자 프로필 | mogazoa',
@@ -76,7 +76,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       },
     };
   }
-}
+};
 
 const UserPage = async ({ params }: PageProps) => {
   const queryClient = new QueryClient();
