@@ -61,6 +61,7 @@ const ProductDetailPage = ({
             )}
 
             <ProductInfo
+              categoryId={product.category.id}
               categoryName={product.category.name}
               productName={product.name}
               description={product.description}
