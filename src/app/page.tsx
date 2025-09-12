@@ -7,17 +7,17 @@ import { headers } from 'next/headers';
 import { Metadata } from 'next';
 
 interface Props {
-  searchParams: {
+  searchParams: Promise<{
     query?: string;
     category?: string;
-  };
+  }>;
 }
 
-export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+export const generateMetadata = async ({ searchParams }: Props): Promise<Metadata> => {
   const headersList = headers();
   const host = (await headersList).get('host') || process.env.DOMAIN;
 
-  const { query, category } = searchParams;
+  const { query, category } = await searchParams;
 
   const queryString = new URLSearchParams();
   if (query) queryString.set('query', query);
@@ -53,7 +53,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
       follow: true,
     },
   };
-}
+};
 
 const Home = async () => {
   const queryClient = new QueryClient();
