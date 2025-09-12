@@ -74,7 +74,7 @@ const ProductFormDialog = ({
   const { mutate: createMutate, isPending: createIsPending } = useMutation({
     mutationFn: createProduct,
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: productKeys.list() });
+      queryClient.invalidateQueries({ queryKey: productKeys.all });
       closeAllAndRoute(`/product/${data.id}`);
     },
     onError: (error) => {
@@ -88,7 +88,7 @@ const ProductFormDialog = ({
       return updateProduct(productId, payload);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: productKeys.detail(productId as number) });
+      queryClient.invalidateQueries({ queryKey: productKeys.all });
       closeAll();
     },
     onError: (error) => {
