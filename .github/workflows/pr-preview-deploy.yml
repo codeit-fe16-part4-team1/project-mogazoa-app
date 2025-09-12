@@ -219,6 +219,9 @@ jobs:
           MONITOR_PID=$!
 
           tar -xzf /tmp/app-built.tar.gz -C "${APP_DIR}"
+          echo "[DEBUG][EC2] 🔍 압축 해제 직후 breakdown:"
+          cd "${APP_DIR}"
+          du -sh node_modules .next public config *.json 2>/dev/null
           rm -f /tmp/app-built.tar.gz
 
           # 모니터링 종료 전에 잠시 대기
