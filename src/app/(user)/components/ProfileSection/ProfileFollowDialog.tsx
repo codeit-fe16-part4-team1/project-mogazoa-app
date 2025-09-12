@@ -7,6 +7,8 @@ import ProfileFollowProfileCard from './components/ProfileFollowProfileCard';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { useRef } from 'react';
 import { profileKeys } from '@/constant/queryKeys';
+import Image from 'next/image';
+import { ThreeDotsIndicator } from '@/components/ThreeDotIndicator/ThreeDotIndicator';
 
 const ProfileFollowDialog = ({ profileId, followsCount, type }: ProfileFollowDialogProps) => {
   const scrollContainerRef = useRef(null);
@@ -26,6 +28,7 @@ const ProfileFollowDialog = ({ profileId, followsCount, type }: ProfileFollowDia
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    isPending,
   } = useInfiniteQuery({
     queryKey: profileKeys.follows(profileId, type),
     queryFn: ({ pageParam }) =>
@@ -62,14 +65,39 @@ const ProfileFollowDialog = ({ profileId, followsCount, type }: ProfileFollowDia
         팔로워/팔로우 정보를 확인할 수 있는 대화상자입니다.
       </DialogDescription>
       <div ref={scrollContainerRef} className='flex h-108 flex-col gap-3 overflow-y-auto'>
-        {allFollows.map((profile, index) => (
-          <div key={profile.id}>
-            <ProfileFollowProfileCard
-              followUser={profile[listKeyMap[type]]}
-              withDivider={index !== allFollows.length - 1}
-            />
+        {isPending && (
+          <div className='layout-center h-full gap-2'>
+            <span className='text-body2 md:text-body1 text-gray-700'>정보를 불러오고 있어요</span>
+            <ThreeDotsIndicator dotColor='primary' className='mt-4' />
           </div>
-        ))}
+        )}
+        {!isPending && allFollows.length === 0 && (
+          <div className='layout-center h-full gap-4 rounded-2xl bg-gray-100'>
+            <figure className='relative h-28 w-24 opacity-50'>
+              <Image
+                className='object-cover'
+                src='/images/image_empty_review.png'
+                alt='팔로우/팔로잉 정보 없음 이미지'
+                fill
+                priority
+                sizes='150px'
+              />
+            </figure>
+            {type === 'followers' && <span className='text-gray-500'>아직 팔로워가 없어요</span>}
+            {type === 'followees' && (
+              <span className='text-gray-500'>아직 팔로우한 사람이 없어요</span>
+            )}
+          </div>
+        )}
+        {!isPending &&
+          allFollows.map((profile, index) => (
+            <div key={profile.id}>
+              <ProfileFollowProfileCard
+                followUser={profile[listKeyMap[type]]}
+                withDivider={index !== allFollows.length - 1}
+              />
+            </div>
+          ))}
         <div ref={fetchObserverRef}>{isFetchingNextPage ? '로딩 중...' : ''}</div>
       </div>
     </DialogContent>
