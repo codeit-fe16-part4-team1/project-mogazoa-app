@@ -177,6 +177,11 @@ const HomeClient = () => {
           'banner',
           'bg-primary-orange-600 flex h-16 w-full items-center justify-center',
         )}
+        style={{
+          backgroundImage: 'url(/images/banner_pattern.png)',
+          backgroundRepeat: 'repeat',
+          backgroundSize: 'auto',
+        }}
       >
         <span className={`${TITLE_STYLES} md:text-h3-bold text-white`}>
           모가조아에서 지금 핫한 상품을 비교해보세요! 🚀
