@@ -21,7 +21,11 @@ export const generateMetadata = async ({ searchParams }: Props): Promise<Metadat
 
   const queryString = new URLSearchParams();
   if (query) queryString.set('query', query);
-  if (category) queryString.set('category', category);
+  if (category) {
+    const categories = await getCategories();
+    const nextCategory = categories.find((cat) => cat.id === Number(category));
+    if (!!nextCategory) queryString.set('category', nextCategory.name);
+  }
   const currentUrl = `https://${host}/compare${queryString.toString() ? `?${queryString.toString()}` : ''}`;
 
   let title = '';
