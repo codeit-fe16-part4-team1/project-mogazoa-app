@@ -9,7 +9,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const currentUrl = `https://${host}/signup`;
 
   return {
-    title: `회원가입`,
+    title: `회원가입 | mogazoa`,
     description: 'mogazoa에 가입하고 상품 정보를 확인해보세요',
     openGraph: {
       title: '회원가입 | mogazoa',

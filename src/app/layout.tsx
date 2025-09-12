@@ -13,13 +13,13 @@ import Footer from '@/components/Footer/Footer';
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | mogazoa',
+    template: 'mogazoa',
     default: 'mogazoa',
   },
   description: '다양한 상품을 비교하고 정보를 확인하세요',
   icons: '/favicon.svg',
   openGraph: {
-    title: '%s | mogazoa',
+    title: 'mogazoa',
     description: '다양한 상품을 비교하고 정보를 확인하세요',
     siteName: 'mogazoa',
     locale: 'ko_KR',
