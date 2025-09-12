@@ -15,6 +15,9 @@ import { Controller, useForm } from 'react-hook-form';
 import z from 'zod';
 import ProfileImageInput from './components/ProfileImageInput';
 import RequiredLabel from '@/components/RequiredLabel/RequiredLabel';
+import { AxiosError } from 'axios';
+import { useRouter } from 'next/navigation';
+import { defaultProfileImageUrl } from '@/lib/imageUrl';
 
 const profileEditScheme = z.object({
   image: ImageInputSchema(1, false),
@@ -33,31 +36,51 @@ const ProfileEditDialog = ({
   description,
   onSubmitSuccess,
 }: ProfileEditDialogProps) => {
+  const router = useRouter();
   const { close } = useDialog();
   const {
     control,
     getValues,
     register,
     handleSubmit,
+    setError,
     watch,
     formState: { errors, isValid, isSubmitting },
   } = useForm<ProfileEditFormInputs>({
     resolver: zodResolver(profileEditScheme),
     mode: 'onChange',
     defaultValues: {
-      image: getInitialImageList([imageUrl]),
+      image: imageUrl
+        ? getInitialImageList([imageUrl])
+        : getInitialImageList([defaultProfileImageUrl]),
       nickname,
       description: description || '',
     },
   });
 
   const onSubmit = async (data: ProfileEditFormInputs) => {
-    await onSubmitSuccess({
-      description: data.description || '',
-      nickname: data.nickname,
-      image: getValues('image'),
-    });
-    close();
+    try {
+      await onSubmitSuccess({
+        description: data.description || '',
+        nickname: data.nickname,
+        image: getValues('image'),
+      });
+      close();
+    } catch (e) {
+      if (e instanceof AxiosError) {
+        const errorMessage = e.response?.data.message;
+        // 닉네임 중복 에러 처리
+        console.log(errorMessage);
+        if (e.status === 400 && errorMessage === '이미 사용중인 닉네임입니다.') {
+          setError('nickname', {
+            type: 'manual',
+            message: errorMessage,
+          });
+        }
+      } else {
+        router.replace('/error?type=unknown_error');
+      }
+    }
   };
 
   const LABEL_STYLES = 'text-caption-bold md:text-body2-bold mb-3';
