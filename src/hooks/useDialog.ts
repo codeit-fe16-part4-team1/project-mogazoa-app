@@ -60,7 +60,9 @@ const useDialog = () => {
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const open = ({ dialogName, dialogProps = undefined, isBlockBackgroundClose }: IOpen<any>) => {
-    router.push(`${pathname}#dialog=${dialogName}`, { scroll: false });
+    const cleanedPathname =
+      pathname.endsWith('/') && pathname.length > 1 ? pathname.slice(0, -1) : pathname;
+    router.push(`${cleanedPathname}#dialog=${dialogName}`, { scroll: false });
     openDialog({
       dialogName,
       dialogContent: DIALOG_COMPONENTS[dialogName](dialogProps),
@@ -72,17 +74,21 @@ const useDialog = () => {
    * 가장 최근에 열린 다이얼로그를 닫고 URL 해시를 변경
    */
   const close = () => {
-    router.back();
     closeDialog();
+    setTimeout(() => {
+      router.back();
+    }, 250);
   };
 
   /**
    * 열려있는 모든 다이얼로그를 닫고, 히스토리를 초기 상태로 되돌림
    */
   const closeAll = () => {
-    const { dialogs: latestDialogs } = useDialogStore.getState();
-    window.history.go(-latestDialogs.length);
     closeAllDialog();
+    setTimeout(() => {
+      const { dialogs: latestDialogs } = useDialogStore.getState();
+      window.history.go(-latestDialogs.length);
+    }, 250);
   };
 
   /**
