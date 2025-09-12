@@ -20,26 +20,31 @@ export const generateMetadata = async ({ searchParams }: Props): Promise<Metadat
   const { query, category } = await searchParams;
 
   const queryString = new URLSearchParams();
+
   if (query) queryString.set('query', query);
+
+  let categoryName = '';
   if (category) {
     const categories = await getCategories();
     const nextCategory = categories.find((cat) => cat.id === Number(category));
-    if (!!nextCategory) queryString.set('category', nextCategory.name);
+    if (!!nextCategory) categoryName = nextCategory.name;
+    queryString.set('category', category);
   }
+
   const currentUrl = `https://${host}/compare${queryString.toString() ? `?${queryString.toString()}` : ''}`;
 
   let title = '';
   let description = 'mogazoa에서 다양한 상품을 비교해보세요';
 
-  if (query && category) {
-    title = `"${query}" ${category} 상품 검색 | mogazoa`;
-    description = `mogazoa에서 "${query}" 관련 ${category} 상품들을 비교해보세요`;
+  if (query && categoryName) {
+    title = `"${query}" ${categoryName} 상품 검색 | mogazoa`;
+    description = `mogazoa에서 "${query}" 관련 ${categoryName} 상품들을 비교해보세요`;
   } else if (query) {
     title = `"${query}" 상품 검색 | mogazoa`;
     description = `mogazoa에서 "${query}" 관련 상품들을 비교해보세요`;
-  } else if (category) {
-    title = `${category} 상품 검색 | mogazoa`;
-    description = `mogazoa에서 ${category} 카테고리 상품들을 비교해보세요`;
+  } else if (categoryName) {
+    title = `${categoryName} 상품 검색 | mogazoa`;
+    description = `mogazoa에서 ${categoryName} 카테고리 상품들을 비교해보세요`;
   }
 
   return {
