@@ -6,7 +6,7 @@ import { getInitialImageList, ImageInputSchema } from '@/components/ImageInput/I
 import Input from '@/components/Input/Input';
 import { TextArea } from '@/components/TextArea/TextArea';
 import useDialog from '@/hooks/useDialog';
-import { TextAreaSchema } from '@/lib/validations';
+import { TextAreaOptionalSchema } from '@/lib/validations';
 import { ProfileEditDialogProps } from '@/types/dialogProps.types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogDescription, DialogTitle } from '@radix-ui/react-dialog';
@@ -14,6 +14,7 @@ import clsx from 'clsx';
 import { Controller, useForm } from 'react-hook-form';
 import z from 'zod';
 import ProfileImageInput from './components/ProfileImageInput';
+import RequiredLabel from '@/components/RequiredLabel/RequiredLabel';
 
 const profileEditScheme = z.object({
   image: ImageInputSchema(1, false),
@@ -21,7 +22,7 @@ const profileEditScheme = z.object({
     .string()
     .min(1, '닉네임은 필수 입력입니다.')
     .max(10, '닉네임은 최대 10자까지 입력 가능합니다.'),
-  description: TextAreaSchema({ minLength: 0, maxLength: 300 }),
+  description: TextAreaOptionalSchema({ maxLength: 300 }),
 });
 
 type ProfileEditFormInputs = z.infer<typeof profileEditScheme>;
@@ -46,13 +47,13 @@ const ProfileEditDialog = ({
     defaultValues: {
       image: getInitialImageList([imageUrl]),
       nickname,
-      description,
+      description: description || '',
     },
   });
 
   const onSubmit = async (data: ProfileEditFormInputs) => {
     await onSubmitSuccess({
-      description: data.description,
+      description: data.description || '',
       nickname: data.nickname,
       image: getValues('image'),
     });
@@ -77,9 +78,9 @@ const ProfileEditDialog = ({
             )}
           />
         </div>
-        <label htmlFor='edit-nickname' className={LABEL_STYLES}>
+        <RequiredLabel htmlFor='edit-nickname' className={LABEL_STYLES}>
           닉네임
-        </label>
+        </RequiredLabel>
         <Input
           id='edit-nickname'
           size={'S'}

@@ -41,11 +41,12 @@ const ProfileEditButton = ({ className, profile }: Props) => {
       const imageKey = Object.keys(image)[0];
       const imageFile = Object.values(image)[0];
       let uploadedImageUrl;
-      if (!imageKey) {
+      if (!imageKey || imageKey === 'null') {
         uploadedImageUrl = defaultProfileImageUrl;
       } else {
         uploadedImageUrl = imageKey;
       }
+
       if (imageFile instanceof File) {
         const imageList = await getUploadedImageUrlArray(image);
         uploadedImageUrl = imageList[0];
