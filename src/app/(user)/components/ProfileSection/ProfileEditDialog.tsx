@@ -6,7 +6,7 @@ import { getInitialImageList, ImageInputSchema } from '@/components/ImageInput/I
 import Input from '@/components/Input/Input';
 import { TextArea } from '@/components/TextArea/TextArea';
 import useDialog from '@/hooks/useDialog';
-import { TextAreaSchema } from '@/lib/validations';
+import { TextAreaOptionalSchema } from '@/lib/validations';
 import { ProfileEditDialogProps } from '@/types/dialogProps.types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogDescription, DialogTitle } from '@radix-ui/react-dialog';
@@ -22,7 +22,7 @@ const profileEditScheme = z.object({
     .string()
     .min(1, '닉네임은 필수 입력입니다.')
     .max(10, '닉네임은 최대 10자까지 입력 가능합니다.'),
-  description: TextAreaSchema({ minLength: 0, maxLength: 300, required: false }),
+  description: TextAreaOptionalSchema({ maxLength: 300 }),
 });
 
 type ProfileEditFormInputs = z.infer<typeof profileEditScheme>;
