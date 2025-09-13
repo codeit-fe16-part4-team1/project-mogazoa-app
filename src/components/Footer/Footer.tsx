@@ -38,7 +38,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className='fixed right-0 bottom-0 left-0 translate-y-[1px] border-t-1 border-gray-500 bg-white md:hidden'>
+    <footer className='z-header fixed right-0 bottom-0 left-0 translate-y-[1px] border-t-1 border-gray-500 bg-white md:hidden'>
       <nav className='flex w-full flex-row items-center justify-between px-[17vw] py-2'>
         {listMap.map(({ label, href, IconDefault, IconSelected }) => {
           const isActivePath = pathname === href;
