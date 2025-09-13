@@ -19,7 +19,10 @@ const AuthLinks = () => {
         const isNotLast = index !== listMap.length - 1;
         return (
           <span key={label}>
-            <Link href={href} className={clsx(isActivePath && 'text-blue-600')}>
+            <Link
+              href={href}
+              className={clsx(isActivePath && 'text-primary-orange-600 font-semibold')}
+            >
               {label}
             </Link>
             {isNotLast && <span className='px-4'>|</span>}
