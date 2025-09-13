@@ -87,7 +87,7 @@ const ProductFormDialog = ({
         if (responseData.details && responseData.details.name) {
           const errorMessage = responseData.details.name.message;
           const errorValue = responseData.details.name.value;
-          setError('productName', { message: `${josa(errorValue, '은/는')} ${errorMessage}` });
+          setError('productName', { message: errorMessage });
         }
       } else {
         alert('알 수 없는 에러가 발생했습니다.');
@@ -110,7 +110,7 @@ const ProductFormDialog = ({
         if (responseData.details && responseData.details.name) {
           const errorMessage = responseData.details.name.message;
           const errorValue = responseData.details.name.value;
-          setError('productName', { message: `${josa(errorValue, '은/는')} ${errorMessage}` });
+          setError('productName', { message: errorMessage });
         }
       } else {
         alert('알 수 없는 에러가 발생했습니다.');
