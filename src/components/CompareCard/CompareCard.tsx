@@ -6,7 +6,6 @@ import CompareDetailDefault from '../CompareDetail/CompareDetailDefault';
 import Badge from '../Badge/Badge';
 
 interface CompareCardProps {
-  products: ProductItem[];
   selectedProduct: ProductItem | null;
   label: string;
   onSelectProduct: (product: ProductItem) => void;
@@ -20,7 +19,6 @@ interface CompareCardProps {
 }
 
 const CompareCard = ({
-  products,
   selectedProduct,
   label,
   onSelectProduct,
@@ -47,7 +45,6 @@ const CompareCard = ({
 
       <div className='w-full'>
         <CompareBar
-          products={products}
           selectedProduct={selectedProduct}
           onSelectProduct={onSelectProduct}
           onRemoveProduct={onRemoveProduct}

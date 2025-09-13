@@ -1,80 +1,57 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import IconClose from '@/assets/icons/IconClose.svg';
 import { ProductItem } from '@/types/api';
-import debounce from 'lodash.debounce';
 import { useCompareStore } from '@/store/useCompareStore';
+import { useQuery } from '@tanstack/react-query';
+import { getProductsAPI } from '@/api/products/getProductsAPI';
 
 interface CompareBarProps {
-  products: ProductItem[];
   selectedProduct: ProductItem | null;
   onSelectProduct: (product: ProductItem) => void;
   onRemoveProduct: () => void;
 }
 
-const CompareBar = ({
-  products,
-  selectedProduct,
-  onSelectProduct,
-  onRemoveProduct,
-}: CompareBarProps) => {
+const CompareBar = ({ selectedProduct, onSelectProduct, onRemoveProduct }: CompareBarProps) => {
   const [inputValue, setInputValue] = useState('');
-  const [filteredProducts, setFilteredProducts] = useState<ProductItem[]>([]);
   const { products: comparisonProducts } = useCompareStore();
 
-  const [selectedIdsBucket, firstProductCategory] = useMemo(() => {
-    const bucket = new Map(comparisonProducts.map((p) => [p?.id, true]));
-    const categoryId = comparisonProducts.filter(Boolean)[0]?.categoryId;
-    return [bucket, categoryId];
+  const firstProductCategory = useMemo(() => {
+    return comparisonProducts.filter(Boolean)[0]?.categoryId;
   }, [comparisonProducts]);
 
-  const debounceFilter = useMemo(
-    () =>
-      debounce((keyword: string) => {
-        const trimmedKeyword = keyword.toLowerCase();
-
-        const newFilteredProducts = products.filter((product) => {
-          const matchesKeyword = product.name.toLowerCase().includes(trimmedKeyword);
-          const isSelected = selectedIdsBucket.has(product.id);
-          const matchesCategory =
-            !firstProductCategory || product.categoryId === firstProductCategory;
-          return matchesKeyword && !isSelected && matchesCategory;
-        });
-        setFilteredProducts(newFilteredProducts);
-      }, 0),
-    [products, selectedIdsBucket, firstProductCategory],
-  );
-  useEffect(() => {
-    if (selectedProduct === null) {
-      setInputValue('');
-    }
-  }, [selectedProduct]);
-
-  useEffect(() => {
-    if (inputValue.length > 0) {
-      debounceFilter(inputValue);
-    } else {
-      setFilteredProducts([]);
-    }
-    return () => {
-      debounceFilter.cancel();
-    };
-  }, [inputValue, debounceFilter]);
+  const { data: searchResults, isFetching } = useQuery({
+    queryKey: ['searchProducts', inputValue, firstProductCategory],
+    queryFn: () =>
+      getProductsAPI({ keyword: inputValue, category: firstProductCategory, order: 'recent' }),
+    enabled: inputValue.length > 0,
+  });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
+    const inputValue = e.target.value;
+    setInputValue(inputValue);
   };
 
   const handleSelect = (product: ProductItem) => {
     setInputValue('');
-    setFilteredProducts([]);
     onSelectProduct(product);
   };
 
   const handleRemove = () => {
     onRemoveProduct();
   };
+
+  const filteredResults = useMemo(() => {
+    if (!searchResults) return [];
+
+    const selectedIdsBucket = new Map(comparisonProducts.map((p) => [p?.id, true]));
+
+    return searchResults.list.filter((product) => {
+      const isSelected = selectedIdsBucket.has(product.id);
+      return !isSelected;
+    });
+  }, [searchResults, comparisonProducts]);
 
   return (
     <div className='relative mx-auto w-full lg:w-[350px]'>
@@ -95,9 +72,9 @@ const CompareBar = ({
             className='border-primary-orange-600 text-body1-medium focus:border-primary-orange-600 w-full rounded-full border-2 border-dashed bg-white px-5 py-[18px] text-gray-600 focus:border-2 focus:border-solid focus:outline-none'
           />
           {inputValue.length > 0 && (
-            <ul className='rounded-x2 z-dropdown absolute mt-4 w-full gap-[5px] border border-gray-400 bg-white p-2.5'>
-              {filteredProducts.length > 0 ? (
-                filteredProducts.map((product) => (
+            <ul className='rounded-x2 z-dropdown absolute mt-4 max-h-85 w-full gap-[5px] overflow-y-auto border border-gray-400 bg-white p-2.5'>
+              {!isFetching && filteredResults.length > 0 ? (
+                filteredResults.map((product) => (
                   <li
                     key={product.id}
                     onClick={() => handleSelect(product)}
