@@ -21,6 +21,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'mogazoa',
     description: '다양한 상품을 비교하고 정보를 확인하세요',
+    images: `https://${process.env.DOMAIN}/images/image_opengraph_wide_mogazoa.png`,
     siteName: 'mogazoa',
     locale: 'ko_KR',
     type: 'website',

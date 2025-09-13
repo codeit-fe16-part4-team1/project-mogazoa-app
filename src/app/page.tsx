@@ -31,9 +31,10 @@ export const generateMetadata = async ({ searchParams }: Props): Promise<Metadat
     queryString.set('category', category);
   }
 
-  const currentUrl = `https://${host}/compare${queryString.toString() ? `?${queryString.toString()}` : ''}`;
+  const queryStr = queryString.toString();
+  const currentUrl = `https://${host}/${queryStr ? `?${queryStr}` : ''}`;
 
-  let title = '';
+  let title = 'mogazoa';
   let description = 'mogazoa에서 다양한 상품을 비교해보세요';
 
   if (query && categoryName) {
@@ -53,6 +54,7 @@ export const generateMetadata = async ({ searchParams }: Props): Promise<Metadat
     openGraph: {
       title,
       description,
+      images: `https://${host}/images/image_opengraph_wide_mogazoa.png`,
       url: currentUrl,
       type: 'website',
       siteName: 'mogazoa',
