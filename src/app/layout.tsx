@@ -12,6 +12,8 @@ import ProductAddButton from '@/components/ProductAddButton/ProductAddButton';
 import Footer from '@/components/Footer/Footer';
 import QuickScrollButton from '@/components/QuickScrollButton/QuickScrollButton';
 import BottomSpacer from '@/components/BottomSpacer/BottomSpacer';
+import { getUserInfo } from '@/lib/getUserInfo';
+import clsx from 'clsx';
 
 export const metadata: Metadata = {
   title: {
@@ -34,11 +36,13 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({
+const RootLayout = async ({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) {
+}>) => {
+  const { isAuthenticated } = await getUserInfo();
+
   return (
     <html lang='ko'>
       <head>
@@ -55,7 +59,14 @@ export default function RootLayout({
           <Suspense fallback={<Loading />}>
             <Header />
             <ProductAddButton className='fixed right-5 bottom-[calc(17vw+32px)] md:right-8 md:bottom-20 lg:right-[calc((100vw-980px)/2-72px))] lg:bottom-28' />
-            <QuickScrollButton className='fixed right-25 bottom-[calc(17vw+32px)] md:right-8 md:bottom-38 lg:right-[calc((100vw-980px)/2-72px))] lg:bottom-46' />
+            <QuickScrollButton
+              className={clsx(
+                'fixed bottom-[calc(17vw+32px)] md:right-8 lg:right-[calc((100vw-980px)/2-72px))]',
+                isAuthenticated
+                  ? 'right-25 md:bottom-38 lg:bottom-46'
+                  : 'right-5 md:bottom-20 lg:bottom-28',
+              )}
+            />
 
             {children}
             <BottomSpacer />
@@ -66,4 +77,6 @@ export default function RootLayout({
       </body>
     </html>
   );
-}
+};
+
+export default RootLayout;
