@@ -1,7 +1,9 @@
 import { cn } from '@/lib/cn';
+import Link from 'next/link';
 import { HTMLAttributes } from 'react';
 
 interface ProductInfoProps extends HTMLAttributes<HTMLDivElement> {
+  categoryId: number;
   categoryName: string;
   productName: string;
   description: string;
@@ -9,6 +11,7 @@ interface ProductInfoProps extends HTMLAttributes<HTMLDivElement> {
 
 const ProductInfo = ({
   className,
+  categoryId,
   categoryName,
   productName,
   description,
@@ -18,7 +21,9 @@ const ProductInfo = ({
     <div className={cn(className)} {...props}>
       {/* 카테고리명 */}
       <div className='mb-2 md:mb-3'>
-        <h2 className='text-caption md:text-body2 text-gray-700'>{`${categoryName} >`}</h2>
+        <Link href={`/?category=${categoryId}`}>
+          <h2 className='text-caption md:text-body2 hover:text-primary-orange-600 hover:text-body2-bold cursor-pointer text-gray-700'>{`${categoryName} >`}</h2>
+        </Link>
       </div>
       {/* 상품명 */}
       <div className='mb-3 md:mb-5'>

@@ -1,7 +1,6 @@
 import ThumbsUpLikes from '@/components/Likes/ThumbsUpLikes';
 import Rating from '@/components/Rating/Rating';
 import { OrderOptions, Review } from '@/types/api';
-import Image from 'next/image';
 import { HTMLAttributes, useState } from 'react';
 import { formatDate } from '@/utils/formatDate';
 import { cn } from '@/lib/cn';
@@ -11,6 +10,7 @@ import { removeReview } from '@/api/review/removeReview';
 import { productKeys, reviewKeys } from '@/constant/queryKeys';
 import useDialog from '@/hooks/useDialog';
 import Link from 'next/link';
+import ProductReviewImage from './ProductReviewImage';
 
 interface ProductReviewCardProps extends HTMLAttributes<HTMLDivElement> {
   productId: number;
@@ -146,16 +146,12 @@ const ProductReviewCard = ({
       {/* 첨부 이미지 */}
       <div className='flex items-center justify-start gap-3'>
         {review.reviewImages &&
-          review.reviewImages.map((image) => (
-            <figure key={image.id} className='relative aspect-square size-16 md:size-25'>
-              <Image
-                className='rounded-3xl object-cover'
-                src={image.source}
-                alt={`리뷰 이미지 ${image.id}`}
-                fill
-                sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw' // 제대로 공부할 필요
-              />
-            </figure>
+          review.reviewImages.map((image, index) => (
+            <ProductReviewImage
+              key={image.id}
+              source={image.source}
+              alt={`${review.user.nickname}님의 ${index}번째 리뷰 이미지`}
+            />
           ))}
       </div>
       {/* 엄지척 좋아요 */}
