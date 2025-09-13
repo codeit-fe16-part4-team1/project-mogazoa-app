@@ -52,7 +52,7 @@ const HomeClient = () => {
     } else {
       return '';
     }
-  }, [category, searchKeyword, hasCategory, hasKeyword, getCategoryName]);
+  }, [category, searchKeyword]);
 
   return (
     <div>

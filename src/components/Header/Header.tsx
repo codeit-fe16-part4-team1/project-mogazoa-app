@@ -70,9 +70,7 @@ const Header = () => {
   const handleLogoClick = () => {
     setInputValue('');
     setLocalSearchQuery('');
-
-    router.push('/');
-    router.refresh();
+    window.location.href = '/';
   };
 
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
