@@ -29,7 +29,7 @@ const Toast = ({ variant, isClosing, isOpening, index, children, className }: Pr
     'flex flex-row gap-4 items-center',
     'rounded-lg shadow-lg',
     'text-body1 md:text-lg lg:text-xl whitespace-nowrap',
-    'top-25 md:top-35 lg:top-40 z-100',
+    'top-25 md:top-35 lg:top-40',
     'py-3 px-4 md:py-4 md:px-5',
     'select-none',
     'transition-all duration-200 ease-in-out',
