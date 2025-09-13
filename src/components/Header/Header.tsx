@@ -21,9 +21,9 @@ const Header = () => {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const searchQuery = searchParams.get('query') || '';
-  const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
-  const previousSearchQueryRef = useRef(searchQuery);
+  const searchKeyword = searchParams.get('query') || '';
+  const [localSearchQuery, setLocalSearchQuery] = useState(searchKeyword);
+  const previousSearchQueryRef = useRef(searchKeyword);
   const [inputValue, setInputValue] = useState(localSearchQuery);
   const { products } = useCompareStore();
   const compareCount = products.filter(Boolean).length;
@@ -44,13 +44,17 @@ const Header = () => {
     };
   }, [localSearchQuery]);
 
-  // // searchQuery가 외부에서 변경될 때 localSearchQuery 동기화
   useEffect(() => {
-    if (searchQuery !== previousSearchQueryRef.current) {
-      setLocalSearchQuery(searchQuery);
-      previousSearchQueryRef.current = searchQuery;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [searchKeyword]);
+
+  // // searchKeyword가 외부에서 변경될 때 localSearchQuery 동기화
+  useEffect(() => {
+    if (searchKeyword !== previousSearchQueryRef.current) {
+      setLocalSearchQuery(searchKeyword);
+      previousSearchQueryRef.current = searchKeyword;
     }
-  }, [searchQuery]);
+  }, [searchKeyword]);
 
   useEffect(() => {
     if (localSearchQuery !== previousSearchQueryRef.current) {
