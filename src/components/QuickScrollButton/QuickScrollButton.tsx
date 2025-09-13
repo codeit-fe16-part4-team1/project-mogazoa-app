@@ -14,7 +14,7 @@ const QuickScrollButton = ({ className, ...props }: QuickScrollButtonProps) => {
   const hiddenPaths = useMemo(() => ['/signin', '/signup', '/compare'], []);
   const isHidden = hiddenPaths.some((path) => pathname.startsWith(path));
 
-  const interactionStyles = 'hover:bg-gray-200 hover:border-2';
+  const interactionStyles = 'hover:bg-gray-200';
 
   const handleButtonClick = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
