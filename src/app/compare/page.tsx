@@ -13,7 +13,7 @@ export const generateMetadata = async (): Promise<Metadata> => {
     openGraph: {
       title: '상품비교 | mogazoa',
       description: 'mogazoa에서 다양한 상품을 비교해보세요',
-      images: '/images/image_opengraph_wide_mogazoa.png',
+      images: `https://${host}/images/image_opengraph_wide_mogazoa.png`,
       url: currentUrl,
       type: 'website',
       siteName: 'mogazoa',
