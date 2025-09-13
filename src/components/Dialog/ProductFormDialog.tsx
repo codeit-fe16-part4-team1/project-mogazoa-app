@@ -29,7 +29,6 @@ import { productKeys } from '@/constant/queryKeys';
 import useDialog from '@/hooks/useDialog';
 import RequiredLabel from '../RequiredLabel/RequiredLabel';
 import { isAxiosError } from 'axios';
-import { josa } from 'es-hangul';
 
 const ProductFormDialog = ({
   mode,
@@ -86,7 +85,6 @@ const ProductFormDialog = ({
 
         if (responseData.details && responseData.details.name) {
           const errorMessage = responseData.details.name.message;
-          const errorValue = responseData.details.name.value;
           setError('productName', { message: errorMessage });
         }
       } else {
@@ -109,7 +107,6 @@ const ProductFormDialog = ({
         const responseData = error.response.data;
         if (responseData.details && responseData.details.name) {
           const errorMessage = responseData.details.name.message;
-          const errorValue = responseData.details.name.value;
           setError('productName', { message: errorMessage });
         }
       } else {
