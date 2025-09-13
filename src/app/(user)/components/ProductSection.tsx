@@ -50,7 +50,7 @@ const ProductSection = ({ profileId }: Props) => {
   }, [profileId, queryClient]);
 
   return (
-    <section className='px-4 pt-6 pb-11 md:px-15 md:pt-9 md:pb-18'>
+    <section className='px-4 pt-6 pb-30 md:px-15 md:pt-9 md:pb-18'>
       <ProductOptionList
         productType={productType}
         onChange={(value: ProductType) => setProductType(value)}
