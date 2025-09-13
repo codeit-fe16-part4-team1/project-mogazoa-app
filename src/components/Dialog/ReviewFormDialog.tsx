@@ -26,6 +26,7 @@ import { createReview } from '@/api/review/createReview';
 import { updateReview, UpdateReviewPayload } from './../../api/review/updateReview';
 import { productKeys, reviewKeys } from '@/constant/queryKeys';
 import useDialog from '@/hooks/useDialog';
+import RequiredLabel from '../RequiredLabel/RequiredLabel';
 
 const INITIAL_RATING = 0;
 const MAX_IMAGE_COUNT = 3;
@@ -158,18 +159,34 @@ const ReviewFormDialog = ({
         </section>
         <section className='flex flex-col gap-5'>
           <div className='flex-between-center'>
-            <h2 className='text-caption-bold md:text-body2-bold text-gray-900'>별점</h2>
+            <RequiredLabel
+              className='text-caption-bold md:text-body2-bold text-gray-900'
+              htmlFor='rating'
+            >
+              별점
+            </RequiredLabel>
             <Controller
               name='rating'
               control={control}
               render={({ field }) => (
-                <Rating rating={field.value} onRatingChange={field.onChange} {...field} />
+                <Rating
+                  id='rating'
+                  rating={field.value}
+                  onRatingChange={field.onChange}
+                  {...field}
+                />
               )}
             />
           </div>
           <div className='flex flex-col gap-3'>
-            <h2 className='text-caption-bold md:text-body2-bold text-gray-900'>상품 후기</h2>
+            <RequiredLabel
+              className='text-caption-bold md:text-body2-bold text-gray-900'
+              htmlFor='reviewContent'
+            >
+              상품 후기
+            </RequiredLabel>
             <TextArea
+              id='reviewContent'
               className='min-h-32 border-gray-300 break-words md:min-h-42'
               register={register('reviewContent')}
               watchValue={watch('reviewContent')}
