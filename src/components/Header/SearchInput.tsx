@@ -20,7 +20,7 @@ const SearchInput = ({
   onClear,
 }: SearchInputProps) => {
   return (
-    <div className={clsx('relative w-full', className)}>
+    <div className={clsx('relative', className)}>
       <div className='pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 md:pl-5'>
         <IconSearch className='h-6 w-6 text-gray-600' />
       </div>
