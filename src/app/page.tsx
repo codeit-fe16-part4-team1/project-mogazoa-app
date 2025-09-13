@@ -53,6 +53,7 @@ export const generateMetadata = async ({ searchParams }: Props): Promise<Metadat
     openGraph: {
       title,
       description,
+      images: '/images/image_opengraph_wide_mogazoa.png',
       url: currentUrl,
       type: 'website',
       siteName: 'mogazoa',
