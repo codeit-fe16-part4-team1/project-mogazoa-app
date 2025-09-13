@@ -27,6 +27,8 @@ import { createProduct } from '@/api/product/createProduct';
 import { updateProduct, UpdateProductPayload } from '@/api/product/updateProduct';
 import { productKeys } from '@/constant/queryKeys';
 import useDialog from '@/hooks/useDialog';
+import RequiredLabel from '../RequiredLabel/RequiredLabel';
+import { isAxiosError } from 'axios';
 
 const ProductFormDialog = ({
   mode,
@@ -54,6 +56,7 @@ const ProductFormDialog = ({
     register,
     watch,
     getValues,
+    setError,
   } = useForm<ProductFormData>({
     resolver: zodResolver(productFormSchema),
     mode: 'onBlur',
@@ -73,11 +76,20 @@ const ProductFormDialog = ({
   const { mutate: createMutate, isPending: createIsPending } = useMutation({
     mutationFn: createProduct,
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: productKeys.list() });
+      queryClient.invalidateQueries({ queryKey: productKeys.all });
       closeAllAndRoute(`/product/${data.id}`);
     },
     onError: (error) => {
-      alert('상품 생성에 실패했습니다: ' + error.message);
+      if (isAxiosError(error) && error.response) {
+        const responseData = error.response.data;
+
+        if (responseData.details && responseData.details.name) {
+          const errorMessage = responseData.details.name.message;
+          setError('productName', { message: errorMessage });
+        }
+      } else {
+        alert('알 수 없는 에러가 발생했습니다.');
+      }
     },
   });
 
@@ -87,11 +99,19 @@ const ProductFormDialog = ({
       return updateProduct(productId, payload);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: productKeys.detail(productId as number) });
+      queryClient.invalidateQueries({ queryKey: productKeys.all });
       closeAll();
     },
     onError: (error) => {
-      alert('상품 수정에 실패했습니다: ' + error.message);
+      if (isAxiosError(error) && error.response) {
+        const responseData = error.response.data;
+        if (responseData.details && responseData.details.name) {
+          const errorMessage = responseData.details.name.message;
+          setError('productName', { message: errorMessage });
+        }
+      } else {
+        alert('알 수 없는 에러가 발생했습니다.');
+      }
     },
   });
 
@@ -125,6 +145,9 @@ const ProductFormDialog = ({
         onSubmit={handleSubmit(onSubmit, onInvalid)}
       >
         <div>
+          <RequiredLabel className='text-caption-bold md:text-body2-bold mb-1 inline-block text-gray-900'>
+            상품 이미지
+          </RequiredLabel>
           <Controller
             name='image'
             control={control}
@@ -144,6 +167,9 @@ const ProductFormDialog = ({
           )}
         </div>
         <div>
+          <RequiredLabel className='text-caption-bold md:text-body2-bold mb-1 inline-block text-gray-900'>
+            카테고리
+          </RequiredLabel>
           <Controller
             name='categoryId'
             control={control}
@@ -171,6 +197,12 @@ const ProductFormDialog = ({
           )}
         </div>
         <div>
+          <RequiredLabel
+            className='text-caption-bold md:text-body2-bold mb-1 inline-block text-gray-900'
+            htmlFor='productName'
+          >
+            상품명
+          </RequiredLabel>
           <Input
             id='productName'
             size='S'
@@ -187,7 +219,14 @@ const ProductFormDialog = ({
           )}
         </div>
         <div>
+          <RequiredLabel
+            className='text-caption-bold md:text-body2-bold mb-1 inline-block text-gray-900'
+            htmlFor='productDescription'
+          >
+            상품 설명
+          </RequiredLabel>
           <TextArea
+            id='productDescription'
             className='min-h-45 border-gray-300 break-words md:min-h-60 md:px-3 md:pt-3 md:pl-3'
             register={register('productDescription')}
             watchValue={watch('productDescription')}

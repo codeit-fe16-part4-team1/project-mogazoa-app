@@ -6,7 +6,7 @@ import { getInitialImageList, ImageInputSchema } from '@/components/ImageInput/I
 import Input from '@/components/Input/Input';
 import { TextArea } from '@/components/TextArea/TextArea';
 import useDialog from '@/hooks/useDialog';
-import { TextAreaSchema } from '@/lib/validations';
+import { TextAreaOptionalSchema } from '@/lib/validations';
 import { ProfileEditDialogProps } from '@/types/dialogProps.types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogDescription, DialogTitle } from '@radix-ui/react-dialog';
@@ -14,6 +14,10 @@ import clsx from 'clsx';
 import { Controller, useForm } from 'react-hook-form';
 import z from 'zod';
 import ProfileImageInput from './components/ProfileImageInput';
+import RequiredLabel from '@/components/RequiredLabel/RequiredLabel';
+import { AxiosError } from 'axios';
+import { useRouter } from 'next/navigation';
+import { defaultProfileImageUrl } from '@/lib/imageUrl';
 
 const profileEditScheme = z.object({
   image: ImageInputSchema(1, false),
@@ -21,7 +25,7 @@ const profileEditScheme = z.object({
     .string()
     .min(1, '닉네임은 필수 입력입니다.')
     .max(10, '닉네임은 최대 10자까지 입력 가능합니다.'),
-  description: TextAreaSchema({ minLength: 0, maxLength: 300 }),
+  description: TextAreaOptionalSchema({ maxLength: 300 }),
 });
 
 type ProfileEditFormInputs = z.infer<typeof profileEditScheme>;
@@ -32,31 +36,51 @@ const ProfileEditDialog = ({
   description,
   onSubmitSuccess,
 }: ProfileEditDialogProps) => {
+  const router = useRouter();
   const { close } = useDialog();
   const {
     control,
     getValues,
     register,
     handleSubmit,
+    setError,
     watch,
     formState: { errors, isValid, isSubmitting },
   } = useForm<ProfileEditFormInputs>({
     resolver: zodResolver(profileEditScheme),
     mode: 'onChange',
     defaultValues: {
-      image: getInitialImageList([imageUrl]),
+      image: imageUrl
+        ? getInitialImageList([imageUrl])
+        : getInitialImageList([defaultProfileImageUrl]),
       nickname,
-      description,
+      description: description || '',
     },
   });
 
   const onSubmit = async (data: ProfileEditFormInputs) => {
-    await onSubmitSuccess({
-      description: data.description,
-      nickname: data.nickname,
-      image: getValues('image'),
-    });
-    close();
+    try {
+      await onSubmitSuccess({
+        description: data.description || '',
+        nickname: data.nickname,
+        image: getValues('image'),
+      });
+      close();
+    } catch (e) {
+      if (e instanceof AxiosError) {
+        const errorMessage = e.response?.data.message;
+        // 닉네임 중복 에러 처리
+        console.log(errorMessage);
+        if (e.status === 400 && errorMessage === '이미 사용중인 닉네임입니다.') {
+          setError('nickname', {
+            type: 'manual',
+            message: errorMessage,
+          });
+        }
+      } else {
+        router.replace('/error?type=unknown_error');
+      }
+    }
   };
 
   const LABEL_STYLES = 'text-caption-bold md:text-body2-bold mb-3';
@@ -77,9 +101,9 @@ const ProfileEditDialog = ({
             )}
           />
         </div>
-        <label htmlFor='edit-nickname' className={LABEL_STYLES}>
+        <RequiredLabel htmlFor='edit-nickname' className={LABEL_STYLES}>
           닉네임
-        </label>
+        </RequiredLabel>
         <Input
           id='edit-nickname'
           size={'S'}

@@ -24,7 +24,7 @@ export const generateMetadata = async ({ params }: PageProps): Promise<Metadata>
     const productDetail = await getProductDetail(Number(slug));
 
     return {
-      title: `${productDetail.name} - 상품 상세`,
+      title: `${productDetail.name} - 상품 상세 | mogazoa`,
       description: productDetail.description,
       keywords: [
         'mogazoa',
@@ -65,10 +65,10 @@ export const generateMetadata = async ({ params }: PageProps): Promise<Metadata>
   } catch (error) {
     console.error('Failed to fetch product detail for metadata:', error);
     return {
-      title: '상품 상세 페이지',
+      title: '상품 상세 페이지 | mogazoa',
       description: '상품 정보를 확인하세요.\n\nmogazoa에서 다양한 상품 리뷰와 정보를 확인하세요',
       openGraph: {
-        title: `상품 상세`,
+        title: `상품 상세 | mogazoa`,
         description: '상품 정보를 확인하세요.\n\nmogazoa에서 다양한 상품 리뷰와 정보를 확인하세요',
         siteName: 'mogazoa',
         locale: 'ko_KR',
@@ -87,11 +87,11 @@ const ProductDetailPageServer = async ({ params }: { params: Promise<{ productId
   const queryClient = new QueryClient();
 
   await Promise.all([
-    queryClient.prefetchQuery({
+    queryClient.fetchQuery({
       queryKey: productKeys.detail(productId),
       queryFn: () => getProductDetail(productId),
     }),
-    queryClient.prefetchInfiniteQuery({
+    queryClient.fetchInfiniteQuery({
       queryKey: reviewKeys.list(productId, order),
       queryFn: ({ pageParam }) => getReviewList({ productId, cursor: pageParam }),
       initialPageParam: 0,

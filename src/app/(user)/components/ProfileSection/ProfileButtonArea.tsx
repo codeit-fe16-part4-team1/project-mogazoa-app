@@ -71,7 +71,7 @@ const ProfileButtonArea = ({ profile, isMyProfile }: Props) => {
     router.push('/signin');
   };
 
-  const BUTTON_STYLES = 'mx-auto block w-full md:h-15 lg:w-160';
+  const BUTTON_STYLES = 'mx-auto block w-full md:h-15 lg:w-160 h-12';
 
   useEffect(() => {
     const getMyUserId = async () => {

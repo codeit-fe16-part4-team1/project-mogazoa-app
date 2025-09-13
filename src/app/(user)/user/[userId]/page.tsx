@@ -1,13 +1,14 @@
 import ProfileSection from '../../components/ProfileSection';
 import ProductSection from '../../components/ProductSection';
 import { getUserInfo } from '@/lib/getUserInfo';
-import { redirect } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 import { getUserProfileAPI } from '@/api/user/getUserProfileAPI';
 import { productKeys, profileKeys } from '@/constant/queryKeys';
 import { headers } from 'next/headers';
 import { Metadata } from 'next';
 import { getUserProductsAPI } from '@/api/user/getUserProductsAPI';
+import { AxiosError } from 'axios';
 
 interface PageProps {
   params: Promise<{
@@ -15,13 +16,16 @@ interface PageProps {
   }>;
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export const generateMetadata = async ({ params }: PageProps): Promise<Metadata> => {
   const { userId } = await params;
   const profileId = Number(userId);
+  if (Number.isNaN(profileId)) {
+    notFound();
+  }
 
   // headers에서 현재 URL 가져오기
   const headersList = headers();
-  const host = (await headersList).get('host') || 'new-project-final.link';
+  const host = (await headersList).get('host') || process.env.DOMAIN;
   const currentUrl = `https://${host}/user/${userId}`;
 
   try {
@@ -29,7 +33,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
     const { nickname, description, followersCount, reviewCount } = userProfile;
 
-    const metaTitle = `${nickname}님의 프로필`;
+    const metaTitle = `${nickname}님의 프로필 | mogazoa`;
     const metaDescription = `${nickname}님의 프로필 | 팔로워 ${followersCount}명 • 리뷰 ${reviewCount}개\n\n${description}\n\nmogazoa에서 다양한 상품 리뷰와 정보를 확인하세요`;
 
     return {
@@ -66,7 +70,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     console.error('Failed to fetch user profile for metadata:', error);
 
     return {
-      title: `사용자 프로필`,
+      title: `사용자 프로필 | mogazoa`,
       description: '사용자의 프로필과 리뷰를 확인해보세요.',
       openGraph: {
         title: '사용자 프로필 | mogazoa',
@@ -76,37 +80,51 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       },
     };
   }
-}
+};
 
 const UserPage = async ({ params }: PageProps) => {
   const queryClient = new QueryClient();
 
   const { userId } = await params;
   const profileId = Number(userId);
+
+  if (Number.isNaN(profileId)) {
+    notFound();
+  }
+
   const { userId: myProfileId } = await getUserInfo();
 
   if (profileId === myProfileId) redirect('/mypage');
 
   console.log(`[DEBUG] User Profile Id: ${profileId}`);
 
-  await Promise.all([
-    queryClient.fetchQuery({
-      queryKey: profileKeys.detail(profileId),
-      queryFn: () => getUserProfileAPI({ userId: profileId }),
-    }),
-    queryClient.fetchInfiniteQuery({
-      queryKey: productKeys.userProductList(profileId, 'reviewed'),
-      queryFn: ({ pageParam }) =>
-        getUserProductsAPI({
-          userId: profileId,
-          type: 'reviewed',
-          ...(pageParam && { cursor: pageParam }),
-        }),
-      initialPageParam: 0,
-      getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
-      pages: 0,
-    }),
-  ]);
+  try {
+    await Promise.all([
+      queryClient.fetchQuery({
+        queryKey: profileKeys.detail(profileId),
+        queryFn: () => getUserProfileAPI({ userId: profileId }),
+      }),
+      queryClient.fetchInfiniteQuery({
+        queryKey: productKeys.userProductList(profileId, 'reviewed'),
+        queryFn: ({ pageParam }) =>
+          getUserProductsAPI({
+            userId: profileId,
+            type: 'reviewed',
+            ...(pageParam && { cursor: pageParam }),
+          }),
+        initialPageParam: 0,
+        getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+        pages: 0,
+      }),
+    ]);
+  } catch (e) {
+    if (e instanceof AxiosError) {
+      if (e.status === 404) {
+        notFound();
+      }
+    }
+    redirect(`/error?type=unknown_error`);
+  }
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <ProfileSection profileId={profileId} isMyProfile={false} />

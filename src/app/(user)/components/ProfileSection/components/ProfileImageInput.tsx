@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import IconAdd from '@/assets/icons/icon_imageinput_add.svg';
 import { useSafeImageUrl } from '@/hooks/useSafeImageUrl';
 import { defaultProfileImageUrl } from '@/lib/imageUrl';
@@ -14,7 +14,7 @@ interface ImageInputProps {
 }
 
 const ProfileImageInput = ({ value: imageList = {}, onChange }: ImageInputProps) => {
-  const defaultUrl = '/images/image_default_profile.png';
+  const defaultUrl = defaultProfileImageUrl;
   const imageUrl = Object.keys(imageList)[0];
   const { safeImageUrl, onError } = useSafeImageUrl(imageUrl, defaultUrl);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -39,7 +39,7 @@ const ProfileImageInput = ({ value: imageList = {}, onChange }: ImageInputProps)
   };
 
   const handleDefaultImageSelect = () => {
-    onChange({});
+    onChange({ [defaultProfileImageUrl]: null });
   };
 
   const handleResetImageSelect = () => {
@@ -49,12 +49,15 @@ const ProfileImageInput = ({ value: imageList = {}, onChange }: ImageInputProps)
   const resetButtonVisible =
     Object.keys(initialImageListRef.current)[0] !== Object.keys(imageList)[0];
 
-  useEffect(() => {
-    const imageUrl = Object.keys(imageList)[0];
-    if (imageUrl === defaultProfileImageUrl) {
-      onChange({});
-    }
-  }, [imageList, onChange]);
+  // console.log(`initialImage: ${Object.keys(initialImageListRef.current)[0]}`);
+  // console.log(`currentImage: ${Object.keys(imageList)[0]}`);
+
+  // useEffect(() => {
+  //   const imageUrl = Object.keys(imageList)[0];
+  //   if (imageUrl === defaultProfileImageUrl) {
+  //     onChange({});
+  //   }
+  // }, [imageList, onChange]);
 
   return (
     <div className='relative flex flex-col'>
@@ -68,6 +71,7 @@ const ProfileImageInput = ({ value: imageList = {}, onChange }: ImageInputProps)
           className='object-cover'
           fill
           onError={onError}
+          sizes='200px'
         />
         <div className='absolute inset-0 bg-black opacity-40' />
         <IconAdd className='absolute top-1/2 left-1/2 aspect-square w-8 translate-x-[-50%] translate-y-[-50%] text-white' />

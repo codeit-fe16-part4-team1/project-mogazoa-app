@@ -42,7 +42,7 @@ const SignupKakao = ({ code, redirectUri }: Props) => {
   const router = useRouter();
 
   const handleRedirectSignin = () => {
-    router.back();
+    router.push('/signin');
   };
 
   const onSubmit = async (data: KakaoSignupFormInputs) => {

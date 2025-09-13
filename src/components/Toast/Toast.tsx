@@ -25,7 +25,7 @@ const Toast = ({ variant, isClosing, isOpening, index, children, className }: Pr
   const IconComponent = iconMap[variant];
 
   const containerStyle = clsx(
-    'fixed left-1/2 -translate-x-1/2',
+    'fixed left-1/2 -translate-x-1/2 z-toast',
     'flex flex-row gap-4 items-center',
     'rounded-lg shadow-lg',
     'text-body1 md:text-lg lg:text-xl whitespace-nowrap',

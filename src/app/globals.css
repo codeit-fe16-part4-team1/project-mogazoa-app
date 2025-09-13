@@ -231,19 +231,19 @@ body {
 
 @layer components {
   .fullscreen {
-    @apply min-h-[calc(100vh-74px)] md:min-h-[calc(100vh-90px)] lg:min-h-[calc(100vh-110px)];
+    @apply min-h-[calc(100vh-74px-17vw)] md:min-h-[calc(100vh-90px)] lg:min-h-[calc(100vh-110px)];
   }
   .layout-center {
     @apply flex flex-col items-center justify-center;
+  }
+  .z-toast {
+    @apply z-[9999];
   }
   .z-modal {
     @apply z-[999];
   }
   .z-header {
-    @apply z-[99];
-  }
-  .z-header-float {
-    @apply z-[100];
+    @apply z-[40];
   }
   .z-dropdown {
     @apply z-[9];
@@ -325,6 +325,13 @@ body {
   }
 }
 
+/* 또는 더 간단하게 */
+@media (max-width: 767px) {
+  body {
+    padding-bottom: 17vw;
+  }
+}
+
 /* Dialog Scroll bar */
 .dialog-scrollable-content::-webkit-scrollbar {
   width: 8px;
@@ -345,4 +352,36 @@ body {
 
 .dialog-scrollable-content::-webkit-scrollbar-corner {
   background-color: transparent;
+}
+
+/* Swiper Custom Styles */
+.high-rating-swiper .swiper-slide {
+  height: auto;
+}
+
+.swiper-button-prev-custom,
+.swiper-button-next-custom {
+  align-items: center;
+  justify-content: center;
+  border-radius: 100%;
+  border: 1px solid var(--gray-300);
+  background-color: white;
+  color: var(--gray-600);
+  transition-property: color, border-color;
+  transition-duration: 200ms;
+  transition-timing-function: ease-in-out;
+  cursor: pointer;
+}
+
+.swiper-button-next-custom:hover,
+.swiper-button-prev-custom:hover {
+  border: 1px solid var(--gray-400);
+  color: var(--gray-700);
+}
+
+.swiper-button-prev-custom:disabled,
+.swiper-button-next-custom:disabled {
+  cursor: not-allowed;
+  border: 1px solid var(--gray-200);
+  color: var(--gray-300);
 }

@@ -5,10 +5,12 @@ import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query
 import ProfileSection from '../components/ProfileSection';
 import { productKeys, profileKeys } from '@/constant/queryKeys';
 import { getUserProductsAPI } from '@/api/user/getUserProductsAPI';
+import { redirect } from 'next/navigation';
 
 const MyPage = async () => {
   const queryClient = new QueryClient();
   const { userId } = await getUserInfo();
+  if (!userId) redirect('/signin');
   console.log(`[DEBUG] My Profile Id: ${userId}`);
 
   await Promise.all([

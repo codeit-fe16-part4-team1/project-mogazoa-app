@@ -1,67 +1,40 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import IconClose from '@/assets/icons/IconClose.svg';
 import { ProductItem } from '@/types/api';
-import debounce from 'lodash.debounce';
 import { useCompareStore } from '@/store/useCompareStore';
+import { useQuery } from '@tanstack/react-query';
+import { getProductsAPI } from '@/api/products/getProductsAPI';
 
 interface CompareBarProps {
-  products: ProductItem[];
   selectedProduct: ProductItem | null;
   onSelectProduct: (product: ProductItem) => void;
   onRemoveProduct: () => void;
 }
 
-const CompareBar = ({
-  products,
-  selectedProduct,
-  onSelectProduct,
-  onRemoveProduct,
-}: CompareBarProps) => {
+const CompareBar = ({ selectedProduct, onSelectProduct, onRemoveProduct }: CompareBarProps) => {
   const [inputValue, setInputValue] = useState('');
-  const [filteredProducts, setFilteredProducts] = useState<ProductItem[]>([]);
-  const { products: selectedCompareProducts } = useCompareStore();
+  const { products: comparisonProducts } = useCompareStore();
 
-  const debounceFilter = useMemo(
-    () =>
-      debounce((keyword: string) => {
-        const trimmedKeyword = keyword.toLowerCase();
-        const selectedIds = selectedCompareProducts.map((p) => p?.id);
+  const firstProductCategory = useMemo(() => {
+    return comparisonProducts.filter(Boolean)[0]?.categoryId;
+  }, [comparisonProducts]);
 
-        const newFilteredProducts = products.filter(
-          (product) =>
-            product.name.toLowerCase().includes(trimmedKeyword) &&
-            !selectedIds.includes(product.id),
-        );
-        setFilteredProducts(newFilteredProducts);
-      }, 0),
-    [products, selectedCompareProducts],
-  );
-  useEffect(() => {
-    if (selectedProduct === null) {
-      setInputValue('');
-    }
-  }, [selectedProduct]);
-
-  useEffect(() => {
-    if (inputValue.length > 0) {
-      debounceFilter(inputValue);
-    } else {
-      setFilteredProducts([]);
-    }
-    return () => {
-      debounceFilter.cancel();
-    };
-  }, [inputValue, debounceFilter]);
+  const { data: searchResults, isFetching } = useQuery({
+    queryKey: ['searchProducts', inputValue, firstProductCategory],
+    queryFn: () =>
+      getProductsAPI({ keyword: inputValue, category: firstProductCategory, order: 'recent' }),
+    enabled: inputValue.length > 0,
+  });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
+    const inputValue = e.target.value;
+    setInputValue(inputValue);
   };
 
   const handleSelect = (product: ProductItem) => {
     setInputValue('');
-    setFilteredProducts([]);
     onSelectProduct(product);
   };
 
@@ -69,12 +42,23 @@ const CompareBar = ({
     onRemoveProduct();
   };
 
+  const filteredResults = useMemo(() => {
+    if (!searchResults) return [];
+
+    const selectedIdsBucket = new Map(comparisonProducts.map((p) => [p?.id, true]));
+
+    return searchResults.list.filter((product) => {
+      const isSelected = selectedIdsBucket.has(product.id);
+      return !isSelected;
+    });
+  }, [searchResults, comparisonProducts]);
+
   return (
     <div className='relative mx-auto w-full lg:w-[350px]'>
       {selectedProduct ? (
         <div className='inline-flex w-full items-center justify-between gap-3 rounded-full bg-gray-900 px-5 py-[18px] text-white'>
           <span className='text-body1-bold'>{selectedProduct.name}</span>
-          <button onClick={handleRemove} className='items-center justify-between'>
+          <button onClick={handleRemove} className='cursor-pointer items-center justify-between'>
             <IconClose className='h-5 w-5' />
           </button>
         </div>
@@ -88,9 +72,9 @@ const CompareBar = ({
             className='border-primary-orange-600 text-body1-medium focus:border-primary-orange-600 w-full rounded-full border-2 border-dashed bg-white px-5 py-[18px] text-gray-600 focus:border-2 focus:border-solid focus:outline-none'
           />
           {inputValue.length > 0 && (
-            <ul className='rounded-x2 z-dropdown absolute mt-4 w-full gap-[5px] border border-gray-400 bg-white p-2.5'>
-              {filteredProducts.length > 0 ? (
-                filteredProducts.map((product) => (
+            <ul className='rounded-x2 z-dropdown absolute mt-4 max-h-85 w-full gap-[5px] overflow-y-auto border border-gray-400 bg-white p-2.5'>
+              {!isFetching && filteredResults.length > 0 ? (
+                filteredResults.map((product) => (
                   <li
                     key={product.id}
                     onClick={() => handleSelect(product)}

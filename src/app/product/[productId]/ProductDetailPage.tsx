@@ -35,9 +35,9 @@ const ProductDetailPage = ({
   const pageContainerStyles = 'lg:mx-auto lg:w-full lg:max-w-[980px]';
 
   return (
-    <main className='bg-white'>
+    <main className='fullscreen bg-gray-100'>
       {/*  페이지 상단 컨테이너 */}
-      <section>
+      <section className='bg-white'>
         {/* 상품 이미지와 상품 설명 컨테이너 - 데스크톱에서 가로로 변경 가운데 정렬 및 max-width설정 */}
         <article
           className={cn(
@@ -46,7 +46,7 @@ const ProductDetailPage = ({
           )}
         >
           {/* 상품 이미지 컨테이너 */}
-          <ProductImage className='my-5 lg:flex-1 lg:self-end' imageUrl={product.image} />
+          <ProductImage className='lg:flex-1 lg:self-end' imageUrl={product.image} />
           {/* 상품 설명 컨테이너 */}
           <section className='relative w-full px-5 py-8 md:px-16 md:py-12 lg:basis-51/100 lg:self-end lg:p-0'>
             {userId === product.writerId && (
@@ -61,6 +61,7 @@ const ProductDetailPage = ({
             )}
 
             <ProductInfo
+              categoryId={product.category.id}
               categoryName={product.category.name}
               productName={product.name}
               description={product.description}
@@ -83,7 +84,7 @@ const ProductDetailPage = ({
         </article>
       </section>
       {/* 페이지 하단 컨테이너 */}
-      <section className='bg-gray-100'>
+      <section>
         {/* 상품 통계 및 리뷰 리스트 컨테이너 - 데스크톱에서 가운데 정렬 및 max-width 설정 */}
         <article className={cn('px-5 pt-7 pb-10', pageContainerStyles)}>
           {/* 상품 통계 */}
@@ -125,7 +126,7 @@ const ProductDetailPage = ({
               </Dropdown>
             </ProductDetailHeader>
             <div className='relative mb-4 lg:mb-16'>
-              <Suspense fallback={<ThreeDotsIndicator />}>
+              <Suspense fallback={<ThreeDotsIndicator className='' />}>
                 <ProductReviewList
                   productId={productId}
                   order={order}

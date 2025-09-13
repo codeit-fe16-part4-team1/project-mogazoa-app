@@ -71,8 +71,10 @@ jobs:
           # 개발 의존성만 제거 (완전히 재설치하지 않고)
           echo "[DEBUG][GHA] ⌛ 개발 의존성 제거 진행 중..."
           BEFORE_SIZE=$(du -sh node_modules | cut -f1)
+          echo "[DEBUG][GHA] 🔍 BEFORE prune: $BEFORE_SIZE"
           npm prune --omit=dev
           AFTER_SIZE=$(du -sh node_modules | cut -f1)
+          echo "[DEBUG][GHA] 🔍 AFTER prune: $AFTER_SIZE"
           echo "[DEBUG][GHA] ✅ 개발 의존성 제거 완료"
 
           # 배포에 필요한 파일들만 선별해서 패키징
@@ -92,9 +94,24 @@ jobs:
 
           # 최적화된 프로덕션 의존성
           cp -r node_modules deploy-package/
-
+          echo "[DEBUG][GHA] 🔍 Copied node_modules size: $(du -sh deploy-package/node_modules | cut -f1)"
           PACKAGE_SIZE=$(du -sh deploy-package | cut -f1)
 
+          RED="\033[1;31m"
+          GREEN="\033[1;32m"
+          BLUE="\033[1;34m"
+          CYAN="\033[1;36m"
+          RESET="\033[0m"
+
+          echo ""
+          echo -e "${CYAN}================== 📁 Deploy package info ==================${RESET}"
+          printf "${CYAN}%-30s${RESET} | %s\n" "node_modules" "$(du -sh deploy-package/node_modules | cut -f1)"
+          printf "${CYAN}%-30s${RESET} | %s\n" ".next" "$(du -sh deploy-package/.next | cut -f1)"
+          printf "${CYAN}%-30s${RESET} | %s\n" "public" "$(du -sh deploy-package/public | cut -f1)"
+          printf "${CYAN}%-30s${RESET} | %s\n" "config" "$(du -sh deploy-package/config | cut -f1)"
+          printf "${CYAN}%-30s${RESET} | %s\n" "other files" "$(du -sh deploy-package/*.json deploy-package/*.* 2>/dev/null | awk '{sum+=$1} END {print sum "K"}' || echo "N/A")"
+          echo -e "${BLUE}=============================================================${RESET}"
+          echo ""
           # 압축
           cd deploy-package
           echo "[DEBUG][GHA] ⌛ 고압축 진행 중..."
@@ -104,14 +121,8 @@ jobs:
 
           FINAL_SIZE=$(du -sh app-built.tar.gz | cut -f1)
 
-          RED="\033[1;31m"
-          GREEN="\033[1;32m"
-          BLUE="\033[1;34m"
-          CYAN="\033[1;36m"
-          RESET="\033[0m"
-
           echo ""
-          echo -e "${BLUE}====================== 📦 패키징 정보 ======================${RESET}"
+          echo -e "${BLUE}===================== 📦 Packaging Info ====================${RESET}"
           printf "${CYAN}%-30s${RESET} | %s\n" "Full node_modules size" "$BEFORE_SIZE"
           printf "${CYAN}%-30s${RESET} | %s\n" "Production node_modules size" "$AFTER_SIZE"
           printf "${CYAN}%-30s${RESET} | %s\n" "Deploy package size" "$PACKAGE_SIZE"
@@ -187,6 +198,12 @@ jobs:
             exit 1
           fi
 
+          FINAL_PORT="${BASE_PORT}"
+          echo "[DEBUG][EC2] ⌛ 이전 프로세스 정리 진행 중..."
+          pm2 delete "preview-${BRANCH}" || true
+          sudo fuser -k ${FINAL_PORT}/tcp || true
+          echo "[DEBUG][EC2] ✅ 이전 프로세스 정리 완료"
+
           echo "[DEBUG][EC2] ⌛ 앱 디렉토리 정리 및 생성 진행 중..."
           echo "[DEBUG][EC2] 🔍 정리 전 메모리: $(free -h | grep '^Mem:' | awk '{print $3 "/" $2}')"
           sudo rm -rf "${APP_DIR}"
@@ -208,6 +225,9 @@ jobs:
           MONITOR_PID=$!
 
           tar -xzf /tmp/app-built.tar.gz -C "${APP_DIR}"
+          echo "[DEBUG][EC2] 🔍 압축 해제 직후 breakdown:"
+          cd "${APP_DIR}"
+          du -sh node_modules .next public config *.json 2>/dev/null
           rm -f /tmp/app-built.tar.gz
 
           # 모니터링 종료 전에 잠시 대기
@@ -218,12 +238,6 @@ jobs:
           echo "[DEBUG][EC2] ✅ 빌드된 파일 압축 해제 완료"
 
           cd "${APP_DIR}"
-
-          FINAL_PORT="${BASE_PORT}"
-          echo "[DEBUG][EC2] ⌛ 이전 프로세스 정리 진행 중..."
-          pm2 delete "preview-${BRANCH}" || true
-          sudo fuser -k ${FINAL_PORT}/tcp || true
-          echo "[DEBUG][EC2] ✅ 이전 프로세스 정리 완료"
 
           echo "[DEBUG][EC2] ⌛ PM2 실행 진행 중..."
           pm2 start "node_modules/.bin/next start -p ${FINAL_PORT}" --name "preview-${BRANCH}"

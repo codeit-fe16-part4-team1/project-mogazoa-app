@@ -1,9 +1,6 @@
-// next.config.ts
-import type { NextConfig } from 'next';
-import type { Configuration as WebpackConfig } from 'webpack';
-import { IMAGE_PATTERNS } from './config/imageConfig';
+import { IMAGE_PATTERNS } from './config/imageConfig.js';
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   images: {
     remotePatterns: IMAGE_PATTERNS,
   },
@@ -21,7 +18,7 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  webpack(config: WebpackConfig) {
+  webpack(config) {
     config.module?.rules?.push({
       test: /\.svg$/,
       use: ['@svgr/webpack'],
