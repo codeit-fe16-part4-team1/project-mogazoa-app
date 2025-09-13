@@ -10,6 +10,8 @@ import Loading from './loading/loading';
 import { cafe24Supermagic } from './font';
 import ProductAddButton from '@/components/ProductAddButton/ProductAddButton';
 import Footer from '@/components/Footer/Footer';
+import QuickScrollButton from '@/components/QuickScrollButton/QuickScrollButton';
+import BottomSpacer from '@/components/BottomSpacer/BottomSpacer';
 
 export const metadata: Metadata = {
   title: {
@@ -53,7 +55,10 @@ export default function RootLayout({
           <Suspense fallback={<Loading />}>
             <Header />
             <ProductAddButton className='fixed right-5 bottom-[calc(17vw+32px)] md:right-8 md:bottom-20 lg:right-[calc((100vw-980px)/2-72px))] lg:bottom-28' />
+            <QuickScrollButton className='fixed right-25 bottom-[calc(17vw+32px)] md:right-8 md:bottom-38 lg:right-[calc((100vw-980px)/2-72px))] lg:bottom-46' />
+
             {children}
+            <BottomSpacer />
             <Footer />
           </Suspense>
           <GlobalDialog />
