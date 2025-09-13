@@ -34,7 +34,7 @@ export const generateMetadata = async ({ searchParams }: Props): Promise<Metadat
   const queryStr = queryString.toString();
   const currentUrl = `https://${host}/${queryStr ? `?${queryStr}` : ''}`;
 
-  let title = '';
+  let title = 'mogazoa';
   let description = 'mogazoa에서 다양한 상품을 비교해보세요';
 
   if (query && categoryName) {
