@@ -7,7 +7,6 @@ import ProductCard from '@/app/components/ProductCard/ProductCard';
 import Dropdown from '@/components/Dropdown/Dropdown';
 import DropdownItem from '@/components/Dropdown/DropdownItem';
 import { useIsDesktop } from '@/hooks/useIsDesktop';
-import { usePendingErrorStore } from '@/store/usePendingErrorStore';
 
 const GRID_STYLES =
   'grid grid-cols-2 gap-3 gap-y-8 md:grid-cols-2 md:gap-5 md:gap-y-12 lg:grid-cols-3';
@@ -27,8 +26,7 @@ const FilteredProducts = ({ searchKeyword, category, filteredTitle }: FilteredPr
   const itemsPerPage = isDesktop ? 3 : 2;
   const [isMount, setIsMount] = useState(false);
   const isFiltered = category !== undefined || searchKeyword.trim().length > 0;
-  const [isTimeout, setIsTimeout] = useState(false);
-  const setError = usePendingErrorStore((state) => state.setError);
+  const [queryEnabled, setQueryEnabled] = useState(false);
 
   const handleOrderChange = (value: string) => {
     setOrderBy(value as ORDER_BY);
@@ -56,8 +54,7 @@ const FilteredProducts = ({ searchKeyword, category, filteredTitle }: FilteredPr
       }),
     initialPageParam: undefined as number | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor || undefined,
-    // enabled: true,
-    enabled: isFiltered && isMount,
+    enabled: isFiltered && isMount && queryEnabled,
   });
 
   useEffect(() => {
@@ -65,18 +62,12 @@ const FilteredProducts = ({ searchKeyword, category, filteredTitle }: FilteredPr
   }, []);
 
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    const timer = setTimeout(() => {
+      setQueryEnabled(true);
+    }, 1000);
 
-    if (searchResultsLoading) {
-      timer = setTimeout(() => {
-        setIsTimeout(true);
-      }, 5000);
-    }
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [searchResultsLoading]);
+    return () => clearTimeout(timer);
+  }, []);
 
   // 스크롤 감지하여 무한 스크롤 구현
   const handleObserver = useCallback(
@@ -102,10 +93,6 @@ const FilteredProducts = ({ searchKeyword, category, filteredTitle }: FilteredPr
     return () => observer.disconnect();
   }, [handleObserver]);
 
-  if (isTimeout) {
-    setError(true);
-  }
-
   return (
     <section className='filtered-products' aria-label='searched products'>
       <div className='filtered-title mt-8 mb-5 flex items-center justify-between md:mb-7'>
@@ -126,7 +113,7 @@ const FilteredProducts = ({ searchKeyword, category, filteredTitle }: FilteredPr
         </div>
       </div>
       <div className={GRID_STYLES}>
-        {searchResultsLoading ? (
+        {searchResultsLoading || !queryEnabled ? (
           Array.from({ length: itemsPerPage }).map((_, index) => (
             <ProductCard.skeleton key={index} />
           ))
