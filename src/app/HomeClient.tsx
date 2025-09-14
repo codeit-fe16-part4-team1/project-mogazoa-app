@@ -10,7 +10,7 @@ import BestProducts from '@/app/components/ProductList/BestProducts';
 import HighRatingProducts from '@/app/components/ProductList/HighRatingProducts';
 import FilteredProducts from '@/app/components/ProductList/FilteredProducts';
 import { usePendingErrorStore } from '@/store/usePendingErrorStore';
-import ErrorPage from '@/app/error/page';
+import PendingError from '@/app/components/PendingError/PendingError';
 
 const TITLE_STYLES = 'font-cafe24-supermagic text-h4-bold tracking-[-0.4px]';
 const SUBTITLE_STYLES = `${TITLE_STYLES} text-gray-900 mb-5 md:mb-7`;
@@ -125,9 +125,7 @@ const HomeClient = () => {
           />
         )}
 
-        {hasError && (
-          <ErrorPage message='요청이 너무 오래 걸리고 있어요. 다시 시도해주세요.' type='timeout' />
-        )}
+        {hasError && <PendingError />}
       </div>
     </div>
   );

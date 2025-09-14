@@ -1,13 +1,10 @@
 'use client';
 import { Button } from '@/components/Button/Button';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 
-const ErrorPage = () => {
-  const router = useRouter();
-
+const PendingError = () => {
   const handleHomeRedirectClick = () => {
-    router.replace('/');
+    window.location.reload();
   };
 
   return (
@@ -17,14 +14,14 @@ const ErrorPage = () => {
           <Image fill src='/images/image_error.png' alt='error' className='object-cover' />
         </div>
         <h1 className='text-h3-bold md:text-h1-bold font-cafe24-supermagic mb-10 text-gray-800'>
-          비정상적인 접근입니다.
+          요청이 너무 오래 걸리고 있어요. 다시 시도해주세요.
         </h1>
         <Button intent='tertiary' className='w-full md:h-16' onClick={handleHomeRedirectClick}>
-          홈으로 가기
+          다시 시도
         </Button>
       </div>
     </section>
   );
 };
 
-export default ErrorPage;
+export default PendingError;
