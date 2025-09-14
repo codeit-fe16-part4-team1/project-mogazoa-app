@@ -40,7 +40,7 @@ export const transform = async (config, path) => {
 export async function additionalPaths() {
   const paths = [];
   let nextCursor = 0;
-
+  let totalFetched = 0;
   while (true) {
     console.log(`🔄 Fetching products with cursor: ${nextCursor}`);
     try {
@@ -49,7 +49,7 @@ export async function additionalPaths() {
       );
       const data = await response.json();
       console.log(`📦 Fetched ${data.list.length} products`);
-
+      totalFetched += data.list.length;
       data.list.forEach((product) => {
         paths.push({
           loc: `/products/${product.id}`,
