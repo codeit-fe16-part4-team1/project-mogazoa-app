@@ -6,6 +6,7 @@ import { ProductItem } from '@/types/api';
 import { useCompareStore } from '@/store/useCompareStore';
 import { useQuery } from '@tanstack/react-query';
 import { getProductsAPI } from '@/api/products/getProductsAPI';
+import debounce from 'lodash/debounce';
 
 interface CompareBarProps {
   selectedProduct: ProductItem | null;
@@ -15,26 +16,41 @@ interface CompareBarProps {
 
 const CompareBar = ({ selectedProduct, onSelectProduct, onRemoveProduct }: CompareBarProps) => {
   const [inputValue, setInputValue] = useState('');
+  const [debouncedInputValue, setDebouncedInputValue] = useState('');
   const { products: comparisonProducts } = useCompareStore();
 
   const firstProductCategory = useMemo(() => {
     return comparisonProducts.filter(Boolean)[0]?.categoryId;
   }, [comparisonProducts]);
 
+  const debouncedSetInputValue = useMemo(
+    () =>
+      debounce((value: string) => {
+        setDebouncedInputValue(value);
+      }, 200),
+    [],
+  );
+
   const { data: searchResults, isFetching } = useQuery({
-    queryKey: ['searchProducts', inputValue, firstProductCategory],
+    queryKey: ['searchProducts', debouncedInputValue, firstProductCategory],
     queryFn: () =>
-      getProductsAPI({ keyword: inputValue, category: firstProductCategory, order: 'recent' }),
-    enabled: inputValue.length > 0,
+      getProductsAPI({
+        keyword: debouncedInputValue,
+        category: firstProductCategory,
+        order: 'recent',
+      }),
+    enabled: debouncedInputValue.length > 0,
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value;
-    setInputValue(inputValue);
+    const value = e.target.value;
+    setInputValue(value);
+    debouncedSetInputValue(value);
   };
 
   const handleSelect = (product: ProductItem) => {
     setInputValue('');
+    setDebouncedInputValue('');
     onSelectProduct(product);
   };
 
