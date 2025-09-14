@@ -19,7 +19,7 @@ export const generateMetadata = async (): Promise<Metadata> => {
       siteName: 'mogazoa',
     },
     robots: {
-      index: false,
+      index: true,
       follow: true,
     },
   };
