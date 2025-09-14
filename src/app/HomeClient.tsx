@@ -9,6 +9,8 @@ import UsersRanking from '@/app/components/UsersRanking/UsersRanking';
 import BestProducts from '@/app/components/ProductList/BestProducts';
 import HighRatingProducts from '@/app/components/ProductList/HighRatingProducts';
 import FilteredProducts from '@/app/components/ProductList/FilteredProducts';
+import { usePendingErrorStore } from '@/store/usePendingErrorStore';
+import ErrorPage from '@/app/error/page';
 
 const TITLE_STYLES = 'font-cafe24-supermagic text-h4-bold tracking-[-0.4px]';
 const SUBTITLE_STYLES = `${TITLE_STYLES} text-gray-900 mb-5 md:mb-7`;
@@ -27,6 +29,7 @@ const HomeClient = () => {
   const hasCategory = category !== undefined;
   const isFiltered = hasKeyword || hasCategory;
   const { getCategoryName } = useCategoryMap();
+  const hasError = usePendingErrorStore((state) => state.hasError);
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
@@ -79,14 +82,16 @@ const HomeClient = () => {
         )}
       >
         {/* 카테고리 */}
-        <section className='category' aria-label='category'>
-          {!isFiltered && <h4 className={SUBTITLE_STYLES}>카테고리</h4>}
-          <Category
-            type={hasCategory ? 'tab' : 'button'}
-            category={category}
-            setCategory={setCategory}
-          />
-        </section>
+        {!hasError && (
+          <section className='category' aria-label='category'>
+            {!isFiltered && <h4 className={SUBTITLE_STYLES}>카테고리</h4>}
+            <Category
+              type={hasCategory ? 'tab' : 'button'}
+              category={category}
+              setCategory={setCategory}
+            />
+          </section>
+        )}
 
         {/* 리뷰어 랭킹 */}
         {!isFiltered && (
@@ -112,12 +117,16 @@ const HomeClient = () => {
         </div>
 
         {/* 필터링된 상품 */}
-        {isFiltered && (
+        {isFiltered && !hasError && (
           <FilteredProducts
             searchKeyword={searchKeyword}
             category={category}
             filteredTitle={filteredTitle}
           />
+        )}
+
+        {hasError && (
+          <ErrorPage message='요청이 너무 오래 걸리고 있어요. 다시 시도해주세요.' type='timeout' />
         )}
       </div>
     </div>
