@@ -54,8 +54,18 @@ const HighRatingProducts = ({ isVisible }: HighRatingProductsProps) => {
           <span className='text-body2 text-gray-500'>/{totalPages > 0 ? `${totalPages}` : 0}</span>
         </div>
         <div className='flex gap-[6px] md:hidden'>
-          <button className='swiper-button-prev-custom text-caption size-7'>❮</button>
-          <button className='swiper-button-next-custom text-caption size-7'>❯</button>
+          <button
+            className='swiper-button-prev-custom text-caption size-7'
+            aria-label='이전 상품 보기'
+          >
+            ❮
+          </button>
+          <button
+            className='swiper-button-next-custom text-caption size-7'
+            aria-label='다음 상품 보기'
+          >
+            ❯
+          </button>
         </div>
       </div>
       <Swiper
@@ -108,10 +118,16 @@ const HighRatingProducts = ({ isVisible }: HighRatingProductsProps) => {
         )}
       </Swiper>
 
-      <button className={cn(`swiper-button-prev-custom size-10 ${SWIPER_NAV_PREV_POSITION}`)}>
+      <button
+        className={cn(`swiper-button-prev-custom size-10 ${SWIPER_NAV_PREV_POSITION}`)}
+        aria-label='이전 상품 보기'
+      >
         ❮
       </button>
-      <button className={cn(`swiper-button-next-custom size-10 ${SWIPER_NAV_NEXT_POSITION}`)}>
+      <button
+        className={cn(`swiper-button-next-custom size-10 ${SWIPER_NAV_NEXT_POSITION}`)}
+        aria-label='다음 상품 보기'
+      >
         ❯
       </button>
     </section>

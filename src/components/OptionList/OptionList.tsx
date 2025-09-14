@@ -56,6 +56,7 @@ const OptionButton = ({
         isSelected ? activeStyle : inactiveStyle,
       )}
       onClick={onClick}
+      aria-label={`${value} 항목 보기 버튼`}
       {...rest}
     >
       {children}

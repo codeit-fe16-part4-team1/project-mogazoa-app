@@ -9,6 +9,7 @@ const KakaoButton = ({ onClick }: Props) => {
     <button
       className='bg-kakao text-body1 mx-auto mb-5 flex cursor-pointer flex-row items-center justify-center gap-2 rounded-full p-4 hover:bg-amber-300'
       onClick={onClick}
+      aria-label='카카오로 시작하기'
     >
       <IconKakao className='w-6' />
     </button>

@@ -86,12 +86,14 @@ const ProductReviewCard = ({
               onClick={() => {
                 reviewRemoveMutate(review.id);
               }}
+              aria-label='리뷰 삭제 버튼'
             >
               예
             </button>
             <button
               className={clsx(reviewInfoTextStyle, editTextStyle)}
               onClick={() => setIsDeleteMode(false)}
+              aria-label='리뷰 삭제 취소 버튼'
             >
               아니요
             </button>

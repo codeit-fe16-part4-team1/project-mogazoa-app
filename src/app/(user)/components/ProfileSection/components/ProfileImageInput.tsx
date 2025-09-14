@@ -64,6 +64,7 @@ const ProfileImageInput = ({ value: imageList = {}, onChange }: ImageInputProps)
       <button
         className='relative aspect-square w-25 cursor-pointer overflow-hidden rounded-full md:w-35'
         onClick={handleImageClick}
+        aria-label='프로필 이미지 수정'
       >
         <Image
           src={safeImageUrl}
@@ -98,6 +99,7 @@ const ProfileImageInput = ({ value: imageList = {}, onChange }: ImageInputProps)
           type='button'
           onClick={handleResetImageSelect}
           className='hover-animate absolute top-1 right-1 flex aspect-square w-8 cursor-pointer items-center justify-center rounded-full border-2 border-white bg-gray-400 hover:bg-gray-500'
+          aria-label='프로필 이미지 변경 취소'
         >
           <IconDelete className='aspect-square w-5' />
         </button>

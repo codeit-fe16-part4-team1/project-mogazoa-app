@@ -94,6 +94,7 @@ const ThumbsUpLikes = ({
       className={cn(thumbsUpButtonVariants({ liked, authenticated }), className)}
       onClick={() => mutate(reviewId)}
       disabled={!authenticated}
+      aria-label='도움이 돼요 버튼'
       {...props}
     >
       <ThumbsUpIcon className={cn(thumbsUpIconVariants({ liked }))} />
