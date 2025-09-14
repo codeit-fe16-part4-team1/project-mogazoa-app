@@ -26,6 +26,7 @@ const QuickScrollButton = ({ className, ...props }: QuickScrollButtonProps) => {
         <FloatingButton
           className={cn('size-15 border-gray-500 bg-white', interactionStyles, className)}
           onClick={handleButtonClick}
+          aria-label='맨 위로 스크롤'
           {...props}
         >
           <IconScrollUp className='text-primary-orange-700 size-8' />
