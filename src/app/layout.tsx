@@ -53,6 +53,7 @@ const RootLayout = async ({
           crossOrigin='anonymous'
           strategy='beforeInteractive'
         />
+        <link rel='preload' as='image' href='/images/banner_pattern.png' fetchPriority='high' />
       </head>
       <body className={`${cafe24Supermagic.variable} antialiased`}>
         <ToastRender />
