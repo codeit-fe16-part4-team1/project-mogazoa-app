@@ -54,6 +54,7 @@ const HeartLikes = ({
       {...props}
       onClick={() => mutate(productId)}
       disabled={!authenticated}
+      aria-label='좋아요 버튼'
     >
       <HeartIcon className='size-fit fill-current stroke-black stroke-12' />
     </button>

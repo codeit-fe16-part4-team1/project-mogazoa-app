@@ -60,7 +60,7 @@ export const generateMetadata = async ({ searchParams }: Props): Promise<Metadat
       siteName: 'mogazoa',
     },
     robots: {
-      index: false,
+      index: true,
       follow: true,
     },
   };

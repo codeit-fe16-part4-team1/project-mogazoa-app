@@ -58,7 +58,11 @@ const CompareBar = ({ selectedProduct, onSelectProduct, onRemoveProduct }: Compa
       {selectedProduct ? (
         <div className='inline-flex w-full items-center justify-between gap-3 rounded-full bg-gray-900 px-5 py-[18px] text-white'>
           <span className='text-body1-bold'>{selectedProduct.name}</span>
-          <button onClick={handleRemove} className='cursor-pointer items-center justify-between'>
+          <button
+            onClick={handleRemove}
+            className='cursor-pointer items-center justify-between'
+            aria-label='비교 항목 삭제'
+          >
             <IconClose className='h-5 w-5' />
           </button>
         </div>

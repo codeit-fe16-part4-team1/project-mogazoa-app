@@ -103,6 +103,7 @@ const Rating = ({
             onClick={() => handleStarClick(starIndex)}
             onMouseEnter={() => handleMouseEnter(starIndex)}
             onMouseLeave={handleMouseLeave}
+            aria-label={`별점 ${index}점 버튼`}
           >
             <RatingStar className={starClassName} state={starState} size={size} />
           </button>

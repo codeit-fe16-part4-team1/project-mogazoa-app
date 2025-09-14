@@ -133,6 +133,7 @@ const ImageInput = ({
     <button
       className={clsx(ADDBUTTON_STYLES, COMMON_ELEMENT_STYLES)}
       onClick={handleAddButtonClick}
+      aria-label='이미지 추가 버튼'
     >
       <IconAdd className='size-6' />
       <span>이미지추가</span>
@@ -176,6 +177,7 @@ const ImageInput = ({
             type='button'
             onClick={() => handleFileDeleteClick(index)}
             className='absolute -top-2 -right-0 flex aspect-square w-8 translate-x-[50%] cursor-pointer items-center justify-center rounded-full border-2 border-white bg-gray-400 hover:bg-gray-500'
+            aria-label='이미지 삭제 버튼'
           >
             <IconDelete className='aspect-square w-5' />
           </button>
