@@ -2,7 +2,7 @@
 import clsx from 'clsx';
 import { cn } from '@/lib/cn';
 import Link from 'next/link';
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import useAuthStore from '@/store/useAuthStore';
 import IconLogo from '@/assets/icons/logo.svg';
 import IconLogoMobile from '@/assets/icons/logo_mobile.svg';
@@ -22,14 +22,12 @@ const Header = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const searchKeyword = searchParams.get('query') || '';
-  const [localSearchQuery, setLocalSearchQuery] = useState(searchKeyword);
-  const previousSearchQueryRef = useRef(searchKeyword);
-  const [inputValue, setInputValue] = useState(localSearchQuery);
+  const [inputValue, setInputValue] = useState(searchKeyword);
   const { products } = useCompareStore();
   const compareCount = products.filter(Boolean).length;
 
-  const updateQuery = useMemo(() => {
-    return (newQuery: string) => {
+  const updateQuery = useCallback(
+    (newQuery: string) => {
       const params = new URLSearchParams(searchParams.toString());
 
       if (newQuery) {
@@ -41,26 +39,13 @@ const Header = () => {
       const queryString = params.toString();
       const newUrl = queryString ? `/?${queryString}` : '/';
       router.push(newUrl);
-    };
-  }, [localSearchQuery]);
+    },
+    [searchParams, router],
+  );
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [searchKeyword]);
-
-  // // searchKeyword가 외부에서 변경될 때 localSearchQuery 동기화
-  useEffect(() => {
-    if (searchKeyword !== previousSearchQueryRef.current) {
-      setLocalSearchQuery(searchKeyword);
-      previousSearchQueryRef.current = searchKeyword;
-    }
-  }, [searchKeyword]);
-
-  useEffect(() => {
-    if (localSearchQuery !== previousSearchQueryRef.current) {
-      updateQuery(localSearchQuery);
-    }
-  }, [localSearchQuery, updateQuery]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
@@ -69,15 +54,12 @@ const Header = () => {
 
   const handleLogoClick = () => {
     setInputValue('');
-    setLocalSearchQuery('');
-
     router.push('/');
-    router.refresh();
   };
 
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLocalSearchQuery(inputValue);
+    updateQuery(inputValue);
   };
 
   const linkText = compareCount > 0 ? `비교하기 (${compareCount}/2)` : '비교하기';
@@ -106,7 +88,7 @@ const Header = () => {
                 onChange={handleSearchChange}
                 onClear={() => {
                   setInputValue('');
-                  setLocalSearchQuery('');
+                  updateQuery('');
                 }}
               />
             </form>
