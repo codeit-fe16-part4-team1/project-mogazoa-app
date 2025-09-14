@@ -32,10 +32,10 @@ const TopRanking = ({ user, index }: { user: UserRanking; index: number }) => {
       >
         <Image
           src={user.image ? user.image : '/images/image_default_profile.png'}
-          sizes='100'
           alt={user.nickname}
           priority
           fill
+          sizes='(max-width: 768px) 64px, 100px'
           className='rounded-full'
           style={{ objectFit: 'cover' }}
         />
