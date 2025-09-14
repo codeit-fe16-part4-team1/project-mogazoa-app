@@ -51,7 +51,7 @@ const HighRatingProducts = ({ isVisible }: HighRatingProductsProps) => {
           <span className='text-body1 text-gray-800'>
             {totalPages > 0 ? `${currentPage + 1}` : 0}
           </span>
-          <span className='text-body1 text-gray-600'>/{totalPages > 0 ? `${totalPages}` : 0}</span>
+          <span className='text-body1 text-gray-700'>/{totalPages > 0 ? `${totalPages}` : 0}</span>
         </div>
         <div className='flex gap-[6px] md:hidden'>
           <button
