@@ -26,6 +26,7 @@ const FilteredProducts = ({ searchKeyword, category, filteredTitle }: FilteredPr
   const itemsPerPage = isDesktop ? 3 : 2;
   const [isMount, setIsMount] = useState(false);
   const isFiltered = category !== undefined || searchKeyword.trim().length > 0;
+  const [queryEnabled, setQueryEnabled] = useState(false);
 
   const handleOrderChange = (value: string) => {
     setOrderBy(value as ORDER_BY);
@@ -53,12 +54,19 @@ const FilteredProducts = ({ searchKeyword, category, filteredTitle }: FilteredPr
       }),
     initialPageParam: undefined as number | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor || undefined,
-    // enabled: true,
-    enabled: isFiltered && isMount,
+    enabled: isFiltered && isMount && queryEnabled,
   });
 
   useEffect(() => {
     setIsMount(true);
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setQueryEnabled(true);
+    }, 1000);
+
+    return () => clearTimeout(timer);
   }, []);
 
   // 스크롤 감지하여 무한 스크롤 구현
@@ -105,7 +113,7 @@ const FilteredProducts = ({ searchKeyword, category, filteredTitle }: FilteredPr
         </div>
       </div>
       <div className={GRID_STYLES}>
-        {searchResultsLoading ? (
+        {searchResultsLoading || !queryEnabled ? (
           Array.from({ length: itemsPerPage }).map((_, index) => (
             <ProductCard.skeleton key={index} />
           ))
