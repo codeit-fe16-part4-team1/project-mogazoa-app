@@ -64,7 +64,7 @@ const ProductCard = ({
       <div className={IMAGE_WRAPPER_STYLES}>
         <Image
           src={safeImageUrl}
-          sizes='(max-width: 768px) 50vw, 33vw'
+          sizes='(max-width: 640px) 350px, (max-width: 1024px) 420px, 298px'
           fill
           alt={name}
           className='hover-grow rounded-xl opacity-0'
