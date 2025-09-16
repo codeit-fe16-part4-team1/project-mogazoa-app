@@ -49,7 +49,7 @@ const ProductCard = ({
   reviewCount,
   likeCount,
   rating,
-  isLandingPage = false,
+  // isLandingPage = false,
   linkToDetailPage = true,
 }: ProductCardProps) => {
   const { safeImageUrl, onError } = useSafeImageUrl(imgUrl, '/images/image_default_product.png');
@@ -64,14 +64,14 @@ const ProductCard = ({
       <div className={IMAGE_WRAPPER_STYLES}>
         <Image
           src={safeImageUrl}
-          sizes='(max-width: 768px) 50vw, 33vw'
+          sizes='(max-width: 640px) 350px, (max-width: 1024px) 420px, 298px'
           fill
           alt={name}
           className='hover-grow rounded-xl opacity-0'
           style={{
             objectFit: 'cover',
           }}
-          priority={isLandingPage}
+          priority={true}
           onLoad={(e) => {
             e.currentTarget.style.opacity = '1';
           }}
