@@ -49,7 +49,7 @@ const ProductCard = ({
   reviewCount,
   likeCount,
   rating,
-  isLandingPage = false,
+  // isLandingPage = false,
   linkToDetailPage = true,
 }: ProductCardProps) => {
   const { safeImageUrl, onError } = useSafeImageUrl(imgUrl, '/images/image_default_product.png');
@@ -71,7 +71,7 @@ const ProductCard = ({
           style={{
             objectFit: 'cover',
           }}
-          priority={isLandingPage}
+          priority={true}
           onLoad={(e) => {
             e.currentTarget.style.opacity = '1';
           }}
