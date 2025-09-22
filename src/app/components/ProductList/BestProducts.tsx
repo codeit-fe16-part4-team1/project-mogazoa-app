@@ -48,15 +48,7 @@ const BestProducts = ({ isVisible }: BestProductsProps) => {
         ) : (
           bestProducts.map((item: ProductItem, index) => (
             <div className='relative' key={item.id}>
-              <ProductCard
-                id={item.id}
-                imgUrl={item.image}
-                name={item.name}
-                reviewCount={item.reviewCount}
-                likeCount={item.favoriteCount}
-                rating={item.rating}
-                isLandingPage={true}
-              />
+              <ProductCard productItem={item} />
               <BestBadge
                 rank={index + 1}
                 className='absolute top-1.5 left-1.5 md:top-2.5 md:left-2.5'

@@ -1,19 +1,9 @@
 'use client';
 import { useSafeImageUrl } from '@/hooks/useSafeImageUrl';
+import { ProductItem } from '@/types/api';
 import clsx from 'clsx';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-
-interface ProductCardProps {
-  id?: number;
-  imgUrl: string;
-  name: string;
-  reviewCount: number;
-  likeCount: number;
-  rating: number;
-  isLandingPage?: boolean;
-  linkToDetailPage?: boolean;
-}
 
 const CONTAINER_STYLES = 'flex cursor-pointer flex-col gap-3 md:gap-5';
 
@@ -42,29 +32,24 @@ const NAME_SKELETON_STYLES =
 const STATS_SKELETON_STYLES =
   'h-caption-skeleton md:h-body1-skeleton skeleton-animate w-10 rounded-md';
 
-const ProductCard = ({
-  id,
-  imgUrl,
-  name,
-  reviewCount,
-  likeCount,
-  rating,
-  // isLandingPage = false,
-  linkToDetailPage = true,
-}: ProductCardProps) => {
-  const { safeImageUrl, onError } = useSafeImageUrl(imgUrl, '/images/image_default_product.png');
+interface ProductCardProps {
+  productItem: ProductItem;
+}
+
+const ProductCard = ({ productItem }: ProductCardProps) => {
+  const { id, image, name, reviewCount, favoriteCount, rating } = productItem;
+  const { safeImageUrl, onError } = useSafeImageUrl(image, '/images/image_default_product.png');
   const router = useRouter();
+
   const handleClick = () => {
-    if (linkToDetailPage && id) {
-      router.push(`/product/${id}`);
-    }
+    router.push(`/product/${id}`);
   };
   return (
     <div className={CONTAINER_STYLES} onClick={handleClick}>
       <div className={IMAGE_WRAPPER_STYLES}>
         <Image
           src={safeImageUrl}
-          sizes='(max-width: 640px) 350px, (max-width: 1024px) 420px, 298px'
+          sizes='(max-width: 1024px) 50vw, 300px'
           fill
           alt={name}
           className='hover-grow rounded-xl opacity-0'
@@ -87,7 +72,7 @@ const ProductCard = ({
           </div>
           <div className={STATS_STYLES}>
             <span>찜</span>
-            <span>{likeCount}</span>
+            <span>{favoriteCount}</span>
           </div>
           <div className={clsx(STATS_STYLES, 'ml-auto')}>
             <span>⭐</span>

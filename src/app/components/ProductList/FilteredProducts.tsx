@@ -125,15 +125,7 @@ const FilteredProducts = ({ searchKeyword, category, filteredTitle }: FilteredPr
           <>
             {searchResults?.pages?.flatMap((page) =>
               page.list.map((item: ProductItem) => (
-                <ProductCard
-                  key={item.id}
-                  id={item.id}
-                  imgUrl={item.image}
-                  name={item.name}
-                  reviewCount={item.reviewCount}
-                  likeCount={item.favoriteCount}
-                  rating={item.rating}
-                />
+                <ProductCard key={item.id} productItem={item} />
               )),
             )}
             <div ref={observerRef} className='col-span-full h-4' />

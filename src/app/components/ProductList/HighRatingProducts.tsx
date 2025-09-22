@@ -104,15 +104,7 @@ const HighRatingProducts = ({ isVisible }: HighRatingProductsProps) => {
         ) : (
           highRatingProducts.map((item: ProductItem) => (
             <SwiperSlide key={item.id}>
-              <ProductCard
-                id={item.id}
-                imgUrl={item.image}
-                name={item.name}
-                reviewCount={item.reviewCount}
-                likeCount={item.favoriteCount}
-                rating={item.rating}
-                isLandingPage={true}
-              />
+              <ProductCard productItem={item} />
             </SwiperSlide>
           ))
         )}
