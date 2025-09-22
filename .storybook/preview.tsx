@@ -1,4 +1,4 @@
-import type { Preview } from '@storybook/nextjs-vite';
+import type { Preview } from '@storybook/nextjs';
 import '@/app/globals.css';
 import './preview.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
