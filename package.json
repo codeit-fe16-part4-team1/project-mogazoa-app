@@ -42,7 +42,6 @@
   "devDependencies": {
     "@chromatic-com/storybook": "^4.1.0",
     "@eslint/eslintrc": "^3",
-    "@next/bundle-analyzer": "^15.5.3",
     "@storybook/addon-a11y": "^9.1.2",
     "@storybook/addon-docs": "^9.1.2",
     "@storybook/nextjs": "^9.1.3",

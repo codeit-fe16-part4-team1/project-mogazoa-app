@@ -1,9 +1,5 @@
 import { IMAGE_PATTERNS } from './config/imageConfig.js';
-import bundleAnalyzer from '@next/bundle-analyzer';
 
-const withBundleAnalyzer = bundleAnalyzer({
-  enabled: process.env.ANALYZE === 'true',
-});
 const nextConfig = {
   images: {
     remotePatterns: IMAGE_PATTERNS,
@@ -34,4 +30,4 @@ const nextConfig = {
   },
 };
 
-export default withBundleAnalyzer(nextConfig);
+export default nextConfig;
