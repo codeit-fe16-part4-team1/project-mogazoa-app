@@ -33,15 +33,7 @@ const ProductList = ({ profileId, productType }: Props) => {
   return (
     <article className='mx-auto grid max-w-235 grid-cols-2 gap-x-3 gap-y-8 md:gap-x-5 md:gap-y-12 lg:grid-cols-3'>
       {allProducts.map((product) => (
-        <ProductCard
-          key={product.id}
-          id={product.id}
-          imgUrl={product.image}
-          name={product.name}
-          reviewCount={product.reviewCount}
-          likeCount={product.favoriteCount}
-          rating={product.rating}
-        />
+        <ProductCard key={product.id} productItem={product} />
       ))}
       <div ref={fetchObserverRef}>{isFetchingNextPage ? '로딩 중...' : ''}</div>
     </article>
