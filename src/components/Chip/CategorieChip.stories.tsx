@@ -1,4 +1,4 @@
-import type { Meta, StoryObj, StoryFn } from '@storybook/nextjs-vite';
+import type { Meta, StoryObj, StoryFn } from '@storybook/nextjs';
 
 import { CategorieChip } from './CategorieChip';
 import { useCategoryMap } from '@/hooks/useCategoryMap';
