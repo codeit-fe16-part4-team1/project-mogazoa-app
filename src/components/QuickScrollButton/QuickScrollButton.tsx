@@ -13,7 +13,6 @@ const QuickScrollButton = ({ className, ...props }: QuickScrollButtonProps) => {
   const pathname = usePathname();
   const hiddenPaths = useMemo(() => ['/signin', '/signup', '/compare'], []);
   const isHidden = hiddenPaths.some((path) => pathname.startsWith(path));
-
   const interactionStyles = 'hover:bg-gray-200';
 
   const handleButtonClick = () => {
