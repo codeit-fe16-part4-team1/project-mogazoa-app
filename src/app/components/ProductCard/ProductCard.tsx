@@ -1,5 +1,4 @@
 'use client';
-import { useDelayedRender } from '@/hooks/useDelayRender';
 import { useSafeImageUrl } from '@/hooks/useSafeImageUrl';
 import { ProductItem } from '@/types/api';
 import clsx from 'clsx';
@@ -86,12 +85,6 @@ const ProductCard = ({ productItem }: ProductCardProps) => {
 };
 
 const Skeleton = () => {
-  const shouldShowSkeleton = useDelayedRender({
-    delay: 300,
-  });
-
-  if (!shouldShowSkeleton) return;
-
   return (
     <div className={CONTAINER_STYLES}>
       <div className={IMAGE_WRAPPER_STYLES} />
