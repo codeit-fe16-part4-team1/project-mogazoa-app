@@ -1,67 +1,50 @@
-# 📜 심화 프로젝트 README
+<div align="center">
+  
+# Mogazoa - 쇼핑 인프라 서비스
+[🔍 다양한 상품 검색과 비교 분석으로 최적의 구매 결정을 돕는 쇼핑 인프라 🔍]
 
-코드잇 파트4 1팀 심화 프로젝트
+서비스 바로가기: https://new-project-final.link
 
-> ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white&labelColor=20232a)
-> ![css](https://img.shields.io/badge/-css-663399?logo=css&logoColor=white&labelColor=20232a)
-> ![HTML5](https://img.shields.io/badge/-HTML5-E34F26?logo=html5&logoColor=white&labelColor=20232a)
-> ![Tailwind CSS](https://img.shields.io/badge/-Tailwind_CSS-06B6D4?logo=tailwindcss&logoColor=white&labelColor=20232a)
+<img width="3600" height="1890" alt="image_opengraph_wide (1)" src="https://github.com/user-attachments/assets/5ac2d7d2-6dea-4873-9b98-4cf8d37d2e6f" />
 
-> ![Next.js](https://img.shields.io/badge/-Next.js-000000?logo=next.js&logoColor=white&labelColor=20232a)
-> ![React](https://img.shields.io/badge/-React-61DAFB?logo=react&logoColor=white&labelColor=20232a)
+<p></p>
 
-> ![Prettier](https://img.shields.io/badge/-Prettier-F7B93E?logo=prettier&logoColor=white&labelColor=20232a)
-> ![ESLint](https://img.shields.io/badge/-ESLint-4B32C3?logo=eslint&logoColor=white&labelColor=20232a)
+[[🔗 홈페이지]](https://new-project-final.link/)　|　[[🔗 스토리북]](https://storybook.new-project-final.link/)
 
-> ![Axios](https://img.shields.io/badge/-Axios-5A29E4?logo=axios&logoColor=white&labelColor=20232a)
-
-> ![Node.js](https://img.shields.io/badge/-Node.js-5FA04E?logo=node.js&logoColor=white&labelColor=20232a)
-> ![npm](https://img.shields.io/badge/-npm-CB3837?logo=npm&logoColor=white&labelColor=20232a)
-
-> ![Git](https://img.shields.io/badge/-Git-F05032?logo=git&logoColor=white&labelColor=20232a)
-> ![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white&labelColor=20232a)
-> ![Notion](https://img.shields.io/badge/-Notion-000000?logo=notion&logoColor=white&labelColor=20232a)
+</div>
 
 ---
 
-## 🚀 배포 사이트
+## ✍️ 프로젝트 개요
+- 프로젝트명: Mogazoa
+- 프로젝트 기간: 2025.08.20 ~ 2025.09.15
 
-- [🧷 [배포 사이트]](https://new-project-final.link/)
-- [🔗 [Storybook]](https://storybook.new-project-final.link/)
----
+<br/>
 
-### 💌 주제
+## 📜 화면 구성
 
-**[WIKIED]** - 지인들의 위키를 직접 작성하고 공유하는 플랫폼
+|메인 페이지|상품 상세페이지|
+|---|---|
+|<img width="867" height="1088" alt="image" src="https://github.com/user-attachments/assets/d2e21697-f2fb-45de-a9b6-edb04efd2f9d" />|<img width="871" height="1090" alt="image" src="https://github.com/user-attachments/assets/d909d3c2-3052-4256-a3e5-d7e654a3b280" />|
 
-- [🧷 [가이드 문서]](https://codeit.notion.site/_-Mogazoa-631abba6780048859d73d74eabf0070f)
+|프로필 페이지|상품비교 페이지|
+|---|---|
+|<img width="873" height="1093" alt="image" src="https://github.com/user-attachments/assets/73a703bf-2527-4450-b2e7-51ef4177424b" />|<img width="871" height="1085" alt="image" src="https://github.com/user-attachments/assets/89cab036-1037-4229-a7bf-e5e0c724e71e" />|
 
----
+<br/>
 
-### 📝 프로젝트 수행 계획서
+## 🧑‍💻 팀원 소개
 
-- [🧷 [수행 계획서]](https://www.notion.so/4-1-23153353e9c18097abeeebffdbe9bb86?source=copy_link)
+|<img width="295" height="295" alt="image" src="https://github.com/user-attachments/assets/11841b70-d487-4447-bf5f-79f15d592264" />|<img width="296" height="295" alt="image" src="https://github.com/user-attachments/assets/3981df75-89c6-4679-acc8-044eb752bfca" />|<img width="295" height="295" alt="image" src="https://github.com/user-attachments/assets/1bd1f7a4-3485-4d8c-855b-72ff76c784e5" />|<img width="295" height="295" alt="image" src="https://github.com/user-attachments/assets/4980cd96-cbd1-4c10-b3e5-d271f21a0768" />|
+|---|---|---|---|
+|<div align="center">김치영</div>|<div align="center">김동희</div>|<div align="center">김민경</div>|<div align="center">박다인</div>|
+| • 프로젝트 세팅/총괄<br/>• 협업환경 구축 <br/>• CI/CD 환경 구축<br/>• Storybook 관리 환경 구축<br/>• 로그인/회원가입 구현<br/>• 프로필 페이지 구현<br/>• Input 컴포넌트 <br/>• SEO 관리(Metadata, Sitemap) |• 상품 상세페이지 구현<br/>• Dialog 컴포넌트<br/>• Category 컴포넌트 |• Global Header<br/>• 메인 페이지 구현<br/>• 404/Loading 페이지 | • 상품비교 페이지 구현<br/>• 상품 상세페이지 내 비교 기능<br/>• Button 컴포넌트<br/>• Dropdown 컴포넌트|
 
----
+<br/>
 
-### 📅 프로젝트 일정
+## ⚙️ 기술 스택
 
----
-
-### 🔍 요구사항 분석
-
-- [🧷 [User Flow]](https://www.figma.com/board/UtX2n9LKDB12vmHnB0WRfl/Mogazoa-userFlow?node-id=0-1&p=f&t=iebj0N5Mn6z4PM6e-0)
-
----
-
-### 🎨 디자인 시안
-
-- [🧷 [Figma - 원본]](https://www.figma.com/design/mo37KmYpd3ZsJ6Ojay2u83/-CCC-Mogazoa?node-id=0-1&p=f&t=5YhaoW7Y9WMKQtCz-0)
-
----
-
-### 🔌 API 정보
-
-- [🧷 [SWAGGER 문서]](https://mogazoa-api.vercel.app/docs/#/)
-
----
+| 분류 | 기술 스택 |
+| --- | --- |
+|개발 환경| ![React](https://img.shields.io/badge/-React-61DAFB?logo=react&logoColor=white&labelColor=404040) ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white&labelColor=404040) ![Tailwind CSS](https://img.shields.io/badge/-Tailwind_CSS-06B6D4?logo=tailwindcss&logoColor=white&labelColor=404040) ![Next.js](https://img.shields.io/badge/-Next.js-000000?logo=next.js&logoColor=white&labelColor=404040) |
+|인프라| ![AWS S3](https://img.shields.io/badge/AWS-S3-E95420?logoColor=white&labelColor=404040) ![AWS EC2](https://img.shields.io/badge/AWS-EC2-68A51C?logoColor=white&labelColor=404040) ![Nginx](https://img.shields.io/badge/-Nginx-009639?logo=nginx&logoColor=white&labelColor=404040) ![Ubuntu](https://img.shields.io/badge/-Ubuntu-E95420?logo=ubuntu&logoColor=white&labelColor=404040) |
