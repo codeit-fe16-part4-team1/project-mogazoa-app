@@ -23,15 +23,32 @@
 
 ## 📜 화면 구성
 
-|메인 페이지|상품 상세페이지|
-|---|---|
-|<img width="867" height="1088" alt="image" src="https://github.com/user-attachments/assets/d2e21697-f2fb-45de-a9b6-edb04efd2f9d" />|<img width="871" height="1090" alt="image" src="https://github.com/user-attachments/assets/d909d3c2-3052-4256-a3e5-d7e654a3b280" />|
+|메인 페이지|로그인|회원가입|
+|---|---|---|
+|<img width="867" height="1088" alt="image" src="https://github.com/user-attachments/assets/d2e21697-f2fb-45de-a9b6-edb04efd2f9d" />|<img width="870" height="1091" alt="image" src="https://github.com/user-attachments/assets/1c7972cc-be50-42c1-9748-cb7de0b97fc4" />|<img width="867" height="1087" alt="image" src="https://github.com/user-attachments/assets/2896005f-ba41-4543-992e-163f2e12981b" />|
 
-|프로필 페이지|상품비교 페이지|
-|---|---|
-|<img width="873" height="1093" alt="image" src="https://github.com/user-attachments/assets/73a703bf-2527-4450-b2e7-51ef4177424b" />|<img width="871" height="1085" alt="image" src="https://github.com/user-attachments/assets/89cab036-1037-4229-a7bf-e5e0c724e71e" />|
+|상품 상세페이지|프로필 페이지|상품비교 페이지|
+|---|---|---|
+|<img width="871" height="1090" alt="image" src="https://github.com/user-attachments/assets/d909d3c2-3052-4256-a3e5-d7e654a3b280" />|<img width="873" height="1093" alt="image" src="https://github.com/user-attachments/assets/73a703bf-2527-4450-b2e7-51ef4177424b" />|<img width="871" height="1085" alt="image" src="https://github.com/user-attachments/assets/89cab036-1037-4229-a7bf-e5e0c724e71e" />|
 
 <br/>
+
+## ✨ 주요 기능
+### 메인 페이지
+- 인기 상품 조회
+- 카테고리와 검색 입력창을 통한 상품 검색
+
+### 상품 상세페이지
+- 상품 설명 조회, 리뷰 작성
+- 사용자들의 리뷰 목록, 별점 등 후기 정보 조회
+
+### 상품 비교
+- 같은 카테고리 간 비교 가능(후기 데이터 기반)
+
+### 프로필
+- 사용자들의 활동 정보 조회 가능
+- 사용자가 등록한 상품, 리뷰한 상품 등의 정보 조회 가능
+
 
 ## 🧑‍💻 팀원 소개
 
