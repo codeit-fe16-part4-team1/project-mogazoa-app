@@ -1,4 +1,4 @@
-import { categoryList } from '@/lib/CategoryList';
+import { categoryList } from '@/lib/categoryList';
 import { createContext, useContext } from 'react';
 
 interface CategoryContextType {
