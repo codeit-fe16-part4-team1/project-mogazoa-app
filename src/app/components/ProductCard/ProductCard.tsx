@@ -52,14 +52,17 @@ const ProductCard = ({ productItem }: ProductCardProps) => {
           sizes='(max-width: 1024px) 50vw, 300px'
           fill
           alt={name}
-          className='hover-grow rounded-xl opacity-0'
+          // className='hover-grow rounded-xl opacity-0'
+          className='hover-grow rounded-xl'
           style={{
             objectFit: 'cover',
           }}
-          priority={true}
-          onLoad={(e) => {
-            e.currentTarget.style.opacity = '1';
-          }}
+          priority
+          fetchPriority='high'
+          // priority={true}
+          // onLoad={(e) => {
+          //   e.currentTarget.style.opacity = '1';
+          // }}
           onError={onError}
         />
       </div>
