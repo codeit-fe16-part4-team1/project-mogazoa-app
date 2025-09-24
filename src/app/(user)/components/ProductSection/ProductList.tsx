@@ -39,9 +39,9 @@ const ProductList = ({ profileId, productType }: Props) => {
         {products.map((product) => (
           <ProductCard key={product.id} productItem={product} />
         ))}
-        <div ref={fetchObserverRef} className='text-center'>
-          {isFetchingNextPage ? '로딩 중...' : ''}
-        </div>
+      </div>
+      <div ref={fetchObserverRef} className='text-center'>
+        {isFetchingNextPage ? '로딩 중...' : ''}
       </div>
       {products.length === 0 && (
         <div className='flex-center bg-gray-150 flex-col gap-5 rounded-4xl py-15'>
