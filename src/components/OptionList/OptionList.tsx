@@ -22,7 +22,9 @@ interface ProviderProps {
 const OptionList = ({ layoutId, children, selectedValue, className }: ProviderProps) => {
   return (
     <OptionContext.Provider value={{ selectedValue, layoutId }}>
-      <div className={className}>{children}</div>
+      <div className={className} role='tablist'>
+        {children}
+      </div>
     </OptionContext.Provider>
   );
 };
@@ -57,6 +59,7 @@ const OptionButton = ({
       )}
       onClick={onClick}
       aria-label={`${value} 항목 보기 버튼`}
+      role='tab'
       {...rest}
     >
       {children}
