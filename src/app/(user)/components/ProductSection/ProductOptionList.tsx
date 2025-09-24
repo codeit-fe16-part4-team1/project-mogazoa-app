@@ -24,7 +24,6 @@ const ProductOptionList = ({ productType, onChange }: Props) => {
         {Object.entries(OPTION_MAP).map(([value, label]) => (
           <OptionList.button
             key={value}
-            role='tab'
             className={clsx(
               'text-sub-headline-medium flex items-center justify-center',
               'h-14 w-40 border-b-1 border-gray-400 hover:text-gray-800',

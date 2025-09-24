@@ -9,7 +9,7 @@ export interface GetUserProductsPayload {
   type: ProductType;
 }
 
-const TYPE_MAP = {
+export const TYPE_MAP = {
   created: 'created-products',
   reviewed: 'reviewed-products',
   favorite: 'favorite-products',
