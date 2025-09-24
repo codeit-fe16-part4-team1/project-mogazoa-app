@@ -1,4 +1,5 @@
 'use client';
+import { useDelayedRender } from '@/hooks/useDelayRender';
 import { useSafeImageUrl } from '@/hooks/useSafeImageUrl';
 import { ProductItem } from '@/types/api';
 import clsx from 'clsx';
@@ -8,7 +9,7 @@ import { useRouter } from 'next/navigation';
 const CONTAINER_STYLES = 'flex cursor-pointer flex-col gap-3 md:gap-5';
 
 const IMAGE_WRAPPER_STYLES =
-  'relative aspect-square w-full overflow-hidden rounded-xl border-1 border-gray-300 md:aspect-[300/276]';
+  'relative aspect-square w-full overflow-hidden rounded-xl border-1 border-gray-300 md:aspect-[300/276] bg-white';
 
 const CONTENTS_STYLES = 'flex flex-col gap-2 md:gap-3 md:px-2';
 
@@ -27,10 +28,10 @@ const STATS_STYLES = clsx(
 
 //skeleton styles
 const NAME_SKELETON_STYLES =
-  'h-body2-skeleton md:h-sub-headline-skeleton skeleton-animate rounded-md w-3/5';
+  'h-body2-skeleton md:h-sub-headline-skeleton rounded-md w-3/5 border-1 border-gray-300 bg-white';
 
 const STATS_SKELETON_STYLES =
-  'h-caption-skeleton md:h-body1-skeleton skeleton-animate w-10 rounded-md';
+  'h-caption-skeleton md:h-body1-skeleton w-10 rounded-md border-1 border-gray-300 bg-white';
 
 interface ProductCardProps {
   productItem: ProductItem;
@@ -85,6 +86,12 @@ const ProductCard = ({ productItem }: ProductCardProps) => {
 };
 
 const Skeleton = () => {
+  const shouldShowSkeleton = useDelayedRender({
+    delay: 300,
+  });
+
+  if (!shouldShowSkeleton) return;
+
   return (
     <div className={CONTAINER_STYLES}>
       <div className={IMAGE_WRAPPER_STYLES} />
