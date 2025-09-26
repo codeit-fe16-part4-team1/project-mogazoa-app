@@ -1,4 +1,3 @@
-import type { Metadata, Viewport } from 'next';
 import { Providers } from './Providers';
 import localFont from 'next/font/local';
 import './globals.css';
@@ -25,28 +24,6 @@ const cafe24Supermagic = localFont({
   variable: '--font-cafe24-supermagic',
   display: 'swap',
 });
-
-export const metadata: Metadata = {
-  title: {
-    template: '%s | mogazoa',
-    default: 'mogazoa',
-  },
-  description: '다양한 상품을 비교하고 정보를 확인하세요',
-  icons: '/favicon.svg',
-  openGraph: {
-    title: '%s | mogazoa',
-    description: '다양한 상품을 비교하고 정보를 확인하세요',
-    siteName: 'mogazoa',
-    locale: 'ko_KR',
-    type: 'website',
-  },
-};
-
-// 별도로 viewport export 추가
-export const viewport: Viewport = {
-  width: 'device-width',
-  initialScale: 1,
-};
 
 export default function RootLayout({
   children,
