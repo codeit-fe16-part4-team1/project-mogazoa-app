@@ -12,7 +12,6 @@ interface Props {
 
 const ProductSection = ({ profileId }: Props) => {
   const [productType, setProductType] = useState<ProductType>('reviewed');
-
   const queryClient = useQueryClient();
 
   // 등록한 상품, 찜한 상품 prefetch
