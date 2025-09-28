@@ -59,10 +59,10 @@ const ProductCard = ({ productItem }: ProductCardProps) => {
           }}
           priority
           fetchPriority='high'
-          // priority={true}
-          // onLoad={(e) => {
-          //   e.currentTarget.style.opacity = '1';
-          // }}
+          loading='eager'
+          onLoad={(e) => {
+            e.currentTarget.style.opacity = '1';
+          }}
           onError={onError}
         />
       </div>
