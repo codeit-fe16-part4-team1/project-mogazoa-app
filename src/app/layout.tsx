@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Providers } from './Providers';
 import './globals.css';
 import GlobalDialog from '@/components/Dialog/core/GlobalDialog';
-import Script from 'next/script';
+// import Script from 'next/script';
 import { Suspense } from 'react';
 import Header from '@/components/Header/Header';
 import { ToastRender } from 'cy-toast';
@@ -47,13 +47,12 @@ const RootLayout = async ({
   return (
     <html lang='ko'>
       <head>
-        <Script
+        {/* <Script
           src='https://t1.kakaocdn.net/kakao_js_sdk/2.7.6/kakao.min.js'
           integrity='sha384-WAtVcQYcmTO/N+C1N+1m6Gp8qxh+3NlnP7X1U7qP6P5dQY/MsRBNTh+e1ahJrkEm'
           crossOrigin='anonymous'
           strategy='beforeInteractive'
-        />
-        <link rel='preload' as='image' href='/images/banner_pattern.png' fetchPriority='high' />
+        /> */}
       </head>
       <body className={`${cafe24Supermagic.variable} antialiased`}>
         <ToastRender />
