@@ -1,6 +1,7 @@
+import { createContext, HTMLAttributes, useContext } from 'react';
+
 import clsx from 'clsx';
 import { motion } from 'motion/react';
-import { createContext, HTMLAttributes, useContext } from 'react';
 
 interface OptionContextType {
   layoutId?: string;

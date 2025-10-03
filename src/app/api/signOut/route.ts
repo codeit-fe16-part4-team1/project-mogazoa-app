@@ -1,5 +1,6 @@
-import { EXPIRED_COOKIE_OPTIONS } from '@/utils/cookieOptions';
 import { NextResponse } from 'next/server';
+
+import { EXPIRED_COOKIE_OPTIONS } from '@/utils/cookieOptions';
 
 export const POST = async () => {
   const res = NextResponse.json({ message: 'Signed out' }, { status: 200 });

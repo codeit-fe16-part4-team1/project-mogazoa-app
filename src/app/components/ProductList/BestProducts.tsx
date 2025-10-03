@@ -1,8 +1,10 @@
 'use client';
 import { useQuery } from '@tanstack/react-query';
+
 import { getProductsAPI } from '@/api/products/getProductsAPI';
-import { ProductItem } from '@/types/api';
 import ProductCard from '@/app/components/ProductCard/ProductCard';
+import { ProductItem } from '@/types/api';
+
 import BestBadge from '../ProductCard/BestBadge';
 
 const TITLE_STYLES = 'font-cafe24-supermagic text-h4-bold tracking-[-0.4px]';

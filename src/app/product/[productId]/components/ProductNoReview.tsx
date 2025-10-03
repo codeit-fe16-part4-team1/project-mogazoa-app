@@ -1,6 +1,8 @@
 import Image from 'next/image';
-import EmptyReviewImg from '@/assets/img_empty_review.png';
+
 import { HTMLAttributes } from 'react';
+
+import EmptyReviewImg from '@/assets/img_empty_review.png';
 import { cn } from '@/lib/cn';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type

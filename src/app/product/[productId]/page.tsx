@@ -1,11 +1,14 @@
-import { getProductDetail } from '@/api/product/getProductDetail';
-import { getReviewList } from '@/api/product/getReviewList';
-import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
-import { productKeys, reviewKeys } from '@/constant/queryKeys';
-import ProductDetailPage from './ProductDetailPage';
-import { getUserInfo } from '@/lib/getUserInfo';
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
+
+import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
+
+import { getProductDetail } from '@/api/product/getProductDetail';
+import { getReviewList } from '@/api/product/getReviewList';
+import { productKeys, reviewKeys } from '@/constant/queryKeys';
+import { getUserInfo } from '@/lib/getUserInfo';
+
+import ProductDetailPage from './ProductDetailPage';
 
 interface PageProps {
   params: Promise<{

@@ -1,19 +1,23 @@
 'use client';
-import FormField from '@/components/FormField/FormField';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import z from 'zod';
-import useAuthStore from '@/store/useAuthStore';
 import { useRouter } from 'next/navigation';
+
+import { useForm } from 'react-hook-form';
+
+import { zodResolver } from '@hookform/resolvers/zod';
 import { AxiosError } from 'axios';
+import z from 'zod';
+
 import { Button } from '@/components/Button/Button';
-import FormTitle from '../components/FormTitle';
-import FormFieldContainer from '../components/FormFieldContainer';
-import Divider from '../components/Divider';
-import KakaoButton from '../components/KakaoButton';
+import FormField from '@/components/FormField/FormField';
 import { cn } from '@/lib/cn';
 import { redirectKakaoAuth } from '@/lib/redirectKakaoAuth';
+import useAuthStore from '@/store/useAuthStore';
+
 import AuthLinks from '../components/AuthLinks';
+import Divider from '../components/Divider';
+import FormFieldContainer from '../components/FormFieldContainer';
+import FormTitle from '../components/FormTitle';
+import KakaoButton from '../components/KakaoButton';
 
 const signupSchema = z
   .object({

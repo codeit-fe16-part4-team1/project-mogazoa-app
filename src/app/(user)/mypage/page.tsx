@@ -1,5 +1,7 @@
-import { getUserInfo } from '@/lib/getUserInfo';
 import { redirect } from 'next/navigation';
+
+import { getUserInfo } from '@/lib/getUserInfo';
+
 import ProfilePage from '../ProfilePage';
 
 const MyPage = async () => {

@@ -1,7 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/nextjs';
 import { Controller, useForm } from 'react-hook-form';
+
 import { zodResolver } from '@hookform/resolvers/zod';
+import type { Meta, StoryObj } from '@storybook/nextjs';
 import { z } from 'zod';
+
 import ImageInput, { getInitialImageList, ImageInputSchema } from './ImageInput';
 
 const meta: Meta<typeof ImageInput> = {

@@ -1,8 +1,10 @@
 import clsx from 'clsx';
-import ProfileImageViewer from './components/ProfileImageViewer';
-import ProfileFollowInfo from './components/ProfileFollowInfo';
-import ProfileEditButton from './components/ProfileEditButton';
+
 import { Profile } from '@/types/api';
+
+import ProfileEditButton from './components/ProfileEditButton';
+import ProfileFollowInfo from './components/ProfileFollowInfo';
+import ProfileImageViewer from './components/ProfileImageViewer';
 
 interface Props {
   profile: Profile;

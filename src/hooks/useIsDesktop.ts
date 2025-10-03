@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 /**
  * 현재 화면이 데스크톱 크기인지 확인하는 커스텀 훅

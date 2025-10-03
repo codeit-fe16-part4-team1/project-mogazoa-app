@@ -1,32 +1,36 @@
 'use client';
 
+import Image from 'next/image';
+
+import { Controller, FieldErrors, useForm } from 'react-hook-form';
+import ScrollContainer from 'react-indiana-drag-scroll';
+
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import z from 'zod';
+
+import { createReview } from '@/api/review/createReview';
 import { Button } from '@/components/Button/Button';
 import {
-  DialogHeader,
-  DialogTitle,
   DialogContent,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from '@/components/Dialog/core/DialogComponents';
+import { productKeys, reviewKeys } from '@/constant/queryKeys';
+import useDialog from '@/hooks/useDialog';
+import { TextAreaSchema } from '@/lib/validations';
 import { ReviewFormDialogProps } from '@/types/dialogProps.types';
-import Image from 'next/image';
-import Rating from '../Rating/Rating';
-import { TextArea } from '../TextArea/TextArea';
-import z from 'zod';
-import { Controller, FieldErrors, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+
 import ImageInput, {
   getInitialImageList,
   getUploadedImageUrlArray,
   ImageInputSchema,
 } from '../ImageInput/ImageInput';
-import { TextAreaSchema } from '@/lib/validations';
-import ScrollContainer from 'react-indiana-drag-scroll';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createReview } from '@/api/review/createReview';
-import { updateReview, UpdateReviewPayload } from './../../api/review/updateReview';
-import { productKeys, reviewKeys } from '@/constant/queryKeys';
-import useDialog from '@/hooks/useDialog';
+import Rating from '../Rating/Rating';
 import RequiredLabel from '../RequiredLabel/RequiredLabel';
+import { TextArea } from '../TextArea/TextArea';
+import { updateReview, UpdateReviewPayload } from './../../api/review/updateReview';
 
 const INITIAL_RATING = 0;
 const MAX_IMAGE_COUNT = 3;

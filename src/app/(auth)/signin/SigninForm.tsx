@@ -1,22 +1,26 @@
 'use client';
-import FormField from '@/components/FormField/FormField';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import z from 'zod';
-import useAuthStore from '@/store/useAuthStore';
 import { useRouter, useSearchParams } from 'next/navigation';
+
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+
+import { zodResolver } from '@hookform/resolvers/zod';
 import { AxiosError } from 'axios';
+import { toast } from 'cy-toast';
+import z from 'zod';
+
 import { Button } from '@/components/Button/Button';
-import KakaoButton from '../components/KakaoButton';
-import Divider from '../components/Divider';
-import FormTitle from '../components/FormTitle';
-import FormFieldContainer from '../components/FormFieldContainer';
+import FormField from '@/components/FormField/FormField';
+import Toast from '@/components/Toast/Toast';
 import { cn } from '@/lib/cn';
 import { redirectKakaoAuth } from '@/lib/redirectKakaoAuth';
-import { useEffect } from 'react';
-import { toast } from 'cy-toast';
-import Toast from '@/components/Toast/Toast';
+import useAuthStore from '@/store/useAuthStore';
+
 import AuthLinks from '../components/AuthLinks';
+import Divider from '../components/Divider';
+import FormFieldContainer from '../components/FormFieldContainer';
+import FormTitle from '../components/FormTitle';
+import KakaoButton from '../components/KakaoButton';
 
 const signinSchema = z.object({
   email: z

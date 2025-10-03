@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient, QueryKey } from '@tanstack/react-query';
+import { QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 
 /**
  * 낙관적 업데이트에 사용되는 옵션 인터페이스.

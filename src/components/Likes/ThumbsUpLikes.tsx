@@ -1,11 +1,13 @@
 import { HTMLAttributes } from 'react';
-import ThumbsUpIcon from '@/assets/icons/icon_thumbs_up.svg';
+
 import { cva, VariantProps } from 'class-variance-authority';
-import { cn } from '@/lib/cn';
-import { useOptimisticMutation } from '@/hooks/useOptimisticMutation';
-import { removeLikeReview } from '@/api/review/removeLikeReview';
+
 import { addLikeReview } from '@/api/review/addLikeReview';
+import { removeLikeReview } from '@/api/review/removeLikeReview';
+import ThumbsUpIcon from '@/assets/icons/icon_thumbs_up.svg';
 import { reviewKeys } from '@/constant/queryKeys';
+import { useOptimisticMutation } from '@/hooks/useOptimisticMutation';
+import { cn } from '@/lib/cn';
 import { OrderOptions, Review, ReviewListResponse } from '@/types/api';
 
 interface ThumbsUpLikesProps
@@ -27,7 +29,7 @@ const thumbsUpButtonVariants = cva(cn(buttonLayoutStyle, buttonStyle), {
   variants: {
     liked: {
       true: 'bg-gray-900 text-white border-gray-900 hover:bg-gray-800',
-      false: cn('bg-white text-gray-900 border-gray-300 hover:bg-gray-200'),
+      false: cn('border-gray-300 bg-white text-gray-900 hover:bg-gray-200'),
     },
     authenticated: {
       false: 'cursor-not-allowed',

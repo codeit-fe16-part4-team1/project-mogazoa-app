@@ -1,14 +1,17 @@
 'use client';
+import { useRouter, useSearchParams } from 'next/navigation';
+
+import { useEffect, useMemo, useState } from 'react';
+
 import clsx from 'clsx';
-import { useState, useEffect, useMemo } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
 import { josa } from 'es-hangul';
+
 import Category from '@/app/components/Category/Category';
-import { useCategoryMap } from '@/hooks/useCategoryMap';
-import UsersRanking from '@/app/components/UsersRanking/UsersRanking';
 import BestProducts from '@/app/components/ProductList/BestProducts';
-import HighRatingProducts from '@/app/components/ProductList/HighRatingProducts';
 import FilteredProducts from '@/app/components/ProductList/FilteredProducts';
+import HighRatingProducts from '@/app/components/ProductList/HighRatingProducts';
+import UsersRanking from '@/app/components/UsersRanking/UsersRanking';
+import { useCategoryMap } from '@/hooks/useCategoryMap';
 
 const TITLE_STYLES = 'font-cafe24-supermagic text-h4-bold tracking-[-0.4px]';
 const SUBTITLE_STYLES = `${TITLE_STYLES} text-gray-900 mb-5 md:mb-7`;

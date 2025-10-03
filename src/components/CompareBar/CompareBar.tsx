@@ -1,12 +1,14 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import IconClose from '@/assets/icons/IconClose.svg';
-import { ProductItem } from '@/types/api';
-import { useCompareStore } from '@/store/useCompareStore';
+import { useMemo, useState } from 'react';
+
 import { useQuery } from '@tanstack/react-query';
-import { getProductsAPI } from '@/api/products/getProductsAPI';
 import debounce from 'lodash/debounce';
+
+import { getProductsAPI } from '@/api/products/getProductsAPI';
+import IconClose from '@/assets/icons/IconClose.svg';
+import { useCompareStore } from '@/store/useCompareStore';
+import { ProductItem } from '@/types/api';
 
 interface CompareBarProps {
   selectedProduct: ProductItem | null;

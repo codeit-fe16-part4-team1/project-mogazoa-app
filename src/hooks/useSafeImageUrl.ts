@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+
 import { isAllowedImageUrl } from '../../config/imageConfig';
 
 export const useSafeImageUrl = (imageUrl: string, fallback: string) => {

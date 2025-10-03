@@ -1,7 +1,9 @@
+import { NextRequest, NextResponse } from 'next/server';
+
+import axios from 'axios';
+
 import { AuthResponse } from '@/types/api';
 import { DEFAULT_COOKIE_OPTIONS, HTTPONLY_COOKIE_OPTIONS } from '@/utils/cookieOptions';
-import axios from 'axios';
-import { NextRequest, NextResponse } from 'next/server';
 
 const BaseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 

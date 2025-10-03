@@ -1,6 +1,7 @@
+import clsx from 'clsx';
+
 import { ProductType } from '@/api/user/getUserProductsAPI';
 import OptionList from '@/components/OptionList/OptionList';
-import clsx from 'clsx';
 
 interface Props {
   productType: ProductType;

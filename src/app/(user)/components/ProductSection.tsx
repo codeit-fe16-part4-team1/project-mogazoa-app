@@ -1,7 +1,9 @@
 'use client';
 import { Suspense, useState } from 'react';
-import ProductList from './ProductSection/ProductList';
+
 import { ProductType } from '@/api/user/getUserProductsAPI';
+
+import ProductList from './ProductSection/ProductList';
 import ProductOptionList from './ProductSection/ProductOptionList';
 
 interface Props {

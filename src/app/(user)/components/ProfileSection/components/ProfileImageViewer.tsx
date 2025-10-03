@@ -1,6 +1,7 @@
 'use client';
-import { useSafeImageUrl } from '@/hooks/useSafeImageUrl';
 import Image from 'next/image';
+
+import { useSafeImageUrl } from '@/hooks/useSafeImageUrl';
 
 interface Props {
   imageUrl: string;

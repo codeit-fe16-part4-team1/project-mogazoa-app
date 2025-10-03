@@ -1,8 +1,11 @@
-import { cn } from '@/lib/cn';
 import Image from 'next/image';
+
 import { HTMLAttributes, MouseEvent, SyntheticEvent, useState } from 'react';
-import ZoomInProductImage from './ZoomInProductImage';
+
 import ZoomInIcon from '@/assets/icons/icon_zoom_in.svg';
+import { cn } from '@/lib/cn';
+
+import ZoomInProductImage from './ZoomInProductImage';
 
 interface ProductImageProps extends HTMLAttributes<HTMLDivElement> {
   imageUrl: string;

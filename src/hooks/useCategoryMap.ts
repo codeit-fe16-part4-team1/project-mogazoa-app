@@ -1,7 +1,7 @@
 'use client';
 import { useQuery } from '@tanstack/react-query';
+
 import { getCategories } from '@/api/category/getCategories';
-import { Category } from '@/types/api';
 import IconApp from '@/assets/icons/icon_category_app.svg';
 import IconBeauty from '@/assets/icons/icon_category_beauty.svg';
 import IconBook from '@/assets/icons/icon_category_book.svg';
@@ -12,6 +12,7 @@ import IconInterior from '@/assets/icons/icon_category_interior.svg';
 import IconMovie from '@/assets/icons/icon_category_movie.svg';
 import IconMusic from '@/assets/icons/icon_category_music.svg';
 import IconRestaurant from '@/assets/icons/icon_category_restaurant.svg';
+import { Category } from '@/types/api';
 
 const categoryIconMap = {
   음악: IconMusic,

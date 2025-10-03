@@ -1,16 +1,19 @@
 'use client';
 import { useState } from 'react';
+
 import { useQuery } from '@tanstack/react-query';
+import type { Swiper as SwiperType } from 'swiper';
+import { Autoplay, Navigation } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/react';
+
 import { getProductsAPI } from '@/api/products/getProductsAPI';
-import { ProductItem } from '@/types/api';
 import ProductCard from '@/app/components/ProductCard/ProductCard';
 import { useIsDesktop } from '@/hooks/useIsDesktop';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Autoplay } from 'swiper/modules';
-import type { Swiper as SwiperType } from 'swiper';
+import { cn } from '@/lib/cn';
+import { ProductItem } from '@/types/api';
+
 import 'swiper/css';
 import 'swiper/css/navigation';
-import { cn } from '@/lib/cn';
 
 const TITLE_STYLES = 'font-cafe24-supermagic text-h4-bold tracking-[-0.4px]';
 const SUBTITLE_STYLES = `${TITLE_STYLES} text-gray-900 mb-5 md:mb-7`;

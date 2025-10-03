@@ -1,7 +1,8 @@
 import clsx from 'clsx';
+
+import IconError from '@/assets/icons/icon_toast_fail.svg';
 import IconInfo from '@/assets/icons/icon_toast_info.svg';
 import IconSuccess from '@/assets/icons/icon_toast_success.svg';
-import IconError from '@/assets/icons/icon_toast_fail.svg';
 import { cn } from '@/lib/cn';
 
 type Variant = 'info' | 'success' | 'error';
@@ -25,12 +26,12 @@ const Toast = ({ variant, isClosing, isOpening, index, children, className }: Pr
   const IconComponent = iconMap[variant];
 
   const containerStyle = clsx(
-    'fixed left-1/2 -translate-x-1/2 z-toast',
-    'flex flex-row gap-4 items-center',
+    'z-toast fixed left-1/2 -translate-x-1/2',
+    'flex flex-row items-center gap-4',
     'rounded-lg shadow-lg',
-    'text-body1 md:text-lg lg:text-xl whitespace-nowrap',
+    'text-body1 whitespace-nowrap md:text-lg lg:text-xl',
     'top-25 md:top-35 lg:top-40',
-    'py-3 px-4 md:py-4 md:px-5',
+    'px-4 py-3 md:px-5 md:py-4',
     'select-none',
     'transition-all duration-200 ease-in-out',
   );
@@ -47,7 +48,7 @@ const Toast = ({ variant, isClosing, isOpening, index, children, className }: Pr
     info: clsx('bg-gray-50 text-gray-500', 'border-1 border-gray-500'),
     success: clsx(
       'bg-primary-orange-100 text-primary-orange-300',
-      'border-1 border-primary-orange-200',
+      'border-primary-orange-200 border-1',
     ),
     error: clsx('bg-red-50 text-red-800', 'border-1 border-red-300'),
   };

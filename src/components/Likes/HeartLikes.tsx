@@ -1,13 +1,15 @@
 'use client';
 
 import React, { HTMLAttributes } from 'react';
+
 import { cva, VariantProps } from 'class-variance-authority';
-import { cn } from '@/lib/cn';
-import HeartIcon from '@/assets/icons/icon_heart.svg';
-import { removeFavoriteProduct } from '@/api/product/removeFavoriteProduct';
+
 import { addFavoriteProduct } from '@/api/product/addFavoriteProduct';
-import { useOptimisticMutation } from '@/hooks/useOptimisticMutation';
+import { removeFavoriteProduct } from '@/api/product/removeFavoriteProduct';
+import HeartIcon from '@/assets/icons/icon_heart.svg';
 import { productKeys } from '@/constant/queryKeys';
+import { useOptimisticMutation } from '@/hooks/useOptimisticMutation';
+import { cn } from '@/lib/cn';
 import { ProductDetail } from '@/types/api';
 
 interface HeartLikesProps

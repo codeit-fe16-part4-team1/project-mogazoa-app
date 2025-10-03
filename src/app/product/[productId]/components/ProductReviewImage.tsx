@@ -1,7 +1,9 @@
+import Image from 'next/image';
+
+import React, { HTMLAttributes } from 'react';
+
 import { useSafeImageUrl } from '@/hooks/useSafeImageUrl';
 import { cn } from '@/lib/cn';
-import Image from 'next/image';
-import React, { HTMLAttributes } from 'react';
 
 interface ProductReviewImageProps extends HTMLAttributes<HTMLDivElement> {
   alt: string;

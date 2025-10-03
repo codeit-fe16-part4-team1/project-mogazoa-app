@@ -1,10 +1,14 @@
 'use client';
-import { useEffect, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import useAuthStore from '@/store/useAuthStore';
+
+import { useEffect, useState } from 'react';
+
 import { AxiosError } from 'axios';
-import SignupKakao from './SignupKakao';
+
 import { ThreeDotsIndicator } from '@/components/ThreeDotIndicator/ThreeDotIndicator';
+import useAuthStore from '@/store/useAuthStore';
+
+import SignupKakao from './SignupKakao';
 
 type AuthType = 'signin' | 'signup';
 

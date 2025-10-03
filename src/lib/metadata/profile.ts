@@ -1,6 +1,7 @@
-import { getUserProfileAPI } from '@/api/user/getUserProfileAPI';
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
+
+import { getUserProfileAPI } from '@/api/user/getUserProfileAPI';
 
 export const generateProfileMetadata = async (userId: number): Promise<Metadata> => {
   // headers에서 현재 URL 가져오기

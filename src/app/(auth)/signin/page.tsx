@@ -1,5 +1,6 @@
-import { headers } from 'next/headers';
 import { Metadata } from 'next';
+import { headers } from 'next/headers';
+
 import SigninForm from './SigninForm';
 
 export const generateMetadata = async (): Promise<Metadata> => {

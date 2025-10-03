@@ -1,14 +1,18 @@
 'use client';
-import clsx from 'clsx';
-import { cn } from '@/lib/cn';
 import Link from 'next/link';
-import { useState, useEffect, useCallback } from 'react';
-import useAuthStore from '@/store/useAuthStore';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+
+import { useCallback, useEffect, useState } from 'react';
+
+import clsx from 'clsx';
+
 import IconLogo from '@/assets/icons/logo.svg';
 import IconLogoMobile from '@/assets/icons/logo_mobile.svg';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import SearchInput from './SearchInput';
+import { cn } from '@/lib/cn';
+import useAuthStore from '@/store/useAuthStore';
 import { useCompareStore } from '@/store/useCompareStore';
+
+import SearchInput from './SearchInput';
 
 const HEADER_LINK_STYLES =
   'text-body2 hidden py-2 text-gray-700 hover:text-gray-800 md:block lg:text-body1 whitespace-nowrap text-center';

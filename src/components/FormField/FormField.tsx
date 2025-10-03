@@ -1,11 +1,12 @@
-import { FieldError, UseFormRegisterReturn } from 'react-hook-form';
-import iconEmail from '@/assets/icons/icon_formfield_email.svg';
-import iconPassword from '@/assets/icons/icon_formfield_password.svg';
-import iconNickname from '@/assets/icons/icon_formfield_nickname.svg';
-import iconVisible from '@/assets/icons/icon_password_visible.svg';
-import iconInvisible from '@/assets/icons/icon_password_invisible.svg';
-import { cn } from '@/lib/cn';
 import { ChangeEvent, useState } from 'react';
+import { FieldError, UseFormRegisterReturn } from 'react-hook-form';
+
+import iconEmail from '@/assets/icons/icon_formfield_email.svg';
+import iconNickname from '@/assets/icons/icon_formfield_nickname.svg';
+import iconPassword from '@/assets/icons/icon_formfield_password.svg';
+import iconInvisible from '@/assets/icons/icon_password_invisible.svg';
+import iconVisible from '@/assets/icons/icon_password_visible.svg';
+import { cn } from '@/lib/cn';
 
 interface FieldProps {
   label: string;
@@ -81,7 +82,7 @@ const FormField = ({
 
   const FLOATING_LABEL_STYLES = {
     base: cn(
-      'bg-white px-2 text-body1-medium',
+      'text-body1-medium bg-white px-2',
       'absolute top-0 left-11 translate-y-[-50%] text-center',
       ERROR_STATE_STYLES.text[`${errorState}`],
     ),

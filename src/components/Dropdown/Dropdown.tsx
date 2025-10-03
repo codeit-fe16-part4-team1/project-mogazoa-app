@@ -1,7 +1,9 @@
+import { Children, createContext, isValidElement, ReactElement, useEffect, useState } from 'react';
+
 import { Menu } from '@headlessui/react';
-import { cn } from '@/lib/cn';
+
 import DropdownIcon from '@/assets/icons/DropdownIcon.svg';
-import { createContext, useState, useEffect, Children, isValidElement, ReactElement } from 'react';
+import { cn } from '@/lib/cn';
 
 interface DropdownItemProps {
   label: string;

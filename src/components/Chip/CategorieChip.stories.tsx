@@ -1,7 +1,8 @@
-import type { Meta, StoryObj, StoryFn } from '@storybook/nextjs';
+import type { Meta, StoryFn, StoryObj } from '@storybook/nextjs';
+
+import { useCategoryMap } from '@/hooks/useCategoryMap';
 
 import { CategorieChip } from './CategorieChip';
-import { useCategoryMap } from '@/hooks/useCategoryMap';
 
 const meta: Meta<typeof CategorieChip> = {
   title: 'Components/CategorieChip',

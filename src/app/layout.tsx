@@ -1,19 +1,25 @@
-import type { Metadata, Viewport } from 'next';
-import { Providers } from './Providers';
 import './globals.css';
-import GlobalDialog from '@/components/Dialog/core/GlobalDialog';
+
 import Script from 'next/script';
+
+import type { Metadata, Viewport } from 'next';
+
 import { Suspense } from 'react';
-import Header from '@/components/Header/Header';
-import { ToastRender } from 'cy-toast';
-import Loading from './loading/loading';
-import { cafe24Supermagic } from './font';
-import ProductAddButton from '@/components/ProductAddButton/ProductAddButton';
-import Footer from '@/components/Footer/Footer';
-import QuickScrollButton from '@/components/QuickScrollButton/QuickScrollButton';
-import BottomSpacer from '@/components/BottomSpacer/BottomSpacer';
-import { getUserInfo } from '@/lib/getUserInfo';
+
 import clsx from 'clsx';
+import { ToastRender } from 'cy-toast';
+
+import BottomSpacer from '@/components/BottomSpacer/BottomSpacer';
+import GlobalDialog from '@/components/Dialog/core/GlobalDialog';
+import Footer from '@/components/Footer/Footer';
+import Header from '@/components/Header/Header';
+import ProductAddButton from '@/components/ProductAddButton/ProductAddButton';
+import QuickScrollButton from '@/components/QuickScrollButton/QuickScrollButton';
+import { getUserInfo } from '@/lib/getUserInfo';
+
+import { cafe24Supermagic } from './font';
+import Loading from './loading/loading';
+import { Providers } from './Providers';
 
 export const metadata: Metadata = {
   title: {

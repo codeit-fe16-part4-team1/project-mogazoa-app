@@ -1,5 +1,7 @@
+import { useEffect, useState } from 'react';
+
 import { toast } from 'cy-toast';
-import { useState, useEffect } from 'react';
+
 import Toast from '@/components/Toast/Toast';
 
 const useCopyToClipboard = () => {

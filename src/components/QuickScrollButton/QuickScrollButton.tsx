@@ -1,10 +1,12 @@
 'use client';
 
-import { HTMLAttributes, useMemo } from 'react';
-import { cn } from '@/lib/cn';
-import FloatingButton from '@/components/FloatingButton/FloatingButton';
 import { usePathname } from 'next/navigation';
+
+import { HTMLAttributes, useMemo } from 'react';
+
 import IconScrollUp from '@/assets/icons/icon_scroll_up.svg';
+import FloatingButton from '@/components/FloatingButton/FloatingButton';
+import { cn } from '@/lib/cn';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface QuickScrollButtonProps extends HTMLAttributes<HTMLButtonElement> {}

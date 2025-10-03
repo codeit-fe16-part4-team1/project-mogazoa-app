@@ -2,12 +2,12 @@
 
 import { Button } from '@/components/Button/Button';
 import {
-  DialogHeader,
-  DialogTitle,
+  DialogClose,
   DialogContent,
   DialogDescription,
-  DialogClose,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from '@/components/Dialog/core/DialogComponents';
 import useDialog from '@/hooks/useDialog';
 

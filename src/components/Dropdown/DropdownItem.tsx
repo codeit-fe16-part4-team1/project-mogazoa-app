@@ -1,8 +1,11 @@
-import { cva } from 'class-variance-authority';
-import { cn } from '@/lib/cn';
-import { Menu } from '@headlessui/react';
-import { DropdownContext } from './Dropdown';
 import { Fragment, useContext } from 'react';
+
+import { Menu } from '@headlessui/react';
+import { cva } from 'class-variance-authority';
+
+import { cn } from '@/lib/cn';
+
+import { DropdownContext } from './Dropdown';
 
 const dropdownItemVariants = cva('block cursor-pointer rounded-x1 text-body2 md:text-body1', {
   variants: {

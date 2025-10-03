@@ -1,3 +1,9 @@
+import { useRouter } from 'next/navigation';
+
+import { useEffect, useState } from 'react';
+
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
 import { userFollowAPI } from '@/api/follow/userFollowAPI';
 import { userUnfollowAPI } from '@/api/follow/userUnfollowAPI';
 import { Button } from '@/components/Button/Button';
@@ -5,9 +11,6 @@ import { profileKeys } from '@/constant/queryKeys';
 import { getUserInfo } from '@/lib/getUserInfo';
 import useAuthStore from '@/store/useAuthStore';
 import { Profile } from '@/types/api';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 
 interface Props {
   profile: Profile;

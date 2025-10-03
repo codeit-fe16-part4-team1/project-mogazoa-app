@@ -1,12 +1,14 @@
+import { HTMLAttributes } from 'react';
+
+import { toast } from 'cy-toast';
+
 import { Button } from '@/components/Button/Button';
+import Toast from '@/components/Toast/Toast';
+import { useCategoryMap } from '@/hooks/useCategoryMap';
 import useDialog from '@/hooks/useDialog';
 import { cn } from '@/lib/cn';
-import { OrderOptions, ProductItem } from '@/types/api';
-import { HTMLAttributes } from 'react';
 import { useCompareStore } from '@/store/useCompareStore';
-import { useCategoryMap } from '@/hooks/useCategoryMap';
-import { toast } from 'cy-toast';
-import Toast from '@/components/Toast/Toast';
+import { OrderOptions, ProductItem } from '@/types/api';
 
 interface ProductBtnsProps extends HTMLAttributes<HTMLDivElement> {
   order: OrderOptions;

@@ -1,9 +1,10 @@
 import { ProductItem } from '@/types/api';
-import CompareImage from '../CompareImage/CompareImage';
+
+import Badge from '../Badge/Badge';
 import CompareBar from '../CompareBar/CompareBar';
 import CompareDetail from '../CompareDetail/CompareDetail';
 import CompareDetailDefault from '../CompareDetail/CompareDetailDefault';
-import Badge from '../Badge/Badge';
+import CompareImage from '../CompareImage/CompareImage';
 
 interface CompareCardProps {
   selectedProduct: ProductItem | null;

@@ -1,10 +1,12 @@
 'use client';
-import ProfileStats from './ProfileSection/ProfileStats';
-import { getUserProfileAPI } from '@/api/user/getUserProfileAPI';
-import ProfileCard from './ProfileSection/ProfileCard';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import ProfileButtonArea from './ProfileSection/ProfileButtonArea';
+
+import { getUserProfileAPI } from '@/api/user/getUserProfileAPI';
 import { profileKeys } from '@/constant/queryKeys';
+
+import ProfileButtonArea from './ProfileSection/ProfileButtonArea';
+import ProfileCard from './ProfileSection/ProfileCard';
+import ProfileStats from './ProfileSection/ProfileStats';
 
 interface Props {
   profileId: number;

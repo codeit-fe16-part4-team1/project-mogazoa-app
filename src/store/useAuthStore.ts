@@ -1,14 +1,15 @@
 'use client';
 
-import { signInAPI, SignInPayload } from '@/api/auth/signInAPI';
-import { signOutAPI } from '@/api/auth/signOutAPI';
-import { signUpAPI, SignUpPayload } from '@/api/auth/signUpAPI';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { User } from '@/types/api';
+
+import { signInAPI, SignInPayload } from '@/api/auth/signInAPI';
 import { signInKakaoAPI, SignInKakaoPayload } from '@/api/auth/signInKakaoAPI';
+import { signOutAPI } from '@/api/auth/signOutAPI';
+import { signUpAPI, SignUpPayload } from '@/api/auth/signUpAPI';
 import { signUpKakaoAPI, SignUpKakaoPayload } from '@/api/auth/signUpKakaoAPI';
 import { getAccessToken } from '@/lib/getAccessToken';
+import { User } from '@/types/api';
 
 interface AuthStore {
   isAuthenticated: boolean;

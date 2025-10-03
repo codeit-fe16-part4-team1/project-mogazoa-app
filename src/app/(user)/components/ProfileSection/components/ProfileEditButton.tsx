@@ -1,12 +1,14 @@
+import { HTMLAttributes } from 'react';
+
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import clsx from 'clsx';
+
 import { updateMyProfileAPI } from '@/api/user/updateMyProfileAPI';
 import { getUploadedImageUrlArray, ImageList } from '@/components/ImageInput/ImageInput';
 import { profileKeys } from '@/constant/queryKeys';
 import useDialog from '@/hooks/useDialog';
 import { defaultProfileImageUrl } from '@/lib/imageUrl';
 import { Profile } from '@/types/api';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import clsx from 'clsx';
-import { HTMLAttributes } from 'react';
 
 export interface ProfileEditMutationData {
   image: ImageList;

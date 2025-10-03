@@ -1,4 +1,5 @@
 import Image from 'next/image';
+
 import Badge from '../Badge/Badge';
 
 interface CompareImageProps {

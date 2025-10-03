@@ -1,12 +1,14 @@
 'use client';
+import { usePathname, useRouter } from 'next/navigation';
+
+import clsx from 'clsx';
+
+import IconCompareDefault from '@/assets/icons/icon_compare_default.svg';
+import IconCompareSelected from '@/assets/icons/icon_compare_selected.svg';
 import IconHomeDefault from '@/assets/icons/icon_home_default.svg';
 import IconHomeSelected from '@/assets/icons/icon_home_selected.svg';
 import IconMyDefault from '@/assets/icons/icon_my_default.svg';
 import IconMySelected from '@/assets/icons/icon_my_selected.svg';
-import IconCompareDefault from '@/assets/icons/icon_compare_default.svg';
-import IconCompareSelected from '@/assets/icons/icon_compare_selected.svg';
-import { usePathname, useRouter } from 'next/navigation';
-import clsx from 'clsx';
 import { useCompareStore } from '@/store/useCompareStore';
 
 const Footer = () => {

@@ -1,10 +1,12 @@
 'use client';
 import { useRef } from 'react';
+
+import clsx from 'clsx';
 import z from 'zod';
+
+import { getUploadedImageUrlAPI } from '@/api/image/getUploadedImageUrlAPI';
 import IconAdd from '@/assets/icons/icon_imageinput_add.svg';
 import IconDelete from '@/assets/icons/icon_imageinput_delete.svg';
-import clsx from 'clsx';
-import { getUploadedImageUrlAPI } from '@/api/image/getUploadedImageUrlAPI';
 
 // ImageInput 전용 zod schema
 export const ImageInputSchema = (maxImageCount: number, required: boolean = true) => {

@@ -1,14 +1,15 @@
 'use client';
 import { useState } from 'react';
-import { ProductItem } from '@/types/api';
-import CompareBar from '@/components/CompareBar/CompareBar';
-import CompareImage from '@/components/CompareImage/CompareImage';
-import CompareDetail from '@/components/CompareDetail/CompareDetail';
-import CompareCard from '@/components/CompareCard/CompareCard';
-import CompareDetailDefault from '@/components/CompareDetail/CompareDetailDefault';
+
 import Badge from '@/components/Badge/Badge';
 import { Button } from '@/components/Button/Button';
+import CompareBar from '@/components/CompareBar/CompareBar';
+import CompareCard from '@/components/CompareCard/CompareCard';
+import CompareDetail from '@/components/CompareDetail/CompareDetail';
+import CompareDetailDefault from '@/components/CompareDetail/CompareDetailDefault';
+import CompareImage from '@/components/CompareImage/CompareImage';
 import { useCompareStore } from '@/store/useCompareStore';
+import { ProductItem } from '@/types/api';
 
 const CompareContent = () => {
   const { products, addProductAtPosition, removeProduct, resetProducts } = useCompareStore();

@@ -1,5 +1,7 @@
-import axios from 'axios';
 import { notFound, redirect } from 'next/navigation';
+
+import axios from 'axios';
+
 import { getAccessToken } from './getAccessToken';
 
 export const baseAPI = axios.create({

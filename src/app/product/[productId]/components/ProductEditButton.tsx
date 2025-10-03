@@ -1,8 +1,9 @@
 import { HTMLAttributes } from 'react';
-import { cn } from '@/lib/cn';
+
 import EditBtnIcon from '@/assets/icons/icon_product_edit.svg';
 import FloatingButton from '@/components/FloatingButton/FloatingButton';
 import useDialog from '@/hooks/useDialog';
+import { cn } from '@/lib/cn';
 
 interface ProductEditButtonProps extends HTMLAttributes<HTMLButtonElement> {
   productId: number;

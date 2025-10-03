@@ -1,14 +1,18 @@
-import { FollowListKey, Follows, getUserFollowsAPI } from '@/api/user/getUserFollowsAPI';
-import { DialogContent } from '@/components/Dialog/core/DialogComponents';
-import { ProfileFollowDialogProps } from '@/types/dialogProps.types';
+import Image from 'next/image';
+
+import { useRef } from 'react';
+
 import { DialogDescription, DialogTitle } from '@radix-ui/react-dialog';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import ProfileFollowProfileCard from './components/ProfileFollowProfileCard';
-import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
-import { useRef } from 'react';
-import { profileKeys } from '@/constant/queryKeys';
-import Image from 'next/image';
+
+import { FollowListKey, Follows, getUserFollowsAPI } from '@/api/user/getUserFollowsAPI';
+import { DialogContent } from '@/components/Dialog/core/DialogComponents';
 import { ThreeDotsIndicator } from '@/components/ThreeDotIndicator/ThreeDotIndicator';
+import { profileKeys } from '@/constant/queryKeys';
+import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
+import { ProfileFollowDialogProps } from '@/types/dialogProps.types';
+
+import ProfileFollowProfileCard from './components/ProfileFollowProfileCard';
 
 const ProfileFollowDialog = ({ profileId, followsCount, type }: ProfileFollowDialogProps) => {
   const scrollContainerRef = useRef(null);

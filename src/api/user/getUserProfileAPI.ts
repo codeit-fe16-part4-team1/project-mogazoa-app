@@ -1,6 +1,7 @@
+import { notFound } from 'next/navigation';
+
 import { baseAPI } from '@/lib/baseAPI';
 import { Profile } from '@/types/api';
-import { notFound } from 'next/navigation';
 
 interface GetUserProfilePayload {
   userId: number;
