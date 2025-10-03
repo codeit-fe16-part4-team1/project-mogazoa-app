@@ -151,10 +151,6 @@
   /* ============================== */
 }
 
-body {
-  font-family: 'Spoqa Han Sans Neo', 'sans-serif';
-}
-
 /* ========== shadcn.ui에서 제공 ========== */
 .dark {
   --background: oklch(0.145 0 0);

@@ -17,7 +17,7 @@ import ProductAddButton from '@/components/ProductAddButton/ProductAddButton';
 import QuickScrollButton from '@/components/QuickScrollButton/QuickScrollButton';
 import { getUserInfo } from '@/lib/getUserInfo';
 
-import { cafe24Supermagic } from './font';
+import { cafe24Supermagic, spoqaSans } from './font';
 import Loading from './loading/loading';
 import { Providers } from './Providers';
 
@@ -61,7 +61,7 @@ const RootLayout = async ({
         />
         <link rel='preload' as='image' href='/images/banner_pattern.png' fetchPriority='high' />
       </head>
-      <body className={`${cafe24Supermagic.variable} antialiased`}>
+      <body className={`${spoqaSans.className} ${cafe24Supermagic.variable} antialiased`}>
         <ToastRender />
         <Providers>
           <Suspense fallback={<Loading />}>
