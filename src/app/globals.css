@@ -1,8 +1,6 @@
 @import 'tailwindcss';
 @config '../../tailwind.config.ts';
 
-@import url(//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css);
-
 /* ========== shadcn.ui에서 제공 ========== */
 @import 'tw-animate-css';
 
