@@ -43,8 +43,8 @@ const config: Config = {
       },
 
       fontFamily: {
-        sans: ['Spoqa Han Sans Neo', 'sans-serif'],
-        'cafe24-supermagic': 'var(--font-cafe24-supermagic)',
+        sans: ['var(--font-spoqa-sans)'],
+        'cafe24-supermagic': ['var(--font-cafe24-supermagic)'],
       },
 
       fontSize: {

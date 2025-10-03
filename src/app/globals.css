@@ -1,8 +1,6 @@
 @import 'tailwindcss';
 @config '../../tailwind.config.ts';
 
-@import url(//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css);
-
 /* ========== shadcn.ui에서 제공 ========== */
 @import 'tw-animate-css';
 
@@ -149,10 +147,6 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   /* ============================== */
-}
-
-body {
-  font-family: 'Spoqa Han Sans Neo', 'sans-serif';
 }
 
 /* ========== shadcn.ui에서 제공 ========== */
