@@ -1,9 +1,11 @@
 import Image from 'next/image';
+
 import { useRef } from 'react';
+
 import IconAdd from '@/assets/icons/icon_imageinput_add.svg';
+import IconDelete from '@/assets/icons/icon_imageinput_delete.svg';
 import { useSafeImageUrl } from '@/hooks/useSafeImageUrl';
 import { defaultProfileImageUrl } from '@/lib/imageUrl';
-import IconDelete from '@/assets/icons/icon_imageinput_delete.svg';
 
 type ImageList = Record<string, File | null>;
 

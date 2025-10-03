@@ -1,7 +1,8 @@
 'use client';
-import { Button } from '@/components/Button/Button';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+
+import { Button } from '@/components/Button/Button';
 
 const NotFoundPage = () => {
   const router = useRouter();

@@ -1,9 +1,11 @@
-import { UserRanking } from '@/types/api';
 import Image from 'next/image';
-import clsx from 'clsx';
-import { cn } from '@/lib/cn';
-import IconFirstRank from '@/assets/icons/icon_ranking_first.svg';
 import { useRouter } from 'next/navigation';
+
+import clsx from 'clsx';
+
+import IconFirstRank from '@/assets/icons/icon_ranking_first.svg';
+import { cn } from '@/lib/cn';
+import { UserRanking } from '@/types/api';
 import { formatNumberWithK } from '@/utils/formatNumber';
 
 const TOP_1_PROFILE_IMAGE_STYLES = 'w-16 h-16 md:w-25 md:h-25';

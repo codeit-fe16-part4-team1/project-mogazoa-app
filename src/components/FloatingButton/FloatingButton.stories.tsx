@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/nextjs';
-import EditBtnIcon from '@/assets/icons/icon_product_edit.svg';
+
 import PlusBtnIcon from '@/assets/icons/icon_plus.svg';
+import EditBtnIcon from '@/assets/icons/icon_product_edit.svg';
 
 import FloatingButton from './FloatingButton';
 

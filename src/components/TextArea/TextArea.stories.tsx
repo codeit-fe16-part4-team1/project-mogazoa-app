@@ -1,10 +1,13 @@
-import type { Meta, StoryObj } from '@storybook/nextjs';
 import { useForm } from 'react-hook-form';
+
 import { zodResolver } from '@hookform/resolvers/zod';
-import { TextArea } from './TextArea';
-import { TextAreaSchema } from '@/lib/validations';
+import type { Meta, StoryObj } from '@storybook/nextjs';
 import z from 'zod';
+
+import { TextAreaSchema } from '@/lib/validations';
+
 import { Button } from '../Button/Button';
+import { TextArea } from './TextArea';
 
 const meta: Meta<typeof TextArea> = {
   title: 'Components/TextArea',

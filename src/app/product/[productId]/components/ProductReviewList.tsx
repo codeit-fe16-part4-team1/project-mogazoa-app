@@ -1,10 +1,12 @@
 import { HTMLAttributes } from 'react';
-import ProductReviewCard from './ProductReviewCard';
-import { OrderOptions } from '@/types/api';
-import { cn } from '@/lib/cn';
-import { useProductReviewListData } from '../hooks/useProductReviewListData';
+
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
+import { cn } from '@/lib/cn';
+import { OrderOptions } from '@/types/api';
+
+import { useProductReviewListData } from '../hooks/useProductReviewListData';
 import ProductNoReview from './ProductNoReview';
+import ProductReviewCard from './ProductReviewCard';
 
 interface ProductReviewListProps extends HTMLAttributes<HTMLDivElement> {
   productId: number;

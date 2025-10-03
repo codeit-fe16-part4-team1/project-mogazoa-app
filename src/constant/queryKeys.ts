@@ -1,6 +1,6 @@
-import { OrderOptions } from '@/types/api';
-import { ProductType } from '@/api/user/getUserProductsAPI';
 import { Follows } from '@/api/user/getUserFollowsAPI';
+import { ProductType } from '@/api/user/getUserProductsAPI';
+import { OrderOptions } from '@/types/api';
 
 export const productKeys = {
   all: ['products'] as const,

@@ -1,6 +1,7 @@
-import { UserRanking } from '@/types/api';
-import { cn } from '@/lib/cn';
 import { useRouter } from 'next/navigation';
+
+import { cn } from '@/lib/cn';
+import { UserRanking } from '@/types/api';
 import { formatNumberWithK } from '@/utils/formatNumber';
 
 const MidRanking = ({

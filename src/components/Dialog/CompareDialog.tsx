@@ -1,9 +1,11 @@
+import { useState } from 'react';
+
 import useDialog from '@/hooks/useDialog';
 import { useCompareStore } from '@/store/useCompareStore';
 import { CompareDialogProps } from '@/types/dialogProps.types';
-import { useState } from 'react';
-import { DialogContent, DialogHeader, DialogTitle } from './core/DialogComponents';
+
 import { Button } from '../Button/Button';
+import { DialogContent, DialogHeader, DialogTitle } from './core/DialogComponents';
 
 const CompareDialog = ({ products, newProduct }: CompareDialogProps) => {
   const { setComparisonProducts } = useCompareStore();

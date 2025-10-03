@@ -1,10 +1,13 @@
-import { HydrationBoundary, QueryClient, dehydrate } from '@tanstack/react-query';
-import { getProductsAPI } from '@/api/products/getProductsAPI';
-import HomeClient from './HomeClient';
-import { getCategories } from '@/api/category/getCategories';
-import { getUsersRankingAPI } from '@/api/user/getUsersRankingAPI';
-import { headers } from 'next/headers';
 import { Metadata } from 'next';
+import { headers } from 'next/headers';
+
+import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
+
+import { getCategories } from '@/api/category/getCategories';
+import { getProductsAPI } from '@/api/products/getProductsAPI';
+import { getUsersRankingAPI } from '@/api/user/getUsersRankingAPI';
+
+import HomeClient from './HomeClient';
 
 interface Props {
   searchParams: Promise<{

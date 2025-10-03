@@ -1,16 +1,19 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+
+import { useForm } from 'react-hook-form';
+
+import { zodResolver } from '@hookform/resolvers/zod';
+import { AxiosError } from 'axios';
+import z from 'zod';
+
 import FormTitle from '@/app/(auth)/components/FormTitle';
+import IconBack from '@/assets/icons/icon_arrow_prev.svg';
 import { Button } from '@/components/Button/Button';
 import FormField from '@/components/FormField/FormField';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import z from 'zod';
-import IconBack from '@/assets/icons/icon_arrow_prev.svg';
-import { useRouter } from 'next/navigation';
-import useAuthStore from '@/store/useAuthStore';
-import { AxiosError } from 'axios';
 import { redirectKakaoAuth } from '@/lib/redirectKakaoAuth';
+import useAuthStore from '@/store/useAuthStore';
 
 const kakaoSignupSchema = z.object({
   nickname: z

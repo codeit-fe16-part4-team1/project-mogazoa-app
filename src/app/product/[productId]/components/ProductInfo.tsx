@@ -1,6 +1,8 @@
-import { cn } from '@/lib/cn';
 import Link from 'next/link';
+
 import { HTMLAttributes } from 'react';
+
+import { cn } from '@/lib/cn';
 
 interface ProductInfoProps extends HTMLAttributes<HTMLDivElement> {
   categoryId: number;

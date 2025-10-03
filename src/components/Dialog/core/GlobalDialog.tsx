@@ -1,8 +1,9 @@
 'use client';
 
-import useDialogStore from '@/store/useDialogStore';
-import { Dialog } from '@/components/Dialog/core/DialogComponents';
 import { useEffect } from 'react';
+
+import { Dialog } from '@/components/Dialog/core/DialogComponents';
+import useDialogStore from '@/store/useDialogStore';
 
 const GlobalDialog = () => {
   const { dialogs, isOpen, isClosing, setIsClosing, closeDialog } = useDialogStore();

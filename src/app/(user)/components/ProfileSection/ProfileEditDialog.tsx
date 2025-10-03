@@ -1,23 +1,27 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+
+import { Controller, useForm } from 'react-hook-form';
+
+import { zodResolver } from '@hookform/resolvers/zod';
+import { DialogDescription, DialogTitle } from '@radix-ui/react-dialog';
+import { AxiosError } from 'axios';
+import clsx from 'clsx';
+import z from 'zod';
+
 import { Button } from '@/components/Button/Button';
 import { DialogContent } from '@/components/Dialog/core/DialogComponents';
 import { getInitialImageList, ImageInputSchema } from '@/components/ImageInput/ImageInput';
 import Input from '@/components/Input/Input';
+import RequiredLabel from '@/components/RequiredLabel/RequiredLabel';
 import { TextArea } from '@/components/TextArea/TextArea';
 import useDialog from '@/hooks/useDialog';
+import { defaultProfileImageUrl } from '@/lib/imageUrl';
 import { TextAreaOptionalSchema } from '@/lib/validations';
 import { ProfileEditDialogProps } from '@/types/dialogProps.types';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { DialogDescription, DialogTitle } from '@radix-ui/react-dialog';
-import clsx from 'clsx';
-import { Controller, useForm } from 'react-hook-form';
-import z from 'zod';
+
 import ProfileImageInput from './components/ProfileImageInput';
-import RequiredLabel from '@/components/RequiredLabel/RequiredLabel';
-import { AxiosError } from 'axios';
-import { useRouter } from 'next/navigation';
-import { defaultProfileImageUrl } from '@/lib/imageUrl';
 
 const profileEditScheme = z.object({
   image: ImageInputSchema(1, false),

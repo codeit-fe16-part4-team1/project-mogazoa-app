@@ -1,6 +1,7 @@
-import CompareContent from './CompareContent';
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
+
+import CompareContent from './CompareContent';
 
 export const generateMetadata = async (): Promise<Metadata> => {
   const headersList = headers();

@@ -1,20 +1,22 @@
 'use client';
 
 import { Suspense, useState } from 'react';
-import ProductStatisticCard from './components/ProductStatisticCard';
-import ProductReviewList from './components/ProductReviewList';
-import ProductDetailHeader from './components/ProductDetailHeader';
-import { OrderOptions } from '@/types/api';
-import ProductEditButton from './components/ProductEditButton';
-import ProductImage from './components/ProductImage';
-import ProductInfo from './components/ProductInfo';
-import ProductShareBtns from './components/ProductShareBtns';
-import ProductBtns from './components/ProductBtns';
-import { cn } from '@/lib/cn';
-import { useProductData } from './hooks/useProductData';
+
 import Dropdown from '@/components/Dropdown/Dropdown';
 import DropdownItem from '@/components/Dropdown/DropdownItem';
 import { ThreeDotsIndicator } from '@/components/ThreeDotIndicator/ThreeDotIndicator';
+import { cn } from '@/lib/cn';
+import { OrderOptions } from '@/types/api';
+
+import ProductBtns from './components/ProductBtns';
+import ProductDetailHeader from './components/ProductDetailHeader';
+import ProductEditButton from './components/ProductEditButton';
+import ProductImage from './components/ProductImage';
+import ProductInfo from './components/ProductInfo';
+import ProductReviewList from './components/ProductReviewList';
+import ProductShareBtns from './components/ProductShareBtns';
+import ProductStatisticCard from './components/ProductStatisticCard';
+import { useProductData } from './hooks/useProductData';
 
 interface ProductDetailPageProps {
   productId: number;

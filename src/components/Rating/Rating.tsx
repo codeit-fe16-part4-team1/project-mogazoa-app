@@ -1,7 +1,9 @@
-import { cn } from '@/lib/cn';
 import { HTMLAttributes, useState } from 'react';
-import RatingStar from './RatingStar';
+
+import { cn } from '@/lib/cn';
 import { RatingStarSize } from '@/types/rating.types';
+
+import RatingStar from './RatingStar';
 
 /**
  * 총 Rating에 대한 상수

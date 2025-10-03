@@ -1,11 +1,12 @@
 'use client';
 
 import { JSX, useState } from 'react';
+
 import { getMyProfileAPI } from '@/api/user/getMyProfileAPI';
 import {
-  getUserFollowsAPI,
   GetUserFollowPayload,
   GetUserFollowResponse,
+  getUserFollowsAPI,
 } from '@/api/user/getUserFollowsAPI';
 import { getUserProductsAPI, GetUserProductsPayload } from '@/api/user/getUserProductsAPI';
 import { getUserProfileAPI } from '@/api/user/getUserProfileAPI';
@@ -15,7 +16,7 @@ import {
   UpdateMyProfilePayload,
   UpdateMyProfileResponse,
 } from '@/api/user/updateMyProfileAPI';
-import { Profile, ProductsList, UserRanking } from '@/types/api';
+import { ProductsList, Profile, UserRanking } from '@/types/api';
 
 type ApiResponse =
   | GetUserFollowResponse

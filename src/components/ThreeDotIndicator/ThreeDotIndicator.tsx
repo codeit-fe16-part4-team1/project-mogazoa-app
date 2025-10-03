@@ -1,6 +1,7 @@
-import { cn } from '@/lib/cn';
-import { motion, HTMLMotionProps, Variants } from 'framer-motion'; // framer-motion으로 변경
 import { cva, VariantProps } from 'class-variance-authority';
+import { HTMLMotionProps, motion, Variants } from 'framer-motion'; // framer-motion으로 변경
+
+import { cn } from '@/lib/cn';
 
 const circleIndicatorVariants = cva('h-2 w-2 rounded-full', {
   variants: {
@@ -62,4 +63,4 @@ const ThreeDotsIndicator = ({ className, dotColor, ...props }: ThreeDotsIndicato
   );
 };
 
-export { ThreeDotsIndicator, circleIndicatorVariants };
+export { circleIndicatorVariants, ThreeDotsIndicator };

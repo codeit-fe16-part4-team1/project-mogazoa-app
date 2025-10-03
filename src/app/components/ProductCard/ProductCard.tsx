@@ -1,9 +1,11 @@
 'use client';
-import { useSafeImageUrl } from '@/hooks/useSafeImageUrl';
-import { ProductItem } from '@/types/api';
-import clsx from 'clsx';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+
+import clsx from 'clsx';
+
+import { useSafeImageUrl } from '@/hooks/useSafeImageUrl';
+import { ProductItem } from '@/types/api';
 
 const CONTAINER_STYLES = 'flex cursor-pointer flex-col gap-3 md:gap-5';
 
@@ -13,7 +15,7 @@ const IMAGE_WRAPPER_STYLES =
 const CONTENTS_STYLES = 'flex flex-col gap-2 md:gap-3 md:px-2';
 
 const NAME_STYLES = clsx(
-  'text-gray-900 text-body2-medium md:text-sub-headline-medium w-full',
+  'text-body2-medium md:text-sub-headline-medium w-full text-gray-900',
   'tracking-[-0.4px]',
 );
 

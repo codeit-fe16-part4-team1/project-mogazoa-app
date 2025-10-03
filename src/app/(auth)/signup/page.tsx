@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
+
 import SignupForm from './SignupForm';
 
 export const generateMetadata = async (): Promise<Metadata> => {

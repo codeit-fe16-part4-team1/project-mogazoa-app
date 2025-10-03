@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+
 import axios from 'axios';
+
 import { AuthResponse } from '@/types/api';
 import { DEFAULT_COOKIE_OPTIONS, HTTPONLY_COOKIE_OPTIONS } from '@/utils/cookieOptions';
 

@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
-import IconTitle from '@/assets/icons/icon_title.svg';
+
 import IconFavicon from '@/assets/icons/icon_logo_without_title.svg';
+import IconTitle from '@/assets/icons/icon_title.svg';
 
 interface Props {
   children: React.ReactNode;

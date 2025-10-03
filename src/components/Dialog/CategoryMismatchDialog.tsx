@@ -1,9 +1,10 @@
+import useDialog from '@/hooks/useDialog';
 import { useCompareStore } from '@/store/useCompareStore';
 import useDialogStore from '@/store/useDialogStore';
-import useDialog from '@/hooks/useDialog';
 import { CategoryMismatchDialogProps } from '@/types/dialogProps.types';
-import { DialogContent, DialogHeader, DialogTitle } from './core/DialogComponents';
+
 import { Button } from '../Button/Button';
+import { DialogContent, DialogHeader, DialogTitle } from './core/DialogComponents';
 
 const CategoryMismatchDialog = ({ newProduct, categoryName }: CategoryMismatchDialogProps) => {
   const { setComparisonProducts } = useCompareStore();

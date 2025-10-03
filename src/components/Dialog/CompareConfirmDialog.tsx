@@ -4,8 +4,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/Dialog/core/DialogComponents';
-import { Button } from '../Button/Button';
 import useDialog from '@/hooks/useDialog';
+
+import { Button } from '../Button/Button';
 
 const CompareConfirmDialog = () => {
   const { closeAllAndRoute } = useDialog();

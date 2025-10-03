@@ -1,5 +1,6 @@
 'use client';
 import clsx from 'clsx';
+
 import IconSearch from '@/assets/icons/search.svg';
 
 interface SearchInputProps {

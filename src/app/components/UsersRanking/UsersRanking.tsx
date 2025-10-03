@@ -1,8 +1,10 @@
-import TopRanking from './TopRanking';
 import { useQuery } from '@tanstack/react-query';
+
 import { getUsersRankingAPI } from '@/api/user/getUsersRankingAPI';
-import MidRanking from './MidRanking';
 import { cn } from '@/lib/cn';
+
+import MidRanking from './MidRanking';
+import TopRanking from './TopRanking';
 
 const RANK7_SM_STYLES = 'gap-4 w-full border-y-1 border-gray-200 px-2 py-4';
 const RANK7_MD_STYLES = 'md:gap-y-5 md:gap-x-12 md:border-y-0 md:px-0 md:py-0';

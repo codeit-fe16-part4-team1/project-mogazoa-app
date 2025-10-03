@@ -1,7 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/nextjs';
 import { useForm } from 'react-hook-form';
+
 import { zodResolver } from '@hookform/resolvers/zod';
+import type { Meta, StoryObj } from '@storybook/nextjs';
 import z from 'zod';
+
 import Input, { InputSchema } from './Input';
 
 const meta: Meta<typeof Input> = {

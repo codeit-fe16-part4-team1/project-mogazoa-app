@@ -1,9 +1,10 @@
-import HeartLikes from '@/components/Likes/HeartLikes';
 import { HTMLAttributes } from 'react';
+
 import KakaoShareBtn from '@/assets/icons/icon_kakao_share.svg';
 import ShareBtn from '@/assets/icons/icon_share.svg';
-import { cn } from '@/lib/cn';
+import HeartLikes from '@/components/Likes/HeartLikes';
 import useCopyToClipboard from '@/hooks/useCopyToClipboard';
+import { cn } from '@/lib/cn';
 
 interface ProductShareBtnsProps extends HTMLAttributes<HTMLDivElement> {
   productId: number;

@@ -1,34 +1,37 @@
 'use client';
 
+import { Controller, FieldError, FieldErrors, useForm } from 'react-hook-form';
+
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { isAxiosError } from 'axios';
+import z from 'zod';
+
+import { createProduct } from '@/api/product/createProduct';
+import { updateProduct, UpdateProductPayload } from '@/api/product/updateProduct';
 import { Button } from '@/components/Button/Button';
 import {
-  DialogHeader,
-  DialogTitle,
   DialogContent,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from '@/components/Dialog/core/DialogComponents';
+import Dropdown from '@/components/Dropdown/Dropdown';
+import { productKeys } from '@/constant/queryKeys';
+import { useCategoryMap } from '@/hooks/useCategoryMap';
+import useDialog from '@/hooks/useDialog';
+import { TextAreaSchema } from '@/lib/validations';
 import { ProductFormDialogProps } from '@/types/dialogProps.types';
+
+import DropdownItem from '../Dropdown/DropdownItem';
 import ImageInput, {
   getInitialImageList,
   getUploadedImageUrlArray,
   ImageInputSchema,
 } from '../ImageInput/ImageInput';
-import { Controller, FieldError, FieldErrors, useForm } from 'react-hook-form';
 import Input, { InputSchema } from '../Input/Input';
-import { TextArea } from '../TextArea/TextArea';
-import z from 'zod';
-import { TextAreaSchema } from '@/lib/validations';
-import { zodResolver } from '@hookform/resolvers/zod';
-import Dropdown from '@/components/Dropdown/Dropdown';
-import DropdownItem from '../Dropdown/DropdownItem';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useCategoryMap } from '@/hooks/useCategoryMap';
-import { createProduct } from '@/api/product/createProduct';
-import { updateProduct, UpdateProductPayload } from '@/api/product/updateProduct';
-import { productKeys } from '@/constant/queryKeys';
-import useDialog from '@/hooks/useDialog';
 import RequiredLabel from '../RequiredLabel/RequiredLabel';
-import { isAxiosError } from 'axios';
+import { TextArea } from '../TextArea/TextArea';
 
 const ProductFormDialog = ({
   mode,

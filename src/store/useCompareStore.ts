@@ -1,8 +1,9 @@
 'use client';
 
 import { create } from 'zustand';
-import { ProductItem } from '@/types/api';
 import { persist } from 'zustand/middleware';
+
+import { ProductItem } from '@/types/api';
 
 interface CompareStore {
   products: (ProductItem | null)[];

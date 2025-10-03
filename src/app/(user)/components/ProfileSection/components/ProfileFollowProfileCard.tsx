@@ -1,7 +1,8 @@
+import Image from 'next/image';
+
 import { FollowUser } from '@/api/user/getUserFollowsAPI';
 import useDialog from '@/hooks/useDialog';
 import { useSafeImageUrl } from '@/hooks/useSafeImageUrl';
-import Image from 'next/image';
 
 interface Props {
   followUser: FollowUser;

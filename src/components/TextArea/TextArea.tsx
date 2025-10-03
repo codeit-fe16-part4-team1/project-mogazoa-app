@@ -1,6 +1,7 @@
-import clsx from 'clsx';
 import { forwardRef, TextareaHTMLAttributes, useState } from 'react';
 import { FieldError, UseFormRegisterReturn } from 'react-hook-form';
+
+import clsx from 'clsx';
 
 interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   id?: string;
@@ -71,14 +72,14 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       'text-body2 md:text-body1 resize-none outline-0',
       'focus-within:placeholder:text-transparent',
       'placeholder:text-gray-600',
-      'rounded-lg border-1 border-gray-300 p-3 md:p-5 pb-8 md:pb-10',
+      'rounded-lg border-1 border-gray-300 p-3 pb-8 md:p-5 md:pb-10',
       'field-sizing-content',
       'block',
       ERROR_STATE_STYLES.border[`${errorState}`],
     );
 
     const LENGTH_INFO_STYLES = clsx(
-      'absolute bottom-3 md:bottom-5 right-3 md:right-5',
+      'absolute right-3 bottom-3 md:right-5 md:bottom-5',
       'text-body2 text-right',
       'text-gray-700',
     );

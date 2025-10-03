@@ -1,12 +1,16 @@
+import { useSearchParams } from 'next/navigation';
+
+import { useEffect } from 'react';
+import ScrollContainer from 'react-indiana-drag-scroll';
+
 import clsx from 'clsx';
+
+import CategoryButton from '@/app/components/Category/CategoryButton';
 import OptionList from '@/components/OptionList/OptionList';
 import { useCategoryMap } from '@/hooks/useCategoryMap';
 import { useHorizontalScroll } from '@/hooks/useHorizontalScroll';
-import CategoryButton from '@/app/components/Category/CategoryButton';
+
 import PaginationButton from '../../../components/PaginationButton/PaginationButton';
-import ScrollContainer from 'react-indiana-drag-scroll';
-import { useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
 
 const BUTTON_CLASSES = {
   tab: 'min-w-20 flex-1 cursor-pointer',

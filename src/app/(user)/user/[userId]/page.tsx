@@ -1,7 +1,9 @@
-import { getUserInfo } from '@/lib/getUserInfo';
-import { redirect } from 'next/navigation';
 import { Metadata } from 'next';
+import { redirect } from 'next/navigation';
+
+import { getUserInfo } from '@/lib/getUserInfo';
 import { generateProfileMetadata } from '@/lib/metadata/profile';
+
 import ProfilePage from '../../ProfilePage';
 
 export interface ProfilePageProps {

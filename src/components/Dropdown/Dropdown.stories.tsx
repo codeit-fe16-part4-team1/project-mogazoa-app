@@ -1,5 +1,7 @@
+import { ReactNode, useState } from 'react';
+
 import type { Meta, StoryObj } from '@storybook/nextjs';
-import { useState, ReactNode } from 'react';
+
 import Dropdown from './Dropdown';
 import DropdownItem from './DropdownItem';
 

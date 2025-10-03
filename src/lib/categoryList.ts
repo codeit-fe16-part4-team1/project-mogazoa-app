@@ -1,13 +1,13 @@
-import IconMusic from '@/assets/icons/icon_category_music.svg';
-import IconMovie from '@/assets/icons/icon_category_movie.svg';
+import IconApp from '@/assets/icons/icon_category_app.svg';
+import IconBeauty from '@/assets/icons/icon_category_beauty.svg';
 import IconBook from '@/assets/icons/icon_category_book.svg';
+import IconElectronic from '@/assets/icons/icon_category_electronic.svg';
+import IconFashion from '@/assets/icons/icon_category_fashion.svg';
 import IconHotel from '@/assets/icons/icon_category_hotel.svg';
 import IconInterior from '@/assets/icons/icon_category_interior.svg';
+import IconMovie from '@/assets/icons/icon_category_movie.svg';
+import IconMusic from '@/assets/icons/icon_category_music.svg';
 import IconRestaurant from '@/assets/icons/icon_category_restaurant.svg';
-import IconElectronic from '@/assets/icons/icon_category_electronic.svg';
-import IconBeauty from '@/assets/icons/icon_category_beauty.svg';
-import IconFashion from '@/assets/icons/icon_category_fashion.svg';
-import IconApp from '@/assets/icons/icon_category_app.svg';
 
 export const categoryList = [
   {

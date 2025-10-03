@@ -1,5 +1,6 @@
-import { categoryList } from '@/lib/categoryList';
 import { createContext, useContext } from 'react';
+
+import { categoryList } from '@/lib/categoryList';
 
 interface CategoryContextType {
   categoryId: number;

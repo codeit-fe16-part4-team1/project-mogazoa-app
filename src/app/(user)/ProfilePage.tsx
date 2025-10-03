@@ -1,9 +1,11 @@
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
-import ProfileSection from './components/ProfileSection';
-import ProductSection from './components/ProductSection';
-import { productKeys, profileKeys } from '@/constant/queryKeys';
-import { getUserProfileAPI } from '@/api/user/getUserProfileAPI';
+
 import { getUserProductsAPI, ProductType, TYPE_MAP } from '@/api/user/getUserProductsAPI';
+import { getUserProfileAPI } from '@/api/user/getUserProfileAPI';
+import { productKeys, profileKeys } from '@/constant/queryKeys';
+
+import ProductSection from './components/ProductSection';
+import ProfileSection from './components/ProfileSection';
 
 interface Props {
   profileId: number;

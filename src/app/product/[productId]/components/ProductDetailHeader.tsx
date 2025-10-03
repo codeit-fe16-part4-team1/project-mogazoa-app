@@ -1,5 +1,6 @@
-import { cn } from '@/lib/cn';
 import { HTMLAttributes } from 'react';
+
+import { cn } from '@/lib/cn';
 
 type ProductDetailHeaderProps = HTMLAttributes<HTMLDivElement>;
 

@@ -1,24 +1,25 @@
-import { IDialogComponents } from '@/types/dialog.types';
-import TestDialog from '../TestDialog';
-import TestInnerDialog from '../TestInnerDialog';
-import {
-  ReviewFormDialogProps,
-  ProfileEditDialogProps,
-  ProfileFollowDialogProps,
-  TestInnerDialogProps,
-  ProductFormDialogProps,
-  CompareDialogProps,
-  CategoryMismatchDialogProps,
-} from '@/types/dialogProps.types';
-import ReviewFormDialog from '../ReviewFormDialog';
 import ProfileEditDialog from '@/app/(user)/components/ProfileSection/ProfileEditDialog';
 import ProfileFollowDialog from '@/app/(user)/components/ProfileSection/ProfileFollowDialog';
-import ProductFormDialog from '../ProductFormDialog';
-import CompareDialog from '../CompareDialog';
-import CompareConfirmDialog from '../CompareConfirmDialog';
-import DuplicateDialog from '../DuplicateDialog';
+import { IDialogComponents } from '@/types/dialog.types';
+import {
+  CategoryMismatchDialogProps,
+  CompareDialogProps,
+  ProductFormDialogProps,
+  ProfileEditDialogProps,
+  ProfileFollowDialogProps,
+  ReviewFormDialogProps,
+  TestInnerDialogProps,
+} from '@/types/dialogProps.types';
+
 import CategoryMismatchDialog from '../CategoryMismatchDialog';
+import CompareConfirmDialog from '../CompareConfirmDialog';
+import CompareDialog from '../CompareDialog';
 import DirectCompareDialog from '../DirectCompareDialog';
+import DuplicateDialog from '../DuplicateDialog';
+import ProductFormDialog from '../ProductFormDialog';
+import ReviewFormDialog from '../ReviewFormDialog';
+import TestDialog from '../TestDialog';
+import TestInnerDialog from '../TestInnerDialog';
 
 /**
  * 모든 다이얼로그 컴포넌트를 매핑하는 객체.

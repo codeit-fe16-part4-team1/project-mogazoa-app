@@ -1,8 +1,9 @@
 'use client';
 
-import { DialogContent, DialogHeader, DialogTitle } from './core/DialogComponents';
-import { Button } from '../Button/Button';
 import useDialog from '@/hooks/useDialog';
+
+import { Button } from '../Button/Button';
+import { DialogContent, DialogHeader, DialogTitle } from './core/DialogComponents';
 
 const DuplicateDialog = () => {
   const { closeAllAndRoute } = useDialog();

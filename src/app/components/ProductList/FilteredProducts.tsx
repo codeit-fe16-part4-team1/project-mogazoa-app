@@ -1,12 +1,14 @@
 'use client';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
 import { useInfiniteQuery } from '@tanstack/react-query';
+
 import { getProductsAPI } from '@/api/products/getProductsAPI';
-import { ProductItem } from '@/types/api';
 import ProductCard from '@/app/components/ProductCard/ProductCard';
 import Dropdown from '@/components/Dropdown/Dropdown';
 import DropdownItem from '@/components/Dropdown/DropdownItem';
 import { useIsDesktop } from '@/hooks/useIsDesktop';
+import { ProductItem } from '@/types/api';
 
 const GRID_STYLES =
   'grid grid-cols-2 gap-3 gap-y-8 md:grid-cols-2 md:gap-5 md:gap-y-12 lg:grid-cols-3';
