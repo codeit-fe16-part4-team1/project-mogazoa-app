@@ -19,13 +19,17 @@ const SearchedSection = ({ categoryId, searchKeyword }: Props) => {
   const [orderBy, setOrderBy] = useState<ORDER_BY>('recent');
 
   const onlyJosa = josa(searchKeyword, '으로/로').replace(searchKeyword, '');
-  const category = categoryList.find((c) => c.id === categoryId)?.name;
+  const categoryName = categoryList.find((c) => c.id === categoryId)?.name;
 
   let title = '';
-  if (!!category && !!searchKeyword)
-    title = `${category}의 "${searchKeyword}"${onlyJosa} 검색한 상품`;
-  else if (!!category) title = `${category}의 모든 상품`;
-  else if (!!searchKeyword) title = `"${searchKeyword}"${onlyJosa} 검색한 상품`;
+
+  if (searchKeyword && categoryName) {
+    title = `${categoryName}의 "${searchKeyword}"${onlyJosa} 검색한 상품`;
+  } else if (searchKeyword) {
+    title = `"${searchKeyword}"${onlyJosa} 검색한 상품`;
+  } else if (categoryName) {
+    title = `${categoryName}의 모든 상품`;
+  }
 
   const handleOrderChange = (value: string) => {
     setOrderBy(value as ORDER_BY);
