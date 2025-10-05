@@ -7,7 +7,7 @@ import { getCategories } from '@/api/category/getCategories';
 import { getProductsAPI } from '@/api/products/getProductsAPI';
 import { getUsersRankingAPI } from '@/api/user/getUsersRankingAPI';
 
-import HomeClient from './HomeClient';
+import HomeClient from './components/HomeClient';
 
 interface Props {
   searchParams: Promise<{

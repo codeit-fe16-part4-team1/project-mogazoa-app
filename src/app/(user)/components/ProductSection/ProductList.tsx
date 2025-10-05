@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
 
 import { getUserProductsAPI, ProductType } from '@/api/user/getUserProductsAPI';
-import ProductCard from '@/app/components/ProductCard/ProductCard';
+import ProductCard from '@/components/ProductCard/ProductCard';
 import { productKeys } from '@/constant/queryKeys';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 
@@ -67,7 +67,7 @@ const ProductList = ({ profileId, productType }: Props) => {
 const Skeleton = () => {
   return (
     <article className='mx-auto grid max-w-235 grid-cols-2 gap-x-3 gap-y-8 md:gap-x-5 md:gap-y-12 lg:grid-cols-3'>
-      {new Array(3).fill(0).map((_, index) => (
+      {new Array(6).fill(0).map((_, index) => (
         <ProductCard.skeleton key={index} />
       ))}
     </article>

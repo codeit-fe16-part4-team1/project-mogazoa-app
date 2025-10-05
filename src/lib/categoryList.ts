@@ -1,63 +1,62 @@
-import IconApp from '@/assets/icons/icon_category_app.svg';
-import IconBeauty from '@/assets/icons/icon_category_beauty.svg';
-import IconBook from '@/assets/icons/icon_category_book.svg';
-import IconElectronic from '@/assets/icons/icon_category_electronic.svg';
-import IconFashion from '@/assets/icons/icon_category_fashion.svg';
-import IconHotel from '@/assets/icons/icon_category_hotel.svg';
-import IconInterior from '@/assets/icons/icon_category_interior.svg';
-import IconMovie from '@/assets/icons/icon_category_movie.svg';
-import IconMusic from '@/assets/icons/icon_category_music.svg';
-import IconRestaurant from '@/assets/icons/icon_category_restaurant.svg';
-
+import IconChair from '@/assets/icons/iconChair.svg';
+import IconGamepad from '@/assets/icons/iconGamepad.svg';
+import IconHeadset from '@/assets/icons/iconHeadset.svg';
+import IconKeyboard from '@/assets/icons/iconKeyboard.svg';
+import IconLaptop from '@/assets/icons/iconLaptop.svg';
+import IconMic from '@/assets/icons/iconMic.svg';
+import IconMonitor from '@/assets/icons/iconMonitor.svg';
+import IconMouse from '@/assets/icons/iconMouse.svg';
+import IconPC from '@/assets/icons/iconPC.svg';
+import IconSpeaker from '@/assets/icons/iconSpeaker.svg';
 export const categoryList = [
   {
     id: 1,
-    name: '음악',
-    icon: IconMusic,
+    name: 'PC',
+    icon: IconPC,
   },
   {
     id: 2,
-    name: '영화/드라마',
-    icon: IconMovie,
+    name: '노트북',
+    icon: IconLaptop,
   },
   {
     id: 3,
-    name: '강의/책',
-    icon: IconBook,
+    name: '모니터',
+    icon: IconMonitor,
   },
   {
     id: 4,
-    name: '호텔',
-    icon: IconHotel,
+    name: '키보드',
+    icon: IconKeyboard,
   },
   {
     id: 5,
-    name: '가구/인테리어',
-    icon: IconInterior,
+    name: '마우스',
+    icon: IconMouse,
   },
   {
     id: 6,
-    name: '식당',
-    icon: IconRestaurant,
+    name: '헤드셋',
+    icon: IconHeadset,
   },
   {
     id: 7,
-    name: '전자기기',
-    icon: IconElectronic,
+    name: '의자',
+    icon: IconChair,
   },
   {
     id: 8,
-    name: '화장품',
-    icon: IconBeauty,
+    name: '스피커',
+    icon: IconSpeaker,
   },
   {
     id: 9,
-    name: '의류/잡화',
-    icon: IconFashion,
+    name: '마이크',
+    icon: IconMic,
   },
   {
     id: 10,
-    name: '앱',
-    icon: IconApp,
+    name: '게임패드',
+    icon: IconGamepad,
   },
 ];
