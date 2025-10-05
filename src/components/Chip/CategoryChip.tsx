@@ -15,7 +15,7 @@ interface CategoryProps {
   categoryId: number;
   className?: string;
   children: React.ReactNode;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 const CategoryChip = ({ categoryId, className, children, onClick, ...rest }: CategoryProps) => {
