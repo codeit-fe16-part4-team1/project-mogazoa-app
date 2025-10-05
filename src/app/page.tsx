@@ -6,8 +6,9 @@ import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query
 import { getCategories } from '@/api/category/getCategories';
 import { getProductsAPI } from '@/api/products/getProductsAPI';
 import { getUsersRankingAPI } from '@/api/user/getUsersRankingAPI';
+import { categoryList } from '@/lib/categoryList';
 
-import HomeClient from './HomeClient';
+import HomeClient from './components/HomeClient';
 
 interface Props {
   searchParams: Promise<{
@@ -28,8 +29,7 @@ export const generateMetadata = async ({ searchParams }: Props): Promise<Metadat
 
   let categoryName = '';
   if (category) {
-    const categories = await getCategories();
-    const nextCategory = categories.find((cat) => cat.id === Number(category));
+    const nextCategory = categoryList.find((c) => c.id === Number(category));
     if (!!nextCategory) categoryName = nextCategory.name;
     queryString.set('category', category);
   }

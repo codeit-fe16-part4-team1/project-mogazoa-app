@@ -1,3 +1,4 @@
+'use client';
 import { createContext, useContext } from 'react';
 
 import { categoryList } from '@/lib/categoryList';
@@ -14,12 +15,15 @@ interface CategoryProps {
   categoryId: number;
   className?: string;
   children: React.ReactNode;
+  onClick?: () => void;
 }
 
-const CategoryChip = ({ categoryId, className, children }: CategoryProps) => {
+const CategoryChip = ({ categoryId, className, children, onClick, ...rest }: CategoryProps) => {
   return (
     <CategoryContext.Provider value={{ categoryId }}>
-      <div className={className}>{children}</div>
+      <div className={className} onClick={onClick} {...rest}>
+        {children}
+      </div>
     </CategoryContext.Provider>
   );
 };
@@ -31,6 +35,7 @@ interface IconProps {
 const CategoryIcon = ({ className }: IconProps) => {
   const { categoryId } = useContext(CategoryContext);
   const IconComponent = categoryList.find((c) => c.id === categoryId)?.icon;
+  if (!IconComponent) return null; // 또는 기본 아이콘
   return <IconComponent className={className} />;
 };
 
