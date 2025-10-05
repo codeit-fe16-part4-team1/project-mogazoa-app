@@ -17,13 +17,13 @@ const CategorySection = () => {
 
   const handleCategoryButtonClick = (id: number) => {
     setSelectedId(id === selectedId ? 0 : id);
-    const nextParams = new URLSearchParams();
+    const nextParams = new URLSearchParams(params.toString());
     if (categoryId === id) {
-      router.push('/');
+      nextParams.delete('category');
     } else {
       nextParams.set('category', id.toString());
-      router.push(`?${nextParams.toString()}`, { scroll: false });
     }
+    router.push(`?${nextParams.toString()}`, { scroll: false });
   };
   // URL 변경 시 동기화
   useEffect(() => {
