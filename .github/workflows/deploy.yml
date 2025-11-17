@@ -47,58 +47,8 @@ jobs:
       # 5) 배포용 파일 패키징
       - name: Package deployment files
         run: |
-          echo "[DEBUG][GHA] ⌛ 배포용 파일 패키징 진행 중..."
-
-          # 개발 의존성 제거
-          BEFORE_SIZE=$(du -sh node_modules | cut -f1)
-          npm prune --omit=dev
-          AFTER_SIZE=$(du -sh node_modules | cut -f1)
-          echo "[DEBUG][GHA] ✅ 개발 의존성 제거 완료"
-
-          # 배포에 필요한 파일들만 선별해서 패키징
-          mkdir -p deploy-package
-
-          # Next.js 빌드 결과물
-          cp -r .next deploy-package/
-          cp -r public deploy-package/ 2>/dev/null || true
-
-          # 런타임에 필요한 파일들
-          cp package.json deploy-package/
-          cp package-lock.json deploy-package/ 2>/dev/null || true
-          cp next.config.* deploy-package/ 2>/dev/null || true
-
-          # 추가: config 폴더 복사
-          cp -r config deploy-package/ 2>/dev/null || true
-
-          # 최적화된 프로덕션 의존성
-          cp -r node_modules deploy-package/
-
-          PACKAGE_SIZE=$(du -sh deploy-package | cut -f1)
-
-          # 압축
-          cd deploy-package
-          echo "[DEBUG][GHA] ⌛ 고압축 진행 중..."
-          tar -czf ../production-app.tar.gz --exclude='node_modules/*/.cache' --exclude='node_modules/*/coverage' .
-          cd ..
-          rm -rf deploy-package
-
-          FINAL_SIZE=$(du -sh production-app.tar.gz | cut -f1)
-
-          RED="\033[1;31m"
-          GREEN="\033[1;32m"
-          BLUE="\033[1;34m"
-          CYAN="\033[1;36m"
-          RESET="\033[0m"
-
-          echo ""
-          echo -e "${BLUE}====================== 📦 패키징 정보 ======================${RESET}"
-          printf "${CYAN}%-30s${RESET} | %s\n" "Full node_modules size" "$BEFORE_SIZE"
-          printf "${CYAN}%-30s${RESET} | %s\n" "Production node_modules size" "$AFTER_SIZE"
-          printf "${CYAN}%-30s${RESET} | %s\n" "Deploy package size" "$PACKAGE_SIZE"
-          printf "${CYAN}%-30s${RESET} | %s\n" "Final compressed size" "$FINAL_SIZE"
-          echo -e "${BLUE}=============================================================${RESET}"
-          echo ""
-          echo "[DEBUG][GHA] ✅ 배포용 파일 패키징 완료"
+          chmod +x scripts/package-deployment.sh
+          ./scripts/package-deployment.sh
 
       # 6) EC2에 프로덕션 배포
       - name: Deploy to Production EC2
