@@ -47,8 +47,8 @@ jobs:
       # 5) 배포용 파일 패키징
       - name: Package deployment files
         run: |
-          chmod +x scripts/package-deployment.sh
-          ./scripts/package-deployment.sh
+          chmod +x .github/scripts/package-deployment-files.sh
+          ./.github/scripts/package-deployment-files.sh
 
       # 6) EC2에 프로덕션 배포
       - name: Deploy to Production EC2
